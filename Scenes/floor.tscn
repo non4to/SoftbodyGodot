@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://cbo0h601u1n5w"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_nm1s7"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_41b03"]
+
+[node name="floor" type="StaticBody2D" groups=["floor"]]
+position = Vector2(600, 337)
+scale = Vector2(0.946102, 1.0198)
+collision_layer = 3
+collision_mask = 3
+physics_material_override = SubResource("PhysicsMaterial_nm1s7")
+
+[node name="CollisionShape2D-bot" type="CollisionShape2D" parent="."]
+position = Vector2(-17.9685, 278.486)
+shape = SubResource("WorldBoundaryShape2D_41b03")
+
+[node name="ColorRect" type="ColorRect" parent="CollisionShape2D-bot"]
+offset_left = -641.58
+offset_top = 1.96118
+offset_right = -601.58
+offset_bottom = 41.9612
+scale = Vector2(31.2428, 0.912722)
+color = Color(0, 0, 0, 1)
+metadata/_edit_use_anchors_ = true

@@ -1,0 +1,97 @@
+[gd_scene load_steps=9 format=3 uid="uid://dvdyf0opvr5ga"]
+
+[ext_resource type="Script" path="res://Scenes/myRobot/myrobot.gd" id="1_yq1co"]
+[ext_resource type="Script" path="res://Scenes/myRobot/damped_spring_joint_2d.gd" id="2_2gl1t"]
+[ext_resource type="PhysicsMaterial" uid="uid://2kay8j53abmv" path="res://samples/softbody2d/softbody2d_phys_slippery.tres" id="3_xa5vx"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_p2k3q"]
+friction = 0.0
+bounce = 1.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bumrm"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_jqyqn"]
+friction = 0.0
+bounce = 1.0
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_kac2y"]
+friction = 0.1
+absorbent = true
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yg6ec"]
+size = Vector2(313, 20)
+
+[node name="MyRobot" type="Node2D"]
+
+[node name="Robotitself" type="Node2D" parent="."]
+position = Vector2(19, 213)
+rotation = 1.5708
+script = ExtResource("1_yq1co")
+
+[node name="rigid1" type="RigidBody2D" parent="Robotitself"]
+unique_name_in_owner = true
+position = Vector2(37.0003, 68.9999)
+physics_material_override = SubResource("PhysicsMaterial_p2k3q")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Robotitself/rigid1"]
+shape = SubResource("RectangleShape2D_bumrm")
+
+[node name="Label" type="Label" parent="Robotitself/rigid1"]
+unique_name_in_owner = true
+offset_left = -9.99996
+offset_top = 10.0
+offset_right = 30.0
+offset_bottom = 33.0
+rotation = -1.56886
+text = "R1"
+
+[node name="rigid2" type="RigidBody2D" parent="Robotitself"]
+unique_name_in_owner = true
+position = Vector2(37.0002, 48.9999)
+physics_material_override = SubResource("PhysicsMaterial_jqyqn")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Robotitself/rigid2"]
+shape = SubResource("RectangleShape2D_bumrm")
+
+[node name="DampedSpringJoint2D" type="DampedSpringJoint2D" parent="Robotitself"]
+position = Vector2(37.0003, 68.9999)
+rotation = -3.14159
+scale = Vector2(1, 1.43992)
+node_a = NodePath("../rigid1")
+node_b = NodePath("../rigid2")
+length = 1.0
+stiffness = 5.0
+damping = 0.01
+script = ExtResource("2_2gl1t")
+
+[node name="terrain" type="Node2D" parent="."]
+position = Vector2(-100, -370)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="terrain"]
+position = Vector2(122, 640)
+scale = Vector2(0.986106, 0.988635)
+physics_material_override = SubResource("PhysicsMaterial_kac2y")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="terrain/StaticBody2D"]
+scale = Vector2(1.92, 1)
+shape = SubResource("RectangleShape2D_yg6ec")
+
+[node name="StaticBody2D2" type="StaticBody2D" parent="terrain"]
+position = Vector2(402, 620)
+rotation = -1.56792
+physics_material_override = ExtResource("3_xa5vx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="terrain/StaticBody2D2"]
+shape = SubResource("RectangleShape2D_yg6ec")
+
+[node name="StaticBody2D3" type="StaticBody2D" parent="terrain"]
+position = Vector2(-170, 615)
+rotation = -1.56792
+physics_material_override = ExtResource("3_xa5vx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="terrain/StaticBody2D3"]
+shape = SubResource("RectangleShape2D_yg6ec")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(21, 137)
+zoom = Vector2(2, 2)

@@ -1,0 +1,36 @@
+[gd_scene load_steps=6 format=3 uid="uid://8ebw7cvndf83"]
+
+[ext_resource type="PackedScene" uid="uid://cbo0h601u1n5w" path="res://Scenes/floor.tscn" id="1_1mpq4"]
+[ext_resource type="Script" path="res://Scenes/main.gd" id="1_7c7pr"]
+[ext_resource type="PackedScene" uid="uid://6sb6h0b0wx26" path="res://Scenes/walls.tscn" id="2_p8ne7"]
+[ext_resource type="PackedScene" uid="uid://s75gnq6i4upv" path="res://Scenes/Robot/robot.tscn" id="5_vx0hj"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_vqdu7"]
+
+[node name="main" type="Node2D"]
+script = ExtResource("1_7c7pr")
+
+[node name="floor" parent="." instance=ExtResource("1_1mpq4")]
+
+[node name="walls" parent="." instance=ExtResource("2_p8ne7")]
+
+[node name="CollisionShape2D-left2" type="CollisionShape2D" parent="walls"]
+position = Vector2(-529, -60)
+rotation = 1.5708
+shape = SubResource("WorldBoundaryShape2D_vqdu7")
+
+[node name="ColorRect" type="ColorRect" parent="walls/CollisionShape2D-left2"]
+offset_left = -641.58
+offset_top = 1.96118
+offset_right = -601.58
+offset_bottom = 41.9612
+scale = Vector2(31.2428, 0.912722)
+color = Color(0, 0, 0, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(301, 464)
+zoom = Vector2(2, 2)
+
+[node name="Robot2" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(97, 567)

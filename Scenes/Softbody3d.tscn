@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3 uid="uid://ckjugtrd2e84"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_8f6hb"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_gm3oc"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nx5sm"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="SoftBody3D" type="SoftBody3D" parent="."]
+mesh = SubResource("BoxMesh_8f6hb")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SoftBody3D"]
+mesh = SubResource("BoxMesh_gm3oc")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 1)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(20, 0, 0, 0, 0.916, 0, 0, 0, 18.91, 0, 0, 0)
+shape = SubResource("BoxShape3D_nx5sm")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 10)
+keep_aspect = 0
+fov = 81.5625
