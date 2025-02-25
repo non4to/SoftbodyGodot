@@ -32,5 +32,8 @@ metadata/_edit_use_anchors_ = true
 position = Vector2(301, 464)
 zoom = Vector2(2, 2)
 
+[node name="Robot" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(177, 568)
+
 [node name="Robot2" parent="." instance=ExtResource("5_vx0hj")]
-position = Vector2(97, 567)
+position = Vector2(126, 567)

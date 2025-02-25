@@ -749,7 +749,6 @@ func _create_bones(voronoi: Array[Voronoi2D.VoronoiRegion2D]) -> Array[Bone2D]:
 		var bone := Bone2D.new()
 		var point = each.fixed_center
 		bone.name = "Bone-"+str(bone_idx)
-		bone.set_script(bone_script)
 		bone_idx += 1
 		bone.global_position = point
 		bone.set_autocalculate_length_and_angle(false)
@@ -842,6 +841,7 @@ func _add_rigid_body_for_bones(skeleton: Skeleton2D) -> Array[RigidBody2D]:
 		rigid_body.set_meta("idx", idx)
 		idx += 1
 		rigid_body.set_meta("bone_name", bone.name)
+		rigid_body.set_script(bone_script)
 		rigidbodies.append(rigid_body)
 	return rigidbodies
 
