@@ -37,9 +37,28 @@ func start_robot() -> void:
 			#bone.connect("bone_collided_with_robot", _on_bone_collided_with_robot)
 			bone.connect("bone_collided", _on_bone_collided)
 			bone.connect("bone_collision_finished", _on_bone_collision_finished)
-#func contract(bone:RigidBody2D, in_bone_direction:RigidBody2D, withForce:float) -> void:
-	#var direction = self.get_direction_vector(bone,in_bone_direction)
-	#bone.apply_central_force(direction*withForce)
+			
+func contract(bone:RigidBody2D, in_bone_direction:RigidBody2D, withForce:float) -> void:
+	var direction = self.get_direction_vector(bone,in_bone_direction)
+	bone.apply_central_force(direction*withForce)
+
+func contract_top(withForce:float) -> void:
+	contract(bones[0],bones[4],withForce)
+	#contract(bones[2],bones[0],withForce)
+
+	contract(bones[3],bones[4],withForce)
+	#contract(bones[5],bones[3],withForce)
+	
+	contract(bones[6],bones[4],withForce)
+	#contract(bones[8],bones[6],withForce)
+
+
+func contract_blue(withForce:float)	-> void:
+	contract(bones[6],bones[8],withForce)
+	#contract(bones[27],bones[22],withForce)
+
+	
+
 	
 func attach_bodies(my_bone:RigidBody2D, other_bone: RigidBody2D, side:String) -> void:
 	print(my_bone,other_bone)
@@ -85,7 +104,9 @@ func get_direction_vector(fromA:RigidBody2D,toB:RigidBody2D) -> Vector2:
 	return direction_vector
 
 func _on_timer_timeout() -> void:
-	var mult = 10
+	var mult = 20
+	#contract_blue(mult*max_power)
+	#contract_top(mult*max_power)
 	if is_supported:
 		if randf() < 0.5:
 			direction *= -1
@@ -111,10 +132,12 @@ func _on_bone_collision_finished(my_bone:RigidBody2D,other_thing:Node):
 		is_supported = false
 
 func _on_topleft_body_entered(body: Node2D) -> void:
-	if (body.is_in_group("bone")) and not(body.is_in_group(robot_id)):
-		self.attach_bodies($"SoftBody2D/Bone-0",body,"left")
+	pass
+	#if (body.is_in_group("bone")) and not(body.is_in_group(robot_id)):
+		#self.attach_bodies($"SoftBody2D/Bone-0",body,"left")
 
 func _on_topright_body_entered(body: Node2D) -> void:
-	if (body.is_in_group("bone")) and not(body.is_in_group(robot_id)):
-		self.attach_bodies($"SoftBody2D/Bone-6",body,"right")
+	pass
+	#if (body.is_in_group("bone")) and not(body.is_in_group(robot_id)):
+		#self.attach_bodies($"SoftBody2D/Bone-6",body,"right")
 		#print(body, self)
