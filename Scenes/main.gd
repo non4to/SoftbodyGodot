@@ -12,7 +12,6 @@ func _ready() -> void:
 	var screen_height = 500
 	for i in range(ROBOTS_NUMBER):
 		make_robot(randf_range(0,screen_width),randf_range(0,screen_height))
-	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -24,7 +23,6 @@ func _input(event):
 	if event.is_action_released("left_mouse_click"):  # Ou use "ui_accept" se for a tecla padrão
 		var mouse_position = get_global_mouse_position()  # Obtém a posição global do mouse
 		make_robot(mouse_position.x, mouse_position.y)  # Spawna o robô nessa posição
-
 
 func make_robot(x:int,y:int):
 	var robot = ROBOT.instantiate()

@@ -1,39 +1,148 @@
-[gd_scene load_steps=6 format=3 uid="uid://8ebw7cvndf83"]
+[gd_scene load_steps=4 format=3 uid="uid://8ebw7cvndf83"]
 
-[ext_resource type="PackedScene" uid="uid://cbo0h601u1n5w" path="res://Scenes/floor.tscn" id="1_1mpq4"]
 [ext_resource type="Script" path="res://Scenes/main.gd" id="1_7c7pr"]
-[ext_resource type="PackedScene" uid="uid://6sb6h0b0wx26" path="res://Scenes/walls.tscn" id="2_p8ne7"]
+[ext_resource type="PackedScene" uid="uid://ob442a1tcbmg" path="res://Scenes/Environment/environment.tscn" id="2_i85tn"]
 [ext_resource type="PackedScene" uid="uid://s75gnq6i4upv" path="res://Scenes/Robot/robot.tscn" id="5_vx0hj"]
-
-[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_vqdu7"]
 
 [node name="main" type="Node2D"]
 script = ExtResource("1_7c7pr")
 
-[node name="floor" parent="." instance=ExtResource("1_1mpq4")]
-
-[node name="walls" parent="." instance=ExtResource("2_p8ne7")]
-
-[node name="CollisionShape2D-left2" type="CollisionShape2D" parent="walls"]
-position = Vector2(-529, -60)
-rotation = 1.5708
-shape = SubResource("WorldBoundaryShape2D_vqdu7")
-
-[node name="ColorRect" type="ColorRect" parent="walls/CollisionShape2D-left2"]
-offset_left = -641.58
-offset_top = 1.96118
-offset_right = -601.58
-offset_bottom = 41.9612
-scale = Vector2(31.2428, 0.912722)
-color = Color(0, 0, 0, 1)
-metadata/_edit_use_anchors_ = true
+[node name="Environment" parent="." instance=ExtResource("2_i85tn")]
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(301, 464)
-zoom = Vector2(2, 2)
+position = Vector2(573, 328)
 
 [node name="Robot" parent="." instance=ExtResource("5_vx0hj")]
 position = Vector2(177, 568)
 
 [node name="Robot2" parent="." instance=ExtResource("5_vx0hj")]
 position = Vector2(126, 567)
+
+[node name="Robot3" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(175, 475)
+
+[node name="Robot4" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(308, 317)
+
+[node name="Robot5" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(640, 471)
+
+[node name="Robot6" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(649, 373)
+
+[node name="Robot7" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(58, 196)
+
+[node name="Robot8" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(66, 313)
+
+[node name="Robot9" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(168, 211)
+
+[node name="Robot10" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(404, 211)
+
+[node name="Robot11" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(442, 539)
+
+[node name="Robot12" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(755, 522)
+
+[node name="Robot13" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(379, 447)
+
+[node name="Robot14" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(508, 368)
+
+[node name="Robot15" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(487, 269)
+
+[node name="Robot16" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(602, 268)
+
+[node name="Robot17" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(740, 402)
+
+[node name="Robot18" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(713, 326)
+
+[node name="Robot19" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(689, 230)
+
+[node name="Robot20" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(274, 211)
+
+[node name="Robot21" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(119, 115)
+
+[node name="Robot22" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(221, 118)
+
+[node name="Robot23" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(315, 118)
+
+[node name="Robot24" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(511, 190)
+
+[node name="Robot25" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(600, 156)
+
+[node name="Robot26" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(791, 215)
+
+[node name="Robot27" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(792, 293)
+
+[node name="Robot28" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(810, 394)
+
+[node name="Robot29" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(790, 466)
+
+[node name="Robot30" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(940, 541)
+
+[node name="Robot31" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(942, 424)
+
+[node name="Robot32" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(904, 343)
+
+[node name="Robot33" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(897, 220)
+
+[node name="Robot34" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(840, 124)
+
+[node name="Robot35" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(734, 122)
+
+[node name="Robot36" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(946, 128)
+
+[node name="Robot37" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(993, 220)
+
+[node name="Robot38" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(998, 320)
+
+[node name="Robot39" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(1031, 453)
+
+[node name="Robot40" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(185, 341)
+
+[node name="Robot41" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(304, 543)
+
+[node name="Robot42" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(527, 524)
+
+[node name="Robot43" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(442, 66)
+
+[node name="Robot44" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(421, 132)
+
+[node name="Robot45" parent="." instance=ExtResource("5_vx0hj")]
+position = Vector2(673, 42)

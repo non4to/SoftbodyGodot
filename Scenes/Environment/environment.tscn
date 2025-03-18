@@ -1,0 +1,103 @@
+[gd_scene load_steps=2 format=3 uid="uid://ob442a1tcbmg"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qo5bc"]
+size = Vector2(20, 647)
+
+[node name="Environment" type="Node2D"]
+
+[node name="left-wall" type="StaticBody2D" parent="."]
+modulate = Color(0, 0, 0, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="left-wall"]
+position = Vector2(10, 323.5)
+shape = SubResource("RectangleShape2D_qo5bc")
+
+[node name="ColorRect" type="ColorRect" parent="left-wall"]
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(0.486259, 16.1716)
+
+[node name="right-wall" type="StaticBody2D" parent="."]
+modulate = Color(0, 0, 0, 1)
+position = Vector2(1132, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="right-wall"]
+position = Vector2(10, 323.5)
+shape = SubResource("RectangleShape2D_qo5bc")
+
+[node name="ColorRect" type="ColorRect" parent="right-wall"]
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(0.486259, 16.1716)
+
+[node name="top-wall" type="StaticBody2D" parent="."]
+modulate = Color(0, 0, 0, 1)
+position = Vector2(1132, 0)
+rotation = 1.5708
+scale = Vector2(1, 1.72)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="top-wall"]
+position = Vector2(10, 323.5)
+shape = SubResource("RectangleShape2D_qo5bc")
+
+[node name="ColorRect" type="ColorRect" parent="top-wall"]
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(0.486259, 16.1716)
+
+[node name="bot-wall" type="StaticBody2D" parent="."]
+modulate = Color(0, 0, 0, 1)
+position = Vector2(1132, 627)
+rotation = 1.5708
+scale = Vector2(1, 1.72)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="bot-wall"]
+position = Vector2(10, 323.5)
+shape = SubResource("RectangleShape2D_qo5bc")
+
+[node name="ColorRect" type="ColorRect" parent="bot-wall"]
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(0.486259, 16.1716)
+
+[node name="mid-wall2" type="StaticBody2D" parent="."]
+modulate = Color(0, 0, 0, 1)
+position = Vector2(567, -2)
+scale = Vector2(0.904274, 0.525683)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="mid-wall2"]
+position = Vector2(10, 323.5)
+shape = SubResource("RectangleShape2D_qo5bc")
+
+[node name="ColorRect" type="ColorRect" parent="mid-wall2"]
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(0.486259, 16.1716)
+
+[node name="mid-wall3" type="StaticBody2D" parent="."]
+modulate = Color(0, 0, 0, 1)
+position = Vector2(865, 304)
+scale = Vector2(0.904274, 0.525683)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="mid-wall3"]
+position = Vector2(10, 323.5)
+shape = SubResource("RectangleShape2D_qo5bc")
+
+[node name="ColorRect" type="ColorRect" parent="mid-wall3"]
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(0.486259, 16.1716)
+
+[node name="mid-wall1" type="StaticBody2D" parent="."]
+modulate = Color(0, 0, 0, 1)
+position = Vector2(271, 296)
+scale = Vector2(0.904274, 0.525683)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="mid-wall1"]
+position = Vector2(10, 323.5)
+shape = SubResource("RectangleShape2D_qo5bc")
+
+[node name="ColorRect" type="ColorRect" parent="mid-wall1"]
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(0.486259, 16.1716)

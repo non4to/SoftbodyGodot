@@ -3,19 +3,23 @@ extends Node2D
 var robot_id: String
 var center_bone: RigidBody2D
 var bones = []
-var max_power = 100
-var direction = 1
-var is_supported = false
+var max_power = 100ls
 
+var direction_x = 1
+var direction_y = 1
+var power_x = 0
+var power_y = 0
 var current_collisions = 0
 #var bone_script = ("res://Scenes/Robot/bone.gd")
+
+## genes: velocity value, energy
+## 4 sensors: one of each side.
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	start_robot() #ID to the robot and its bones
 	
 func _process(delta: float) -> void:
-	#print(is_supported,current_collisions)
 	#print(get_children())
 	pass
 
@@ -24,7 +28,6 @@ func _physics_process(delta: float) -> void:
 	
 func start_robot() -> void:
 	#Builds an ID to robot and adds robot and its bones to this group
-	
 	robot_id = "id_" + str(get_instance_id())
 	add_to_group("robot")
 	add_to_group(robot_id)
@@ -52,13 +55,9 @@ func contract_top(withForce:float) -> void:
 	contract(bones[6],bones[4],withForce)
 	#contract(bones[8],bones[6],withForce)
 
-
 func contract_blue(withForce:float)	-> void:
 	contract(bones[6],bones[8],withForce)
 	#contract(bones[27],bones[22],withForce)
-
-	
-
 	
 func attach_bodies(my_bone:RigidBody2D, other_bone: RigidBody2D, side:String) -> void:
 	print(my_bone,other_bone)
@@ -104,15 +103,17 @@ func get_direction_vector(fromA:RigidBody2D,toB:RigidBody2D) -> Vector2:
 	return direction_vector
 
 func _on_timer_timeout() -> void:
-	var mult = 20
 	#contract_blue(mult*max_power)
 	#contract_top(mult*max_power)
-	if is_supported:
+	if randf() < 0.4:
 		if randf() < 0.5:
-			direction *= -1
-		$SoftBody2D.apply_force(Vector2(direction*mult*max_power,-mult*max_power))
+			direction_x *= -1
+		if randf() > 0.5:
+			direction_y *= -1
+		power_x = max_power#randi_range(1000, max_power)
+		power_y = max_power#randi_range(1000, max_power)
+		$SoftBody2D.apply_impulse(Vector2(direction_x*power_x, direction_y*power_y))
 #func _on_bone_collided_with_robot(my_bone:RigidBody2D,other_bone:RigidBody2D):
-	#is_supported = true
 	#print(my_bone, other_bone)
 	
 func _on_bone_collided(my_bone:RigidBody2D,other_thing:Node):
@@ -120,7 +121,6 @@ func _on_bone_collided(my_bone:RigidBody2D,other_thing:Node):
 		pass
 		#print("collidi com outro robo!")
 	#print("collidi com algo!", other_thing)
-	is_supported = true
 	current_collisions += 1
 	#direction *= -1
 	#print(my_bone, other_thing)
@@ -128,8 +128,6 @@ func _on_bone_collided(my_bone:RigidBody2D,other_thing:Node):
 func _on_bone_collision_finished(my_bone:RigidBody2D,other_thing:Node):
 	#print(other_thing)
 	current_collisions -= 1
-	if current_collisions == 0:
-		is_supported = false
 
 func _on_topleft_body_entered(body: Node2D) -> void:
 	pass
