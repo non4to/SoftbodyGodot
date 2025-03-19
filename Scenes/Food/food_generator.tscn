@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://ceytao6v6mlyq"]
+
+[ext_resource type="Texture2D" uid="uid://d32xm2vs7j7j2" path="res://assets/foody-disk.png" id="1_viw46"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_jub1s"]
+radius = 6.0
+height = 12.0
+
+[node name="food_generator" type="Node2D"]
+
+[node name="RigidBody2D" type="RigidBody2D" parent="."]
+collision_layer = 4
+collision_mask = 7
+can_sleep = false
+
+[node name="Sprite2D" type="Sprite2D" parent="RigidBody2D"]
+texture = ExtResource("1_viw46")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D"]
+shape = SubResource("CapsuleShape2D_jub1s")

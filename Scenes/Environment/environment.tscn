@@ -1,103 +1,77 @@
-[gd_scene load_steps=2 format=3 uid="uid://ob442a1tcbmg"]
+[gd_scene load_steps=3 format=3 uid="uid://ob442a1tcbmg"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_qo5bc"]
-size = Vector2(20, 647)
+[ext_resource type="PackedScene" uid="uid://c0jxx2vamkhdh" path="res://Scenes/Environment/wall.tscn" id="1_4xs6h"]
+[ext_resource type="PackedScene" uid="uid://tihpy2qgx7ak" path="res://Scenes/Environment/half-wall.tscn" id="2_rcjk5"]
 
-[node name="Environment" type="Node2D"]
+[node name="Environment1" type="Node2D"]
 
-[node name="left-wall" type="StaticBody2D" parent="."]
-modulate = Color(0, 0, 0, 1)
+[node name="wall" parent="." instance=ExtResource("1_4xs6h")]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="left-wall"]
-position = Vector2(10, 323.5)
-shape = SubResource("RectangleShape2D_qo5bc")
+[node name="wall2" parent="." instance=ExtResource("1_4xs6h")]
+position = Vector2(0, 647)
 
-[node name="ColorRect" type="ColorRect" parent="left-wall"]
-offset_right = 40.0
-offset_bottom = 40.0
-scale = Vector2(0.486259, 16.1716)
+[node name="wall3" parent="." instance=ExtResource("1_4xs6h")]
+position = Vector2(1132, 1)
 
-[node name="right-wall" type="StaticBody2D" parent="."]
-modulate = Color(0, 0, 0, 1)
-position = Vector2(1132, 0)
+[node name="wall4" parent="." instance=ExtResource("1_4xs6h")]
+position = Vector2(1132, 648)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="right-wall"]
-position = Vector2(10, 323.5)
-shape = SubResource("RectangleShape2D_qo5bc")
-
-[node name="ColorRect" type="ColorRect" parent="right-wall"]
-offset_right = 40.0
-offset_bottom = 40.0
-scale = Vector2(0.486259, 16.1716)
-
-[node name="top-wall" type="StaticBody2D" parent="."]
-modulate = Color(0, 0, 0, 1)
-position = Vector2(1132, 0)
+[node name="wall5" parent="." instance=ExtResource("1_4xs6h")]
+position = Vector2(1132, 1275)
 rotation = 1.5708
-scale = Vector2(1, 1.72)
+scale = Vector2(1, 1.74793)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="top-wall"]
-position = Vector2(10, 323.5)
-shape = SubResource("RectangleShape2D_qo5bc")
-
-[node name="ColorRect" type="ColorRect" parent="top-wall"]
-offset_right = 40.0
-offset_bottom = 40.0
-scale = Vector2(0.486259, 16.1716)
-
-[node name="bot-wall" type="StaticBody2D" parent="."]
-modulate = Color(0, 0, 0, 1)
-position = Vector2(1132, 627)
+[node name="wall7" parent="." instance=ExtResource("1_4xs6h")]
+position = Vector2(1152, 0)
 rotation = 1.5708
-scale = Vector2(1, 1.72)
+scale = Vector2(1.11111, 1.77987)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="bot-wall"]
-position = Vector2(10, 323.5)
-shape = SubResource("RectangleShape2D_qo5bc")
+[node name="mid-wall1" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(179, 11)
 
-[node name="ColorRect" type="ColorRect" parent="bot-wall"]
-offset_right = 40.0
-offset_bottom = 40.0
-scale = Vector2(0.486259, 16.1716)
+[node name="mid-wall2" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(966, 9)
 
-[node name="mid-wall2" type="StaticBody2D" parent="."]
-modulate = Color(0, 0, 0, 1)
-position = Vector2(567, -2)
-scale = Vector2(0.904274, 0.525683)
+[node name="mid-wall3" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(98, 406)
+rotation = -0.577277
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="mid-wall2"]
-position = Vector2(10, 323.5)
-shape = SubResource("RectangleShape2D_qo5bc")
+[node name="mid-wall4" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(1031, 395)
+rotation = 0.543273
 
-[node name="ColorRect" type="ColorRect" parent="mid-wall2"]
-offset_right = 40.0
-offset_bottom = 40.0
-scale = Vector2(0.486259, 16.1716)
+[node name="mid-wall5" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(229, 744)
+rotation = 1.5708
+scale = Vector2(1.05634, 0.247915)
 
-[node name="mid-wall3" type="StaticBody2D" parent="."]
-modulate = Color(0, 0, 0, 1)
-position = Vector2(865, 304)
-scale = Vector2(0.904274, 0.525683)
+[node name="mid-wall6" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(1080, 737)
+rotation = 1.5708
+scale = Vector2(0.904274, 0.208618)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="mid-wall3"]
-position = Vector2(10, 323.5)
-shape = SubResource("RectangleShape2D_qo5bc")
+[node name="mid-wall7" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(105, 867)
 
-[node name="ColorRect" type="ColorRect" parent="mid-wall3"]
-offset_right = 40.0
-offset_bottom = 40.0
-scale = Vector2(0.486259, 16.1716)
+[node name="mid-wall8" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(214, 933)
 
-[node name="mid-wall1" type="StaticBody2D" parent="."]
-modulate = Color(0, 0, 0, 1)
-position = Vector2(271, 296)
-scale = Vector2(0.904274, 0.525683)
+[node name="mid-wall9" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(327, 859)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="mid-wall1"]
-position = Vector2(10, 323.5)
-shape = SubResource("RectangleShape2D_qo5bc")
+[node name="mid-wall10" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(942, 934)
 
-[node name="ColorRect" type="ColorRect" parent="mid-wall1"]
-offset_right = 40.0
-offset_bottom = 40.0
-scale = Vector2(0.486259, 16.1716)
+[node name="mid-wall11" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(1035, 852)
+
+[node name="mid-wall12" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(846, 845)
+
+[node name="mid-wall13" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(446, 851)
+rotation = 1.5708
+
+[node name="mid-wall14" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(1051, 845)
+rotation = 1.5708

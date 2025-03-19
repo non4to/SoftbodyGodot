@@ -43,11 +43,11 @@ dash={
 
 [layer_names]
 
-2d_physics/layer_1="soft"
+2d_physics/layer_1="softbodies"
+2d_physics/layer_2="walls"
 
 [physics]
 
-2d/physics_engine="Rapier2D"
 3d/physics_engine="JoltPhysics3D"
 2d/default_gravity=0.0
 2d/default_linear_damp=1.0
