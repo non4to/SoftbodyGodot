@@ -25,3 +25,9 @@ position = Vector2(1054, 180)
 
 [node name="food_spawner4" parent="." instance=ExtResource("4_ckyev")]
 position = Vector2(1055, 274)
+
+[node name="food_spawner5" parent="." instance=ExtResource("4_ckyev")]
+position = Vector2(295, 98)
+
+[node name="food_spawner6" parent="." instance=ExtResource("4_ckyev")]
+position = Vector2(869, 83)

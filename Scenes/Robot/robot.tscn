@@ -173,7 +173,7 @@ metadata/_local_pose_override_enabled_ = true
 
 [node name="Bone-4" type="Bone2D" parent="SoftBody2D/Skeleton2D"]
 position = Vector2(12.5, 12.5)
-rotation = 1.55374
+rotation = 1.6263
 rest = Transform2D(-0.05547, 0.99846, -0.99846, -0.05547, 12.5, 12.5)
 auto_calculate_length_and_angle = false
 length = 12.0
@@ -438,6 +438,12 @@ offset_top = -11.5
 offset_right = 28.5
 offset_bottom = 11.5
 scale = Vector2(0.575811, 0.418887)
+
+[node name="Label2" type="Label" parent="SoftBody2D/Bone-4"]
+offset_left = -12.0
+offset_right = 13.0
+offset_bottom = 23.0
+scale = Vector2(0.974978, 0.530183)
 
 [node name="sensor" type="Area2D" parent="SoftBody2D/Bone-4"]
 unique_name_in_owner = true

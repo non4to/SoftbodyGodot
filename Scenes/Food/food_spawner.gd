@@ -1,10 +1,10 @@
 extends Node2D
 
 const FOOD = preload("res://Scenes/Food/food.tscn")
-const MaxFoodSpawn = 10
-const RechargeRate = 1
-const MultToRecharge = 10
-const MaxThrownInpulse = 100
+@export var MaxFoodSpawn = 15
+@export var RechargeRate = 1
+@export var MultToRecharge = 15
+@export var MaxThrownInpulse = 150
 
 
 var FoodAvailable = MaxFoodSpawn

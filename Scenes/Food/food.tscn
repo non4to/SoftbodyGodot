@@ -16,7 +16,7 @@ offset_top = -1.0
 offset_right = 39.0
 offset_bottom = 39.0
 scale = Vector2(0.0496489, 0.0500924)
-color = Color(0, 0, 0, 1)
+color = Color(0.811765, 0.815686, 0, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_43glv")
