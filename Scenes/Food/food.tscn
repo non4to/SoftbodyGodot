@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3 uid="uid://c1dnnj5808j2o"]
+
+[ext_resource type="Script" path="res://Scenes/Food/food.gd" id="1_7gh2a"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_43glv"]
+radius = 1.0
+
+[node name="food" type="RigidBody2D" groups=["food"]]
+collision_mask = 3
+mass = 0.01
+script = ExtResource("1_7gh2a")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -1.0
+offset_top = -1.0
+offset_right = 39.0
+offset_bottom = 39.0
+scale = Vector2(0.0496489, 0.0500924)
+color = Color(0, 0, 0, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_43glv")

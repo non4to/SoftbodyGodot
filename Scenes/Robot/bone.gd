@@ -13,7 +13,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	pass
 
-func _on_body_entered(collider:Node):
+func _on_body_entered(collider:Node): #emits bone collided, if any bone collided with anything outside the robot.
 	var my_id = self.get_groups()[1]
 	if not(collider.is_in_group(my_id)):
 		bone_collided.emit(self,collider)

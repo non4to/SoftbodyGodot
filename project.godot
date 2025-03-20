@@ -43,7 +43,7 @@ dash={
 
 [layer_names]
 
-2d_physics/layer_1="softbodies"
+2d_physics/layer_1="objects"
 2d_physics/layer_2="walls"
 
 [physics]

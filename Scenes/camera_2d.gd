@@ -14,3 +14,9 @@ func _input(event):
 		var diferenca = lastPosition - event.position
 		position += diferenca  # Move a câmera na direção oposta ao movimento do mouse
 		lastPosition = event.position  # Atualiza a última posição do mouse
+
+	elif event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
+			zoom *= 1.1  # Aumenta o zoom (aproxima)
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN and event.pressed:
+			zoom /= 1.1  # Diminui o zoom (afasta)

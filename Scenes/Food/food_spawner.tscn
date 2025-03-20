@@ -1,16 +1,19 @@
-[gd_scene load_steps=3 format=3 uid="uid://ceytao6v6mlyq"]
+[gd_scene load_steps=4 format=3 uid="uid://ceytao6v6mlyq"]
 
+[ext_resource type="Script" path="res://Scenes/Food/food_spawner.gd" id="1_nagys"]
 [ext_resource type="Texture2D" uid="uid://d32xm2vs7j7j2" path="res://assets/foody-disk.png" id="1_viw46"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_jub1s"]
 radius = 6.0
 height = 12.0
 
-[node name="food_generator" type="Node2D"]
+[node name="food_spawner" type="Node2D"]
+script = ExtResource("1_nagys")
 
 [node name="RigidBody2D" type="RigidBody2D" parent="."]
 collision_layer = 4
 collision_mask = 7
+mass = 2.0
 can_sleep = false
 
 [node name="Sprite2D" type="Sprite2D" parent="RigidBody2D"]
@@ -18,3 +21,11 @@ texture = ExtResource("1_viw46")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D"]
 shape = SubResource("CapsuleShape2D_jub1s")
+
+[node name="Label" type="Label" parent="RigidBody2D"]
+unique_name_in_owner = true
+offset_left = -6.0
+offset_top = -6.0
+offset_right = 34.0
+offset_bottom = 17.0
+scale = Vector2(0.310424, 0.531978)

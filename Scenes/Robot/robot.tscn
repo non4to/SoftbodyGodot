@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://s75gnq6i4upv"]
+[gd_scene load_steps=17 format=3 uid="uid://s75gnq6i4upv"]
 
 [ext_resource type="Script" path="res://Scenes/Robot/robot.gd" id="1_0bndf"]
 [ext_resource type="Texture2D" uid="uid://b0pi77bwyb4g0" path="res://assets/robot-rainbow-25.png" id="2_sujim"]
@@ -86,6 +86,10 @@ modifications/8 = SubResource("SkeletonModification2DLookAt_fveea")
 resource_local_to_scene = true
 size = Vector2(11, 11)
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_nn0y6"]
+radius = 10.6023
+height = 31.0606
+
 [node name="Robot" type="Node2D"]
 script = ExtResource("1_0bndf")
 
@@ -169,7 +173,7 @@ metadata/_local_pose_override_enabled_ = true
 
 [node name="Bone-4" type="Bone2D" parent="SoftBody2D/Skeleton2D"]
 position = Vector2(12.5, 12.5)
-rotation = 1.62629
+rotation = 1.55374
 rest = Transform2D(-0.05547, 0.99846, -0.99846, -0.05547, 12.5, 12.5)
 auto_calculate_length_and_angle = false
 length = 12.0
@@ -428,6 +432,22 @@ script = ExtResource("4_wujyb")
 metadata/idx = 4
 metadata/bone_name = &"Bone-4"
 
+[node name="Label" type="Label" parent="SoftBody2D/Bone-4"]
+offset_left = -11.5
+offset_top = -11.5
+offset_right = 28.5
+offset_bottom = 11.5
+scale = Vector2(0.575811, 0.418887)
+
+[node name="sensor" type="Area2D" parent="SoftBody2D/Bone-4"]
+unique_name_in_owner = true
+collision_layer = 0
+collision_mask = 7
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SoftBody2D/Bone-4/sensor"]
+scale = Vector2(2.5, 1.7)
+shape = SubResource("CapsuleShape2D_nn0y6")
+
 [node name="RectangleShape2D" type="CollisionShape2D" parent="SoftBody2D/Bone-4"]
 shape = SubResource("RectangleShape2D_xry5a")
 
@@ -683,4 +703,5 @@ softness = 60.0
 [node name="Timer" type="Timer" parent="."]
 autostart = true
 
+[connection signal="body_entered" from="SoftBody2D/Bone-4/sensor" to="." method="_on_sensor_body_entered"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
