@@ -2,32 +2,91 @@
 
 [ext_resource type="Script" path="res://Scenes/main.gd" id="1_7c7pr"]
 [ext_resource type="PackedScene" uid="uid://ob442a1tcbmg" path="res://Scenes/Environment/environment.tscn" id="2_i85tn"]
-[ext_resource type="Script" path="res://Scenes/camera_2d.gd" id="3_01ya3"]
 [ext_resource type="PackedScene" uid="uid://ceytao6v6mlyq" path="res://Scenes/Food/food_spawner.tscn" id="4_ckyev"]
+[ext_resource type="PackedScene" uid="uid://dt317af5oy764" path="res://Scenes/Robot/robot_spawner.tscn" id="5_ef2dv"]
 
 [node name="main" type="Node2D"]
 script = ExtResource("1_7c7pr")
 
 [node name="Environment" parent="." instance=ExtResource("2_i85tn")]
 
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(573, 328)
-script = ExtResource("3_01ya3")
-
 [node name="food_spawner" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(562, 325)
+position = Vector2(214, 545)
 
 [node name="food_spawner2" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(1053, 90)
-
-[node name="food_spawner3" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(1054, 180)
+position = Vector2(1027, 535)
 
 [node name="food_spawner4" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(1055, 274)
+position = Vector2(54, 390)
 
 [node name="food_spawner5" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(295, 98)
+position = Vector2(205, 56)
 
 [node name="food_spawner6" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(869, 83)
+position = Vector2(334, 394)
+
+[node name="food_spawner7" parent="." instance=ExtResource("4_ckyev")]
+position = Vector2(750, 73)
+
+[node name="food_spawner8" parent="." instance=ExtResource("4_ckyev")]
+position = Vector2(861, 396)
+
+[node name="food_spawner9" parent="." instance=ExtResource("4_ckyev")]
+position = Vector2(980, 50)
+
+[node name="food_spawner10" parent="." instance=ExtResource("4_ckyev")]
+position = Vector2(1085, 394)
+
+[node name="robot-spawner" parent="." instance=ExtResource("5_ef2dv")]
+position = Vector2(52, 59)
+
+[node name="robot-spawner2" parent="." instance=ExtResource("5_ef2dv")]
+position = Vector2(1100, 65)
+
+[node name="robot-spawner3" parent="." instance=ExtResource("5_ef2dv")]
+position = Vector2(109, 537)
+
+[node name="robot-spawner4" parent="." instance=ExtResource("5_ef2dv")]
+position = Vector2(1039, 526)
+
+[node name="food_spawner11" parent="." instance=ExtResource("4_ckyev")]
+position = Vector2(595, 527)
+
+[node name="food_spawner12" parent="." instance=ExtResource("4_ckyev")]
+position = Vector2(584, 225)
+
+[node name="food_spawner13" parent="." instance=ExtResource("4_ckyev")]
+position = Vector2(583, 240)
+
+[node name="food_spawner14" parent="." instance=ExtResource("4_ckyev")]
+position = Vector2(598, 225)
+
+[node name="food_spawner15" parent="." instance=ExtResource("4_ckyev")]
+position = Vector2(600, 245)
+
+[node name="food_spawner16" parent="." instance=ExtResource("4_ckyev")]
+position = Vector2(616, 234)
+
+[node name="food_spawner17" parent="." instance=ExtResource("4_ckyev")]
+position = Vector2(569, 234)
+
+[node name="food_spawner18" parent="." instance=ExtResource("4_ckyev")]
+position = Vector2(460, 69)
+
+[node name="robot-spawner7" parent="." instance=ExtResource("5_ef2dv")]
+position = Vector2(1057, 64)
+
+[node name="robot-spawner8" parent="." instance=ExtResource("5_ef2dv")]
+position = Vector2(106, 61)
+
+[node name="robot-spawner9" parent="." instance=ExtResource("5_ef2dv")]
+position = Vector2(62, 486)
+
+[node name="robot-spawner10" parent="." instance=ExtResource("5_ef2dv")]
+position = Vector2(57, 595)
+
+[node name="robot-spawner11" parent="." instance=ExtResource("5_ef2dv")]
+position = Vector2(1085, 475)
+
+[node name="robot-spawner12" parent="." instance=ExtResource("5_ef2dv")]
+position = Vector2(1085, 589)

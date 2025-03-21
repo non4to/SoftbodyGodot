@@ -1,22 +1,25 @@
 extends Node2D
  
-const ROBOTS_NUMBER = 0
 const ROBOT = preload("res://Scenes/Robot/robot.tscn")
-const ROBOT2 = preload("res://Scenes/myRobot/myrobot2.tscn")
-var robots = []
+var RobotSpawners = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	var spawn_robot = false
-	var screen_width = 1000
-	var screen_height = 500
-	for i in range(ROBOTS_NUMBER):
-		make_robot(randf_range(0,screen_width),randf_range(0,screen_height))
-
+	get_spawners()
+	for spawner in RobotSpawners:
+		spawner.spawn_robot(spawner.position)
+	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	pass	
-	
+	var used = []
+	if Global.Robots.size() < 5:
+		for i in range(5):
+			var rand_index:int = randi() % RobotSpawners.size()
+			while rand_index in used:
+				rand_index = randi() % RobotSpawners.size()			
+			used.append(rand_index)
+			RobotSpawners[rand_index].spawn_robot(RobotSpawners[rand_index].position)
+
 func _input(event):
 	if event.is_action_released("toogle_spawn_robot"):
 		make_robot(50,50)
@@ -28,4 +31,10 @@ func make_robot(x:int,y:int):
 	var robot = ROBOT.instantiate()
 	robot.position = Vector2(x,y)
 	add_child(robot)
-	robots.append(robot)	
+	Global.Robots.append(robot)	
+
+func get_spawners():
+	for node in self.get_children():
+		if (node.is_in_group("robot-spawner")):
+			RobotSpawners.append(node)
+	

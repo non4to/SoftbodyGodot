@@ -17,11 +17,16 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+Global="*res://Global.gd"
 screen_size="*res://screen_size.gd"
 
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/softbody2d/plugin.cfg")
+
+[global_group]
+
+robot-spawner=""
 
 [input]
 
@@ -43,8 +48,10 @@ dash={
 
 [layer_names]
 
-2d_physics/layer_1="objects"
+2d_physics/layer_1="robots"
 2d_physics/layer_2="walls"
+2d_physics/layer_3="food"
+2d_physics/layer_4="food-spawners"
 
 [physics]
 

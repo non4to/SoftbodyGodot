@@ -6,6 +6,7 @@
 radius = 1.0
 
 [node name="food" type="RigidBody2D" groups=["food"]]
+collision_layer = 4
 collision_mask = 3
 mass = 0.01
 script = ExtResource("1_7gh2a")

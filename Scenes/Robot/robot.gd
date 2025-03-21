@@ -2,7 +2,7 @@ extends Node2D
 
 var Bones = []
 const CenterBoneIndex: int = 4      #Which is the bone in the center of the robot -> Force is applied on it
-@export var MaxForcePossible: int = 1   #Maximum Force possible
+@export var MaxForcePossible: int = 10   #Maximum Force possible
 const MaxEnergyPossible: int = 300  #Maximum Energy possible
 const MovingEnergyMult: float = 0.005 #Multiply this by the Force of the movement to obtain the Energy Cost
 const ReproductionCost: float = 0.5   #Multiply this value by the max Energy value of created (not max Energy possible)
@@ -52,21 +52,15 @@ func _physics_process(delta: float) -> void:
 	pass
 	var directions = [-1,0,1]
 	metabolize()
-	if not AllowDirectionChange:
-		StepsToChangeDirection += 1
-		if StepsToChangeDirection > ChangeDirectionDelay:
-			AllowDirectionChange = true
-	
-	#if StepsToChangeDirection > 5*ChangeDirectionDelay:
-		#if randf() < 0.99:
-			#if randf() < 0.5:
-				#direction_x = directions[randi()%directions.size()]
-				#direction_y = directions[randi()%directions.size()]
-				#change_direction(Vector2(direction_x,direction_y))
-		
 	if Energy > 0:	
+		if not AllowDirectionChange:
+			StepsToChangeDirection += 1
+			if StepsToChangeDirection > ChangeDirectionDelay:
+				AllowDirectionChange = true
 		move_to_direction(MovementDirection,MaxForcePossible)
-			#Bones[CenterBoneIndex].apply_central_force(Vector2(direction_x*power_x, direction_y*power_y))
+	else:
+		Global.Robots.erase(self)
+		self.queue_free()
 #---------------------------------------
 func start_robot() -> void:
 	#Start variables
@@ -99,8 +93,8 @@ func gene_translation() -> void:
 						get_direction_vector(Bones[4],Bones[7]),
 						get_direction_vector(Bones[4],Bones[8])]
 	for i in range(Bones.size()):
-		print(Gene[bonesLimits[i][0]])
-		
+		#print(Gene[bonesLimits[i][0]])
+		pass
 
 #---------------------------------------
 func metabolize() -> void:
@@ -148,8 +142,7 @@ func _on_bone_collided(myBone:RigidBody2D,collider:Node):
 	var directions = [-1,0,1]
 	for i in range(Bones.size()):
 		if myBone==Bones[i] and AllowDirectionChange:
-			print(myBone)
-			change_direction(directions[randi()%directions.size()]*collisionDirections[i])
+			change_direction(-1*collisionDirections[i])
 
 			
 		

@@ -112,7 +112,7 @@ length_ratio = 1.0
 radius = 11
 margin_offset_edge = 2.0
 gravity_scale = 0.0
-collision_mask = 3
+collision_mask = 15
 
 [node name="Skeleton2D" type="Skeleton2D" parent="SoftBody2D"]
 visible = false
@@ -238,7 +238,7 @@ metadata/_local_pose_override_enabled_ = true
 
 [node name="Bone-0" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(4.41421, 4.41421)
-collision_mask = 3
+collision_mask = 15
 mass = 0.1
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
@@ -278,7 +278,7 @@ softness = 60.0
 
 [node name="Bone-1" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(4.99724, 12.1051)
-collision_mask = 3
+collision_mask = 15
 mass = 0.1
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
@@ -331,7 +331,7 @@ softness = 60.0
 
 [node name="Bone-2" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(4.45191, 20.1245)
-collision_mask = 3
+collision_mask = 15
 mass = 0.1
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
@@ -371,7 +371,7 @@ softness = 60.0
 
 [node name="Bone-3" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(12.1051, 4.99724)
-collision_mask = 3
+collision_mask = 15
 mass = 0.1
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
@@ -425,7 +425,7 @@ softness = 60.0
 
 [node name="Bone-4" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(12.5, 12.5)
-collision_mask = 3
+collision_mask = 15
 mass = 0.1
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
@@ -433,6 +433,7 @@ metadata/idx = 4
 metadata/bone_name = &"Bone-4"
 
 [node name="Label" type="Label" parent="SoftBody2D/Bone-4"]
+visible = false
 offset_left = -11.5
 offset_top = -11.5
 offset_right = 28.5
@@ -440,6 +441,7 @@ offset_bottom = 11.5
 scale = Vector2(0.575811, 0.418887)
 
 [node name="Label2" type="Label" parent="SoftBody2D/Bone-4"]
+visible = false
 offset_left = -12.0
 offset_right = 13.0
 offset_bottom = 23.0
@@ -521,7 +523,7 @@ softness = 60.0
 
 [node name="Bone-5" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(12.1109, 19.5031)
-collision_mask = 3
+collision_mask = 15
 mass = 0.1
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
@@ -575,7 +577,7 @@ softness = 60.0
 
 [node name="Bone-6" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(20.1245, 4.45191)
-collision_mask = 3
+collision_mask = 15
 mass = 0.1
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
@@ -615,7 +617,7 @@ softness = 60.0
 
 [node name="Bone-7" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(19.5031, 12.1109)
-collision_mask = 3
+collision_mask = 15
 mass = 0.1
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
@@ -669,7 +671,7 @@ softness = 60.0
 
 [node name="Bone-8" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(20.0858, 20.0858)
-collision_mask = 3
+collision_mask = 15
 mass = 0.1
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")

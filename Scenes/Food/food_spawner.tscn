@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://ceytao6v6mlyq"]
+[gd_scene load_steps=5 format=3 uid="uid://ceytao6v6mlyq"]
 
 [ext_resource type="Script" path="res://Scenes/Food/food_spawner.gd" id="1_nagys"]
 [ext_resource type="Texture2D" uid="uid://d32xm2vs7j7j2" path="res://assets/foody-disk.png" id="1_viw46"]
@@ -7,11 +7,15 @@
 radius = 6.0
 height = 12.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_th2ti"]
+radius = 49.0408
+
 [node name="food_spawner" type="Node2D"]
 script = ExtResource("1_nagys")
 
 [node name="RigidBody2D" type="RigidBody2D" parent="."]
-collision_mask = 3
+collision_layer = 8
+collision_mask = 11
 mass = 2.0
 can_sleep = false
 
@@ -23,8 +27,14 @@ shape = SubResource("CapsuleShape2D_jub1s")
 
 [node name="Label" type="Label" parent="RigidBody2D"]
 unique_name_in_owner = true
+visible = false
 offset_left = -6.0
 offset_top = -6.0
 offset_right = 34.0
 offset_bottom = 17.0
 scale = Vector2(0.310424, 0.531978)
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_th2ti")
