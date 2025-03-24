@@ -1,8 +1,8 @@
 [gd_scene load_steps=50 format=3 uid="uid://chhnrbkrbyki8"]
 
 [ext_resource type="Texture2D" uid="uid://bxx5v7b42j4kf" path="res://addons/softbody2d/softbody2d.svg" id="1_dax5o"]
-[ext_resource type="Script" path="res://addons/softbody2d/softbody2d.gd" id="2_sqj5y"]
-[ext_resource type="Script" path="res://samples/softbody2d/attach-to-character-controller/character_body_2d.gd" id="3_ksp00"]
+[ext_resource type="Script" uid="uid://cdioqoo5vumbp" path="res://addons/softbody2d/softbody2d.gd" id="2_sqj5y"]
+[ext_resource type="Script" uid="uid://b7a0crl3cygw6" path="res://samples/softbody2d/attach-to-character-controller/character_body_2d.gd" id="3_ksp00"]
 
 [sub_resource type="SkeletonModification2DLookAt" id="SkeletonModification2DLookAt_qhvfe"]
 resource_local_to_scene = true

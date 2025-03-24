@@ -72,3 +72,24 @@ scale = Vector2(0.904274, 0.125683)
 position = Vector2(678, 102)
 rotation = 1.5708
 scale = Vector2(0.867713, 0.102208)
+
+[node name="mid-wall15" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(1717, 214)
+
+[node name="mid-wall16" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(1486, 214)
+
+[node name="mid-wall17" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(1774, 214)
+rotation = 1.5708
+
+[node name="mid-wall18" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(1771, 536)
+rotation = 1.5708
+
+[node name="mid-wall19" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(1602, 213)
+
+[node name="mid-wall20" parent="." instance=ExtResource("2_rcjk5")]
+position = Vector2(1772, 374)
+rotation = 1.5708

@@ -1,8 +1,8 @@
 [gd_scene load_steps=139 format=3 uid="uid://dj7rr4fsairae"]
 
 [ext_resource type="Texture2D" uid="uid://cjts3x6u8ogsg" path="res://samples/softbody2d/Boiled_Egg_Half.png" id="1_l6w30"]
-[ext_resource type="Script" path="res://samples/softbody2d/car-demo/car.gd" id="1_w81vk"]
-[ext_resource type="Script" path="res://addons/softbody2d/softbody2d.gd" id="2_tpicg"]
+[ext_resource type="Script" uid="uid://cygcy05win6or" path="res://samples/softbody2d/car-demo/car.gd" id="1_w81vk"]
+[ext_resource type="Script" uid="uid://cdioqoo5vumbp" path="res://addons/softbody2d/softbody2d.gd" id="2_tpicg"]
 [ext_resource type="Texture2D" uid="uid://jaiqvvk71pw" path="res://samples/softbody2d/softbody2d_banner.jpg" id="4_tu3v1"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_2r1gp"]

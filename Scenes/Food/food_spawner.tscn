@@ -1,31 +1,42 @@
-[gd_scene load_steps=5 format=3 uid="uid://ceytao6v6mlyq"]
+[gd_scene load_steps=6 format=3 uid="uid://ceytao6v6mlyq"]
 
-[ext_resource type="Script" path="res://Scenes/Food/food_spawner.gd" id="1_nagys"]
+[ext_resource type="Script" uid="uid://bvsuk0ej44xem" path="res://Scenes/Food/food_spawner.gd" id="1_nagys"]
 [ext_resource type="Texture2D" uid="uid://d32xm2vs7j7j2" path="res://assets/foody-disk.png" id="1_viw46"]
+[ext_resource type="Texture2D" uid="uid://bta655sen8vpf" path="res://assets/yellow-circle1.png" id="2_htpas"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_th2ti"]
+radius = 49.0408
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_jub1s"]
 radius = 6.0
 height = 12.0
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_th2ti"]
-radius = 49.0408
-
 [node name="food_spawner" type="Node2D"]
 script = ExtResource("1_nagys")
 
-[node name="RigidBody2D" type="RigidBody2D" parent="."]
+[node name="FoodSpawner" type="RigidBody2D" parent="."]
 collision_layer = 8
 collision_mask = 11
 mass = 2.0
 can_sleep = false
 
-[node name="Sprite2D" type="Sprite2D" parent="RigidBody2D"]
+[node name="RechargeArea" type="Area2D" parent="FoodSpawner" groups=["recharge-area"]]
+collision_layer = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FoodSpawner/RechargeArea"]
+shape = SubResource("CircleShape2D_th2ti")
+
+[node name="Sprite2D" type="Sprite2D" parent="FoodSpawner/RechargeArea"]
+z_index = -1
+texture = ExtResource("2_htpas")
+
+[node name="Sprite2D" type="Sprite2D" parent="FoodSpawner"]
 texture = ExtResource("1_viw46")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FoodSpawner"]
 shape = SubResource("CapsuleShape2D_jub1s")
 
-[node name="Label" type="Label" parent="RigidBody2D"]
+[node name="Label" type="Label" parent="FoodSpawner"]
 unique_name_in_owner = true
 visible = false
 offset_left = -6.0
@@ -34,7 +45,13 @@ offset_right = 34.0
 offset_bottom = 17.0
 scale = Vector2(0.310424, 0.531978)
 
-[node name="Area2D" type="Area2D" parent="."]
+[node name="Label2" type="Label" parent="FoodSpawner"]
+unique_name_in_owner = true
+visible = false
+offset_left = -20.0
+offset_top = -34.0
+offset_right = 20.0
+offset_bottom = -11.0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-shape = SubResource("CircleShape2D_th2ti")
+[connection signal="body_entered" from="FoodSpawner/RechargeArea" to="." method="_on_recharge_area_body_entered"]
+[connection signal="body_exited" from="FoodSpawner/RechargeArea" to="." method="_on_recharge_area_body_exited"]

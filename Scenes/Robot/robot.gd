@@ -2,12 +2,13 @@ extends Node2D
 
 var Bones = []
 const CenterBoneIndex: int = 4      #Which is the bone in the center of the robot -> Force is applied on it
-@export var MaxForcePossible: int = 10   #Maximum Force possible
 const MaxEnergyPossible: int = 300  #Maximum Energy possible
 const MovingEnergyMult: float = 0.005 #Multiply this by the Force of the movement to obtain the Energy Cost
-const ReproductionCost: float = 0.5   #Multiply this value by the max Energy value of created (not max Energy possible)
+const ReproductionConst: float = 0.5   #Multiply this value by the max Energy value of created (not max Energy possible)
+const MagneticForceConst: float = 1
 
 var RobotID: String 								#Robot unique identifier
+var MaxForcePossible: int = 10   					#Maximum Movement Force possible
 var Gene: Array[int] = [0]							#Gene Array
 var Energy: float = 0								#Current Energy
 var Metabolism: float = MaxEnergyPossible*0.001		#Metabolism. Every step this value is deduced from Energy
@@ -16,6 +17,10 @@ var ChangeDirectionDelay: int = 15					#Delay to allow change in Movement Direct
 var StepsToChangeDirection: int = 0					#Counter to allow change in Movement Direction
 var AllowDirectionChange: bool = true				#Self explanatory
 var MovementRules: Array[Vector2] = []				#Has the movement direction that will be taken after a collision happens in the corresponding bone
+var RechargingAreas = []							#9 bones, 9 rigidbodies. If at least one rigidbodies is colliding with recharge zone, the robot recharges. this variable is tweaker in food-spawner
+
+var MagneticForceDirection:int = 0					#Will just assume 3 values: -1 ATRACT, 0 OFF, 1 REPEL 
+var MagneticForceIntensity:float = 100				#self explanatory
 
 var direction_x = 1
 var direction_y = 1
@@ -44,13 +49,17 @@ func _ready() -> void:
 	#gene_translation()
 #---------------------------------------
 func _process(delta: float) -> void:
-	$"SoftBody2D/Bone-4/Label".text = str(Energy)
-	$"SoftBody2D/Bone-4/Label2".text = str(StepsToChangeDirection)
+	#$"SoftBody2D/Bone-4/Label".text = str(Energy)
+	#$"SoftBody2D/Bone-4/Label2".text = str(RechargingAreas)
 	pass
 #---------------------------------------
 func _physics_process(delta: float) -> void:	
 	pass
 	var directions = [-1,0,1]
+	if RechargingAreas:
+		for eachArea in RechargingAreas:
+			Energy += eachArea.get_parent().get_parent().GivenEnergy
+			
 	metabolize()
 	if Energy > 0:	
 		if not AllowDirectionChange:
@@ -77,7 +86,6 @@ func start_robot() -> void:
 			#bone.set_script(bone_script)
 			#bone.connect("bone_collided_with_robot", _on_bone_collided_with_robot)
 			bone.connect("bone_collided", _on_bone_collided)
-			bone.connect("bone_collision_finished", _on_bone_collision_finished)
 #---------------------------------------
 func gene_translation() -> void:
 	# Each bone has 5 bits: [0~4]=Towards/[5~9]=Avoid/[10~14]=+90deg/[15~19]=-90deg/[20~25]=Stop/[26~31]=Random
@@ -135,16 +143,30 @@ func _on_bone_collided(myBone:RigidBody2D,collider:Node):
 								get_direction_vector(Bones[4],Bones[7]),
 								get_direction_vector(Bones[4],Bones[8])]
 								
-	if (collider.is_in_group("food")):
-		Energy += collider.EnergyGiven
-		collider.queue_free()
+	#if (collider.is_in_group("food")):
+		#Energy += collider.EnergyGiven
+		#collider.queue_free()
+
 	
 	var directions = [-1,0,1]
 	for i in range(Bones.size()):
 		if myBone==Bones[i] and AllowDirectionChange:
 			change_direction(-1*collisionDirections[i])
-
-			
+#---------------------------------------
+func _on_charger_area_entered(area: Area2D) -> void:
+	if (area.is_in_group("recharge-area")):
+		RechargingAreas.append(area)
+#---------------------------------------	
+func _on_charger_area_exited(area: Area2D) -> void:
+	if (area.is_in_group("recharge-area")):
+		RechargingAreas.erase(area)
+#---------------------------------------
+func magnetic_force(body: RigidBody2D) -> float:
+	var my_position = Bones[CenterBoneIndex].position
+	#distance = Non
+	#magnitude = MagneticForceConst * (self.MagneticForceDirection*self.MagneticForceIntensity)*(body.MagneticForceDirection*body.MagneticForceIntensity)
+	
+	#returns the value of the magneticForce
 		
 	#if (other_thing.is_in_group("bone"))and not(other_thing.is_in_group(RobotID)):
 		#pass
@@ -177,7 +199,7 @@ func _on_bone_collided(myBone:RigidBody2D,collider:Node):
 		#if AllowDirectionChange:	
 			#print("blue!")
 			#change_direction(Vector2(0,-1))
-		
+	return 10
 #---------------------------------------
 
 func movement_rules(collision_point:Node):
@@ -239,12 +261,6 @@ func _on_timer_timeout() -> void:
 		#$SoftBody2D.apply_impulse(Vector2(direction_x*power_x, direction_y*power_y))
 #func _on_bone_collided_with_robot(my_bone:RigidBody2D,other_bone:RigidBody2D):
 	#print(my_bone, other_bone)
-	
-
-
-func _on_bone_collision_finished(my_bone:RigidBody2D,other_thing:Node):
-	#print(other_thing)
-	current_collisions -= 1
 
 #func setting_sensors() -> void:
 	#var sensorsNames = ["red","green","yellow","blue"]

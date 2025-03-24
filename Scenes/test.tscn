@@ -1,8 +1,7 @@
 [gd_scene load_steps=129 format=3 uid="uid://bmui5qeh2g1a3"]
 
 [ext_resource type="Texture2D" uid="uid://bnptfp43gjbk1" path="res://samples/softbody2d/cell.png" id="1_bdmhp"]
-[ext_resource type="Script" path="res://addons/softbody2d/softbody2d.gd" id="2_gx57r"]
-[ext_resource type="Script" path="res://Scenes/Robot/robot-brain.gd" id="3_smgdk"]
+[ext_resource type="Script" uid="uid://cdioqoo5vumbp" path="res://addons/softbody2d/softbody2d.gd" id="2_gx57r"]
 
 [sub_resource type="SkeletonModification2DLookAt" id="SkeletonModification2DLookAt_gfepm"]
 resource_local_to_scene = true
@@ -982,6 +981,9 @@ resource_local_to_scene = true
 size = Vector2(0, 0)
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_vk5vl"]
+
+[sub_resource type="Resource" id="Resource_8od7v"]
+metadata/__load_path__ = "res://Scenes/Robot/robot-brain.gd"
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3fewm"]
 size = Vector2(220.681, 136.557)
@@ -31266,7 +31268,7 @@ position = Vector2(446, 42)
 scale = Vector2(10, 10)
 collision_layer = 2
 collision_mask = 2
-script = ExtResource("3_smgdk")
+script = SubResource("Resource_8od7v")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
 position = Vector2(4.5, 4.5035)

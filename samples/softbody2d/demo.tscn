@@ -1,7 +1,7 @@
 [gd_scene load_steps=386 format=3 uid="uid://8rlq77lfpm27"]
 
 [ext_resource type="Texture2D" uid="uid://cftllc7cu2w2" path="res://samples/softbody2d/Asparagus.png" id="1_bb0nr"]
-[ext_resource type="Script" path="res://addons/softbody2d/softbody2d.gd" id="2_2dapw"]
+[ext_resource type="Script" uid="uid://cdioqoo5vumbp" path="res://addons/softbody2d/softbody2d.gd" id="2_2dapw"]
 [ext_resource type="PackedScene" uid="uid://e43003nmrylg" path="res://samples/softbody2d/pickable_rigidbody.tscn" id="3_6ern4"]
 [ext_resource type="PhysicsMaterial" uid="uid://2kay8j53abmv" path="res://samples/softbody2d/softbody2d_phys_slippery.tres" id="3_durpg"]
 [ext_resource type="Texture2D" uid="uid://cmkcrj63x1mg2" path="res://samples/softbody2d/Butter.png" id="4_xackp"]
