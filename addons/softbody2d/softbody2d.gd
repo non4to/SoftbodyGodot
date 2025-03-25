@@ -1212,9 +1212,11 @@ func _update_soft_body_rigidbodies(skeleton_node:Skeleton2D = null):
 		softbodyrb.shape = rb_children.filter(func (node): return node is CollisionShape2D)[0]
 		var joints = rb_children.filter(func (node): return node is Joint2D)
 		for joint in joints:
+			if !(joint.name == "body-link"):
+				print(joint.name)
 			# dont add joints we are about to delete
-			if !joint.is_queued_for_deletion():
-				softbodyrb.joints.append(joint)
+				if !joint.is_queued_for_deletion():
+					softbodyrb.joints.append(joint)
 		result.append(softbodyrb)
 		_soft_body_rigidbodies_dict[softbodyrb.rigidbody] = softbodyrb
 	_soft_body_rigidbodies_array = result

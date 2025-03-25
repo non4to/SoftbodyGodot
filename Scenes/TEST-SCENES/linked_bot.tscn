@@ -1,0 +1,79 @@
+[gd_scene load_steps=4 format=3 uid="uid://dvfypfjiwcm6a"]
+
+[ext_resource type="Script" uid="uid://cfy31irt31yg" path="res://Scenes/TEST-SCENES/linked_bot.gd" id="1_mvl8q"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_q48na"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mvl8q"]
+
+[node name="LinkedBot" type="Node2D"]
+script = ExtResource("1_mvl8q")
+SpringLen = 75.0
+SpringRestLen = 40.0
+SpringStiffness = 1.0
+SpringDamping = 0.01
+
+[node name="Line2D" type="Line2D" parent="."]
+points = PackedVector2Array(28, 0, 0, 0)
+width = 5.0
+default_color = Color(1, 0, 0, 1)
+
+[node name="A" type="RigidBody2D" parent="."]
+unique_name_in_owner = true
+collision_mask = 15
+
+[node name="ColorRect" type="ColorRect" parent="A"]
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 30.0
+offset_bottom = 30.0
+scale = Vector2(0.501219, 0.49815)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="A"]
+shape = SubResource("RectangleShape2D_q48na")
+
+[node name="A-DampedSpringJoint2D" type="DampedSpringJoint2D" parent="A"]
+unique_name_in_owner = true
+rotation = -1.5708
+scale = Vector2(1, 0.56)
+node_a = NodePath("..")
+node_b = NodePath("../../B")
+disable_collision = false
+length = 75.0
+rest_length = 50.0
+stiffness = 5.0
+damping = 0.5
+
+[node name="B" type="RigidBody2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(28, 0)
+collision_mask = 15
+
+[node name="ColorRect" type="ColorRect" parent="B"]
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 30.0
+offset_bottom = 30.0
+scale = Vector2(0.499414, 0.500139)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="B"]
+shape = SubResource("RectangleShape2D_mvl8q")
+
+[node name="B-DampedSpringJoint2D" type="DampedSpringJoint2D" parent="B"]
+unique_name_in_owner = true
+rotation = 1.5708
+scale = Vector2(1, 0.56)
+node_a = NodePath("..")
+node_b = NodePath("../../A")
+disable_collision = false
+length = 75.0
+rest_length = 50.0
+stiffness = 5.0
+damping = 0.5
+
+[node name="Label" type="Label" parent="."]
+offset_left = 4.0
+offset_top = 11.0
+offset_right = 28.0
+offset_bottom = 34.0
+scale = Vector2(0.824226, 0.868298)

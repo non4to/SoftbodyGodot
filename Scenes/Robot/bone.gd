@@ -1,5 +1,8 @@
 extends RigidBody2D
 var robot_id
+var Joined:bool = false
+var JoinedTo:RigidBody2D
+
 signal bone_collided(myself:RigidBody2D, collider:Node)
 signal bone_exited(myself:RigidBody2D, collider:Node)
 

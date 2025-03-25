@@ -1,10 +1,9 @@
-[gd_scene load_steps=19 format=3 uid="uid://s75gnq6i4upv"]
+[gd_scene load_steps=17 format=3 uid="uid://s75gnq6i4upv"]
 
 [ext_resource type="Script" uid="uid://botsknnrxgbph" path="res://Scenes/Robot/robot.gd" id="1_0bndf"]
 [ext_resource type="Texture2D" uid="uid://b0pi77bwyb4g0" path="res://assets/robot-rainbow-25.png" id="2_sujim"]
 [ext_resource type="Script" uid="uid://cdioqoo5vumbp" path="res://addons/softbody2d/softbody2d.gd" id="3_rpd0y"]
 [ext_resource type="Script" uid="uid://c6oc1bjumrurd" path="res://Scenes/Robot/bone.gd" id="4_wujyb"]
-[ext_resource type="Script" uid="uid://6gqjmxta7bnn" path="res://Scenes/Robot/magnezone.gd" id="5_3i0v6"]
 
 [sub_resource type="SkeletonModification2DLookAt" id="SkeletonModification2DLookAt_g0jhg"]
 resource_local_to_scene = true
@@ -90,12 +89,12 @@ size = Vector2(11, 11)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mestj"]
 size = Vector2(17, 17)
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_nn0y6"]
-radius = 10.6023
-height = 31.0606
-
 [node name="Robot" type="Node2D"]
 script = ExtResource("1_0bndf")
+JointDamping = 10000.0
+JointStiffness = 1000.0
+JointLength = 120.0
+JointRestLen = 100.0
 
 [node name="SoftBody2D" type="Polygon2D" parent="."]
 unique_name_in_owner = true
@@ -115,6 +114,7 @@ rest_length_ratio = 1.0
 length_ratio = 1.0
 radius = 11
 margin_offset_edge = 2.0
+mass = 1.0
 gravity_scale = 0.0
 collision_mask = 15
 
@@ -243,7 +243,6 @@ metadata/_local_pose_override_enabled_ = true
 [node name="Bone-0" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(4.41421, 4.41421)
 collision_mask = 15
-mass = 0.1
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
 metadata/idx = 0
@@ -283,7 +282,6 @@ softness = 60.0
 [node name="Bone-1" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(4.99724, 12.1051)
 collision_mask = 15
-mass = 0.1
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
 metadata/idx = 1
@@ -336,7 +334,6 @@ softness = 60.0
 [node name="Bone-2" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(4.45191, 20.1245)
 collision_mask = 15
-mass = 0.1
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
 metadata/idx = 2
@@ -376,7 +373,6 @@ softness = 60.0
 [node name="Bone-3" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(12.1051, 4.99724)
 collision_mask = 15
-mass = 0.1
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
 metadata/idx = 3
@@ -431,7 +427,6 @@ softness = 60.0
 unique_name_in_owner = true
 position = Vector2(12.5, 12.5)
 collision_mask = 15
-mass = 0.1
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
 metadata/idx = 4
@@ -458,14 +453,6 @@ collision_mask = 8
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SoftBody2D/Bone-4/charger"]
 shape = SubResource("RectangleShape2D_mestj")
 debug_color = Color(0.752941, 0.458824, 0, 0.682353)
-
-[node name="magnezone" type="Area2D" parent="SoftBody2D/Bone-4" groups=["magnezone"]]
-unique_name_in_owner = true
-script = ExtResource("5_3i0v6")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SoftBody2D/Bone-4/magnezone"]
-scale = Vector2(2.5, 1.7)
-shape = SubResource("CapsuleShape2D_nn0y6")
 
 [node name="RectangleShape2D" type="CollisionShape2D" parent="SoftBody2D/Bone-4"]
 shape = SubResource("RectangleShape2D_xry5a")
@@ -535,7 +522,6 @@ softness = 60.0
 [node name="Bone-5" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(12.1109, 19.5031)
 collision_mask = 15
-mass = 0.1
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
 metadata/idx = 5
@@ -589,7 +575,6 @@ softness = 60.0
 [node name="Bone-6" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(20.1245, 4.45191)
 collision_mask = 15
-mass = 0.1
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
 metadata/idx = 6
@@ -629,7 +614,6 @@ softness = 60.0
 [node name="Bone-7" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(19.5031, 12.1109)
 collision_mask = 15
-mass = 0.1
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
 metadata/idx = 7
@@ -683,7 +667,6 @@ softness = 60.0
 [node name="Bone-8" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(20.0858, 20.0858)
 collision_mask = 15
-mass = 0.1
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
 metadata/idx = 8
@@ -722,8 +705,7 @@ softness = 60.0
 [node name="Timer" type="Timer" parent="."]
 autostart = true
 
+[connection signal="joint_removed" from="SoftBody2D" to="." method="_on_soft_body_2d_joint_removed"]
 [connection signal="area_entered" from="SoftBody2D/Bone-4/charger" to="." method="_on_charger_area_entered"]
 [connection signal="area_exited" from="SoftBody2D/Bone-4/charger" to="." method="_on_charger_area_exited"]
-[connection signal="area_entered" from="SoftBody2D/Bone-4/magnezone" to="." method="_on_magnezone_area_entered"]
-[connection signal="area_exited" from="SoftBody2D/Bone-4/magnezone" to="." method="_on_magnezone_area_exited"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

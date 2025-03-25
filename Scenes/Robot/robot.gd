@@ -1,5 +1,13 @@
 extends Node2D
 
+#
+@export var JointDamping:float = 150
+@export var JointStiffness:float = 1
+@export var JointLength:float = 300
+@export var JointRestLen:float = 20
+
+
+
 #body
 var Bones = []
 var RobotID: String 								#Robot unique identifier
@@ -13,14 +21,16 @@ var Metabolism: float = MaxEnergyPossible*0.001		#Metabolism. Every step this va
 var RechargingAreas: Array[Area2D] = []							#9 bones, 9 rigidbodies. If at least one rigidbodies is colliding with recharge zone, the robot recharges. this variable is tweaker in food-spawner
 
 #movement
-var MaxForcePossible: int = 5   					#Maximum Movement Force possible
+const MaxLinearVelocity: float = 500				#Maximum velocity that can be produced by a robot
+var MaxForcePossible: int = 10   					#Maximum Movement Force possible
 var AllowDirectionChange: bool = false				#Self explanatory
 var StepsToChangeDirection: int = 0					#Counter to allow change in Movement Direction
-var ChangeDirectionDelay: int = 10000					#Delay to allow change in Movement Direction
-@export var MovementDirection: Vector2 = Vector2(0,-1)						#MovementDirection
-## magnetic
-var MagneticZones: Array[Area2D] = []
-var MagResultingForce: Vector2 = Vector2(0,0)
+var ChangeDirectionDelay: int = 50					#Delay to allow change in Movement Direction
+@export var MovementDirection: Vector2 = Vector2(0,1)						#MovementDirection
+
+#joining mechanics
+const JoinThresold: float = 5						#if a collision happens while above this, they joint
+####variables variavles
 
 ########
 #not used yet/ideas
@@ -55,7 +65,6 @@ func _process(delta: float) -> void:
 	#$"SoftBody2D/Bone-4/Label".text = str(Energy)
 	#$"SoftBody2D/Bone-4/Label2".text = str(RechargingAreas)
 	pass
-	print(Bones[4].linear_velocity)
 #---------------------------------------
 func _physics_process(delta: float) -> void:	
 	#Energy Economy
@@ -65,19 +74,14 @@ func _physics_process(delta: float) -> void:
 	metabolize()
 	#Alive, move!
 	if Energy > 0:	
-		#Magnetic forces
-		MagResultingForce = Vector2(0,0)
-		if MagneticZones:
-			for magZone in MagneticZones:
-				MagResultingForce += get_direction_vector(self,magZone)*magZone.MagneticForceIntensity
-		apply_magnetic_force(MagResultingForce)
 		#My movements
 		if not AllowDirectionChange:
 			StepsToChangeDirection += 1
 			if StepsToChangeDirection > ChangeDirectionDelay:
 				AllowDirectionChange = true
-		change_direction(get_random_direction())
+		#change_direction(get_random_direction())
 		move_to_direction(MovementDirection,MaxForcePossible)
+
 	#Ded, die: x-x 
 	else:
 		Global.Robots.erase(self)
@@ -114,9 +118,51 @@ func move_to_direction(direction:Vector2, withForce:float) -> void:
 			direction = direction.normalized()
 		Bones[CenterBoneIndex].apply_central_impulse(direction*withForce)
 		Energy -= withForce*MovingEnergyMult
+		
+		##Limit velocity
+		#if Bones[CenterBoneIndex].linear_velocity[0] > MaxLinearVelocity:
+			#Bones[CenterBoneIndex].linear_velocity[0] = MaxLinearVelocity
+			#
+		#if Bones[CenterBoneIndex].linear_velocity[1] > MaxLinearVelocity:
+			#Bones[CenterBoneIndex].linear_velocity[1] = MaxLinearVelocity
 #---------------------------------------
-func apply_magnetic_force(withForce:Vector2) -> void:
-		Bones[CenterBoneIndex].apply_central_force(withForce)
+func attach_bodies(myBone:RigidBody2D, otherBone: RigidBody2D) -> void:
+	#print(myBone.position,otherBone.position)
+	var joint:DampedSpringJoint2D = DampedSpringJoint2D.new()
+	var spring:Line2D = Line2D.new()
+
+	joint.name = "body-link"
+	joint.position = myBone.global_position
+	joint.node_a = myBone.get_path()
+	joint.node_b = otherBone.get_path()
+		
+	joint.damping = JointDamping
+	joint.stiffness = JointStiffness
+	joint.length = JointLength
+	joint.rest_length = JointRestLen
+	joint.disable_collision = false
+	
+	myBone.Joined = true
+	myBone.JoinedTo = otherBone
+	myBone.get_parent().get_parent().add_child(joint)
+
+	
+	#joint1.position = point1
+	#joint2.position = point2
+	#
+	#joint1.node_a = my_bone.get_path()
+	#joint1.node_b = other_bone.get_path()
+	#joint2.node_a = my_bone.get_path()
+	#joint2.node_b = other_bone.get_path()
+	#
+	#joint1.scale = Vector2(1.2,1.2)
+	#joint2.scale = Vector2(1.2,1.2)
+	#
+	#joint1.softness = 0.001
+	#joint2.softness = 0.001
+	#
+	#my_bone.add_child(joint1)
+	#my_bone.add_child(joint2)
 #---------------------------------------
 func is_unit_vector(vector:Vector2):
 	return abs(vector.length_squared() - 1) < 0.001
@@ -140,26 +186,9 @@ func get_random_direction() -> Vector2:
 	return	-1*collisionDirections.pick_random()
 #---------------------------------------
 func _on_bone_collided(myBone:RigidBody2D,collider:Node):
-	pass
-	#if not(collider.is_in_group("robot")):
-		#var collisionDirections = [get_direction_vector(Bones[4],Bones[0]), 
-									#get_direction_vector(Bones[4],Bones[1]),
-									#get_direction_vector(Bones[4],Bones[2]),
-									#get_direction_vector(Bones[4],Bones[3]),
-									#get_direction_vector(Bones[4],Bones[4]),
-									#get_direction_vector(Bones[4],Bones[5]),
-									#get_direction_vector(Bones[4],Bones[6]),
-									#get_direction_vector(Bones[4],Bones[7]),
-									#get_direction_vector(Bones[4],Bones[8])]
-									#
-		##if (collider.is_in_group("food")):
-			##Energy += collider.EnergyGiven
-			##collider.queue_free()
-#
-		#var directions = [-1,0,1]
-		#for i in range(Bones.size()):
-			#if myBone==Bones[i] and AllowDirectionChange:
-				#change_direction(-1*collisionDirections[i])
+	if collider.is_in_group("bone"):
+		if (not collider.Joined) and (not myBone.Joined) and (Bones[CenterBoneIndex].linear_velocity.length() > JoinThresold):
+			attach_bodies(myBone,collider)	
 #---------------------------------------
 func _on_charger_area_entered(area: Area2D) -> void:
 	if (area.is_in_group("recharge-area")):
@@ -169,57 +198,11 @@ func _on_charger_area_exited(area: Area2D) -> void:
 	if (area.is_in_group("recharge-area")):
 		RechargingAreas.erase(area)
 #---------------------------------------
-func _on_magnezone_area_entered(area: Area2D) -> void:
-	#if self.magnezone enters body.magnezone, then robot is submited to body.magnezone
-	if (area.is_in_group("magnezone")):
-		MagneticZones.append(area)
-#---------------------------------------
-func _on_magnezone_area_exited(area: Area2D) -> void:
-	if (area.is_in_group("magnezone")):
-		MagneticZones.erase(area)
-#---------------------------------------
 func movement_rules(collision_point:Node):
 	pass
 func contract(bone:RigidBody2D, in_bone_direction:RigidBody2D, withForce:float) -> void:
 	var direction = self.get_direction_vector(bone,in_bone_direction)
 	bone.apply_central_force(direction*withForce)
-func attach_bodies(my_bone:RigidBody2D, other_bone: RigidBody2D, side:String) -> void:
-	print(my_bone,other_bone)
-	var point1 = self.position
-	var point2 = self.position
-	var joint1 = PinJoint2D.new()
-	var joint2 = PinJoint2D.new()
-
-	
-	if side == "left":
-		point1 = Vector2(0,12.5) 
-		point2 = Vector2(0,37.5)
-	elif side == "right":
-		point1 = Vector2(50,25)
-		point2 = Vector2(50,50)
-	elif side == "top":
-		point1 = Vector2(12.5,0)
-		point2 = Vector2(37.5,0)
-	elif side == "bot":
-		point1 = Vector2(25,50)
-		point2 = Vector2(50,50)
-		
-	joint1.position = point1
-	joint2.position = point2
-	
-	joint1.node_a = my_bone.get_path()
-	joint1.node_b = other_bone.get_path()
-	joint2.node_a = my_bone.get_path()
-	joint2.node_b = other_bone.get_path()
-	
-	joint1.scale = Vector2(1.2,1.2)
-	joint2.scale = Vector2(1.2,1.2)
-	
-	joint1.softness = 0.001
-	joint2.softness = 0.001
-	
-	my_bone.add_child(joint1)
-	my_bone.add_child(joint2)
 
 func _on_timer_timeout() -> void:
 	pass
@@ -261,3 +244,8 @@ func gene_translation() -> void:
 	for i in range(Bones.size()):
 		#print(Gene[bonesLimits[i][0]])
 		pass
+
+
+func _on_soft_body_2d_joint_removed(rigid_body_a: RefCounted, rigid_body_b: RefCounted) -> void:
+	Global.Robots.erase(self)
+	self.queue_free()

@@ -1,6 +1,7 @@
 extends Node2D
  
 const ROBOT = preload("res://Scenes/Robot/robot.tscn")
+const TESTSPRING = preload("res://Scenes/TEST-SCENES/linked_bot.tscn")
 var RobotSpawners = []
 
 # Called when the node enters the scene tree for the first time.
@@ -29,6 +30,7 @@ func _input(event):
 
 func make_robot(x:int,y:int):
 	var robot = ROBOT.instantiate()
+	#var robot = TESTSPRING.instantiate()
 	robot.position = Vector2(x,y)
 	add_child(robot)
 	Global.Robots.append(robot)	
