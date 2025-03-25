@@ -1,9 +1,10 @@
-[gd_scene load_steps=18 format=3 uid="uid://s75gnq6i4upv"]
+[gd_scene load_steps=19 format=3 uid="uid://s75gnq6i4upv"]
 
 [ext_resource type="Script" uid="uid://botsknnrxgbph" path="res://Scenes/Robot/robot.gd" id="1_0bndf"]
 [ext_resource type="Texture2D" uid="uid://b0pi77bwyb4g0" path="res://assets/robot-rainbow-25.png" id="2_sujim"]
 [ext_resource type="Script" uid="uid://cdioqoo5vumbp" path="res://addons/softbody2d/softbody2d.gd" id="3_rpd0y"]
 [ext_resource type="Script" uid="uid://c6oc1bjumrurd" path="res://Scenes/Robot/bone.gd" id="4_wujyb"]
+[ext_resource type="Script" uid="uid://6gqjmxta7bnn" path="res://Scenes/Robot/magnezone.gd" id="5_3i0v6"]
 
 [sub_resource type="SkeletonModification2DLookAt" id="SkeletonModification2DLookAt_g0jhg"]
 resource_local_to_scene = true
@@ -107,7 +108,7 @@ internal_vertex_count = 100
 script = ExtResource("3_rpd0y")
 show_shapes = true
 vertex_interval = 12
-break_distance_ratio = 5.0
+break_distance_ratio = 2.0
 stiffness = 100.0
 damping = 10.01
 rest_length_ratio = 1.0
@@ -427,6 +428,7 @@ node_b = NodePath("../../Bone-7")
 softness = 60.0
 
 [node name="Bone-4" type="RigidBody2D" parent="SoftBody2D"]
+unique_name_in_owner = true
 position = Vector2(12.5, 12.5)
 collision_mask = 15
 mass = 0.1
@@ -457,11 +459,11 @@ collision_mask = 8
 shape = SubResource("RectangleShape2D_mestj")
 debug_color = Color(0.752941, 0.458824, 0, 0.682353)
 
-[node name="sensor" type="Area2D" parent="SoftBody2D/Bone-4"]
+[node name="magnezone" type="Area2D" parent="SoftBody2D/Bone-4" groups=["magnezone"]]
 unique_name_in_owner = true
-collision_layer = 0
+script = ExtResource("5_3i0v6")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SoftBody2D/Bone-4/sensor"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SoftBody2D/Bone-4/magnezone"]
 scale = Vector2(2.5, 1.7)
 shape = SubResource("CapsuleShape2D_nn0y6")
 
@@ -722,5 +724,6 @@ autostart = true
 
 [connection signal="area_entered" from="SoftBody2D/Bone-4/charger" to="." method="_on_charger_area_entered"]
 [connection signal="area_exited" from="SoftBody2D/Bone-4/charger" to="." method="_on_charger_area_exited"]
-[connection signal="body_entered" from="SoftBody2D/Bone-4/sensor" to="." method="_on_sensor_body_entered"]
+[connection signal="area_entered" from="SoftBody2D/Bone-4/magnezone" to="." method="_on_magnezone_area_entered"]
+[connection signal="area_exited" from="SoftBody2D/Bone-4/magnezone" to="." method="_on_magnezone_area_exited"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

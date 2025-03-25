@@ -27,6 +27,7 @@ enabled=PackedStringArray("res://addons/softbody2d/plugin.cfg")
 [global_group]
 
 robot-spawner=""
+magnezone=""
 
 [input]
 

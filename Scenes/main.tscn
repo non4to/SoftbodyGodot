@@ -4,13 +4,13 @@
 [ext_resource type="PackedScene" uid="uid://ob442a1tcbmg" path="res://Scenes/Environment/environment.tscn" id="2_i85tn"]
 [ext_resource type="Script" uid="uid://bi7tr8art64q7" path="res://Scenes/camera_2d.gd" id="2_kry3j"]
 [ext_resource type="PackedScene" uid="uid://ceytao6v6mlyq" path="res://Scenes/Food/food_spawner.tscn" id="4_ckyev"]
-[ext_resource type="PackedScene" uid="uid://dt317af5oy764" path="res://Scenes/Robot/robot_spawner.tscn" id="5_ef2dv"]
+[ext_resource type="PackedScene" uid="uid://s75gnq6i4upv" path="res://Scenes/Robot/robot.tscn" id="5_kry3j"]
 
 [node name="main" type="Node2D"]
 script = ExtResource("1_7c7pr")
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(578, 325)
+position = Vector2(582, 328)
 script = ExtResource("2_kry3j")
 
 [node name="Environment" parent="." instance=ExtResource("2_i85tn")]
@@ -66,32 +66,8 @@ position = Vector2(569, 234)
 [node name="food_spawner18" parent="." instance=ExtResource("4_ckyev")]
 position = Vector2(460, 69)
 
-[node name="robot-spawner" parent="." instance=ExtResource("5_ef2dv")]
-position = Vector2(68, 534)
+[node name="Robot" parent="." instance=ExtResource("5_kry3j")]
+position = Vector2(369, 583)
 
-[node name="robot-spawner2" parent="." instance=ExtResource("5_ef2dv")]
-position = Vector2(1102, 535)
-
-[node name="robot-spawner3" parent="." instance=ExtResource("5_ef2dv")]
-position = Vector2(79, 72)
-
-[node name="robot-spawner4" parent="." instance=ExtResource("5_ef2dv")]
-position = Vector2(1082, 72)
-
-[node name="robot-spawner5" parent="." instance=ExtResource("5_ef2dv")]
-position = Vector2(115, 72)
-
-[node name="robot-spawner6" parent="." instance=ExtResource("5_ef2dv")]
-position = Vector2(1082, 125)
-
-[node name="robot-spawner7" parent="." instance=ExtResource("5_ef2dv")]
-position = Vector2(65, 481)
-
-[node name="robot-spawner8" parent="." instance=ExtResource("5_ef2dv")]
-position = Vector2(66, 590)
-
-[node name="robot-spawner9" parent="." instance=ExtResource("5_ef2dv")]
-position = Vector2(1094, 598)
-
-[node name="robot-spawner10" parent="." instance=ExtResource("5_ef2dv")]
-position = Vector2(1091, 476)
+[node name="Robot2" parent="." instance=ExtResource("5_kry3j")]
+position = Vector2(404, 582)

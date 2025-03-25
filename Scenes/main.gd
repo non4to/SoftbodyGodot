@@ -12,13 +12,13 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	var used = []
-	if Global.Robots.size() < 5:
-		for i in range(5):
-			var rand_index:int = randi() % RobotSpawners.size()
-			while rand_index in used:
-				rand_index = randi() % RobotSpawners.size()			
-			used.append(rand_index)
-			RobotSpawners[rand_index].spawn_robot(RobotSpawners[rand_index].position)
+	#if Global.Robots.size() < 5:
+		#for i in range(5):
+			#var rand_index:int = randi() % RobotSpawners.size()
+			#while rand_index in used:
+				#rand_index = randi() % RobotSpawners.size()			
+			#used.append(rand_index)
+			#RobotSpawners[rand_index].spawn_robot(RobotSpawners[rand_index].position)
 
 func _input(event):
 	if event.is_action_released("toogle_spawn_robot"):
