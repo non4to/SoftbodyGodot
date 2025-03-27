@@ -17,13 +17,13 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	var used = []
-	if Global.Robots.size() < 5:
-		for i in range(5):
-			var rand_index:int = randi() % RobotSpawners.size()
-			while rand_index in used:
-				rand_index = randi() % RobotSpawners.size()			
-			used.append(rand_index)
-			RobotSpawners[rand_index].spawn_robot(RobotSpawners[rand_index].position)
+	#if Global.Robots.size() < 5:
+		#for i in range(5):
+			#var rand_index:int = randi() % RobotSpawners.size()
+			#while rand_index in used:
+				#rand_index = randi() % RobotSpawners.size()			
+			#used.append(rand_index)
+			#RobotSpawners[rand_index].spawn_robot(RobotSpawners[rand_index].position)
 	if (SaveFrames) and (Step%FPS==0):
 		save_frame()
 	Step += 1
@@ -45,7 +45,7 @@ func make_robot(x:int,y:int):
 	Global.Robots.append(robot)	
 
 func get_spawners():
-	for node in $"SubViewportContainer/SubViewport".get_children():
+	for node in get_children():#$"SubViewportContainer/SubViewport".get_children():
 		if (node.is_in_group("robot-spawner")):
 			RobotSpawners.append(node)
 	

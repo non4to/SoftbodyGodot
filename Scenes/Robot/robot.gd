@@ -7,14 +7,14 @@ const CenterBoneIndex: int = 4      #Which is the bone in the center of the robo
 
 #energy economy
 var Energy: float = 0								#Current Energy
-const MaxEnergyPossible: int = 3000  #Maximum Energy possible
+const MaxEnergyPossible: int = 9999999999  #Maximum Energy possible
 const MovingEnergyMult: float = 0.005 #Multiply this by the Force of the movement to obtain the Energy Cost
 var Metabolism: float = MaxEnergyPossible*0.001		#Metabolism. Every step this value is deduced from Energy
 var RechargingAreas: Array[Area2D] = []							#9 bones, 9 rigidbodies. If at least one rigidbodies is colliding with recharge zone, the robot recharges. this variable is tweaker in food-spawner
 
 #movement
 const MaxLinearVelocity: float = 500				#Maximum velocity that can be produced by a robot
-@export var MaxForcePossible: int = 30   					#Maximum Movement Force possible
+@export var MaxForcePossible: int = 50   					#Maximum Movement Force possible
 var AllowDirectionChange: bool = false				#Self explanatory
 var StepsToChangeDirection: int = 0					#Counter to allow change in Movement Direction
 var ChangeDirectionDelay: int = 50					#Delay to allow change in Movement Direction
@@ -205,7 +205,7 @@ func get_random_direction() -> Vector2:
 func _on_bone_collided(myBone:RigidBody2D,collider:Node):
 	if collider.is_in_group("bone"):
 		if (not collider.Joined) and (not myBone.Joined) and (Bones[CenterBoneIndex].linear_velocity.length() > JoinThresold):
-			print(Bones[CenterBoneIndex].linear_velocity.length())
+			#print(Bones[CenterBoneIndex].linear_velocity.length())
 			attach_bodies(myBone,collider)	
 #---------------------------------------
 func _on_charger_area_entered(area: Area2D) -> void:
