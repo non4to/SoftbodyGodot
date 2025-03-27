@@ -1,13 +1,5 @@
 extends Node2D
 
-#
-@export var JointDamping:float = 150
-@export var JointStiffness:float = 1
-@export var JointLength:float = 300
-@export var JointRestLen:float = 20
-
-
-
 #body
 var Bones = []
 var RobotID: String 								#Robot unique identifier
@@ -15,23 +7,21 @@ const CenterBoneIndex: int = 4      #Which is the bone in the center of the robo
 
 #energy economy
 var Energy: float = 0								#Current Energy
-const MaxEnergyPossible: int = 300  #Maximum Energy possible
+const MaxEnergyPossible: int = 3000  #Maximum Energy possible
 const MovingEnergyMult: float = 0.005 #Multiply this by the Force of the movement to obtain the Energy Cost
 var Metabolism: float = MaxEnergyPossible*0.001		#Metabolism. Every step this value is deduced from Energy
 var RechargingAreas: Array[Area2D] = []							#9 bones, 9 rigidbodies. If at least one rigidbodies is colliding with recharge zone, the robot recharges. this variable is tweaker in food-spawner
 
 #movement
 const MaxLinearVelocity: float = 500				#Maximum velocity that can be produced by a robot
-var MaxForcePossible: int = 10   					#Maximum Movement Force possible
+@export var MaxForcePossible: int = 30   					#Maximum Movement Force possible
 var AllowDirectionChange: bool = false				#Self explanatory
 var StepsToChangeDirection: int = 0					#Counter to allow change in Movement Direction
 var ChangeDirectionDelay: int = 50					#Delay to allow change in Movement Direction
-@export var MovementDirection: Vector2 = Vector2(0,1)						#MovementDirection
+@export var MovementDirection: Vector2 = Vector2(1,0)						#MovementDirection
 
 #joining mechanics
-const JoinThresold: float = 5						#if a collision happens while above this, they joint
-####variables variavles
-
+const JoinThresold: float = 150						#if a collision happens while above this, they joint
 ########
 #not used yet/ideas
 var Gene: Array[int] = [0]							#Gene Array
@@ -57,14 +47,27 @@ func _init(Gene=9) -> void:
 #---------------------------------------
 func _ready() -> void:
 	start_robot() #ID to the robot and its Bones
-	#MovementDirection = Vector2(cos(deg_to_rad(randi_range(0,360))),sin(deg_to_rad(randi_range(0,360))))
+	MovementDirection = Vector2(cos(deg_to_rad(randi_range(0,360))),sin(deg_to_rad(randi_range(0,360))))
 	
 	#gene_translation()
 #---------------------------------------
 func _process(delta: float) -> void:
-	#$"SoftBody2D/Bone-4/Label".text = str(Energy)
-	#$"SoftBody2D/Bone-4/Label2".text = str(RechargingAreas)
+	
+	#$"SoftBody2D/Bone-4/Label".text = str(Bones[CenterBoneIndex].linear_velocity[0])
+	#$"SoftBody2D/Bone-4/Label2".text = str(Bones[CenterBoneIndex].linear_velocity[1])
+	
+	
+	
 	pass
+#---------------------------------------
+func check_unjoint() -> void:
+	pass
+			
+		#if Bones[CenterBoneIndex].linear_velocity.length > Bones[i].ToUnjoint.length:
+			#print(Bones[i],"WOW FAST!")
+		
+		
+		
 #---------------------------------------
 func _physics_process(delta: float) -> void:	
 	#Energy Economy
@@ -79,13 +82,12 @@ func _physics_process(delta: float) -> void:
 			StepsToChangeDirection += 1
 			if StepsToChangeDirection > ChangeDirectionDelay:
 				AllowDirectionChange = true
-		#change_direction(get_random_direction())
+		change_direction(get_random_direction())
 		move_to_direction(MovementDirection,MaxForcePossible)
 
 	#Ded, die: x-x 
 	else:
-		Global.Robots.erase(self)
-		self.queue_free()
+		die()
 #---------------------------------------
 func start_robot() -> void:
 	#Start variables
@@ -99,14 +101,25 @@ func start_robot() -> void:
 			Bones.append(bone)	
 			bone.add_to_group("bone")
 			bone.add_to_group(RobotID)
-			#bone.set_script(bone_script)
-			#bone.connect("bone_collided_with_robot", _on_bone_collided_with_robot)
 			bone.connect("bone_collided", _on_bone_collided)
+#---------------------------------------
 #---------------------------------------
 func metabolize() -> void:
 	Energy -= Metabolism
 	if Energy < 0: Energy = 0 
 #---------------------------------------
+func die() -> void:
+	for bone in Bones:
+		if (bone.Joined) and (is_instance_valid(bone.JoinedTo)):
+			var jointLine:Line2D = bone.JoinedTo.get_node_or_null("joint")
+			if jointLine: jointLine.queue_free()
+		for joint in bone.RelatedJoints:
+			if is_instance_valid(joint):
+				joint.queue_free()
+	Global.Robots.erase(self)
+	self.queue_free()
+
+#---------------------------------------				
 func change_direction(direction:Vector2) -> void:
 	if AllowDirectionChange:
 		MovementDirection = direction
@@ -117,6 +130,7 @@ func move_to_direction(direction:Vector2, withForce:float) -> void:
 		if not is_unit_vector(direction):
 			direction = direction.normalized()
 		Bones[CenterBoneIndex].apply_central_impulse(direction*withForce)
+		#$SoftBody2D.apply_impulse(direction*withForce)
 		Energy -= withForce*MovingEnergyMult
 		
 		##Limit velocity
@@ -126,43 +140,46 @@ func move_to_direction(direction:Vector2, withForce:float) -> void:
 		#if Bones[CenterBoneIndex].linear_velocity[1] > MaxLinearVelocity:
 			#Bones[CenterBoneIndex].linear_velocity[1] = MaxLinearVelocity
 #---------------------------------------
-func attach_bodies(myBone:RigidBody2D, otherBone: RigidBody2D) -> void:
-	#print(myBone.position,otherBone.position)
-	var joint:DampedSpringJoint2D = DampedSpringJoint2D.new()
-	var spring:Line2D = Line2D.new()
+func attach_bodies(myBone:RigidBody2D, otherBone: RigidBody2D) -> void:	
+	var joint1: PinJoint2D = PinJoint2D.new()
+	var joint2: PinJoint2D = PinJoint2D.new()
 
-	joint.name = "body-link"
-	joint.position = myBone.global_position
-	joint.node_a = myBone.get_path()
-	joint.node_b = otherBone.get_path()
-		
-	joint.damping = JointDamping
-	joint.stiffness = JointStiffness
-	joint.length = JointLength
-	joint.rest_length = JointRestLen
-	joint.disable_collision = false
-	
+	joint1.position = Vector2(0,0)
+	joint1.node_a = myBone.get_path()
+	joint1.node_b = otherBone.get_path()
+	joint1.softness = 0.001
+	joint1.disable_collision =false
+	joint1.name = "body-link"
 	myBone.Joined = true
 	myBone.JoinedTo = otherBone
-	myBone.get_parent().get_parent().add_child(joint)
-
+	myBone.JointDirection = get_direction_vector(myBone,otherBone)
+	myBone.add_child(joint1)
 	
-	#joint1.position = point1
-	#joint2.position = point2
-	#
-	#joint1.node_a = my_bone.get_path()
-	#joint1.node_b = other_bone.get_path()
-	#joint2.node_a = my_bone.get_path()
-	#joint2.node_b = other_bone.get_path()
-	#
-	#joint1.scale = Vector2(1.2,1.2)
-	#joint2.scale = Vector2(1.2,1.2)
-	#
-	#joint1.softness = 0.001
-	#joint2.softness = 0.001
-	#
-	#my_bone.add_child(joint1)
-	#my_bone.add_child(joint2)
+	
+	joint2.position = Vector2(0,0)
+	joint2.node_a = otherBone.get_path()
+	joint2.node_b = myBone.get_path()
+	joint2.softness = 0.001
+	joint2.disable_collision =false
+	joint2.name = "body-link"
+	otherBone.Joined = true
+	otherBone.JoinedTo = myBone
+	otherBone.JointDirection = get_direction_vector(otherBone,myBone)
+	otherBone.add_child(joint2)
+	
+	myBone.RelatedJoints.append(joint1)
+	myBone.RelatedJoints.append(joint2)
+	otherBone.RelatedJoints.append(joint1)
+	otherBone.RelatedJoints.append(joint2)
+	
+	var jointLine:Line2D = Line2D.new()
+	jointLine.name = "joint"
+	jointLine.add_point(myBone.global_position/100,0)
+	jointLine.add_point(otherBone.global_position/100,1)
+	jointLine.default_color = Color(255,255,255)
+	jointLine.width = 3
+	jointLine.z_index = -1
+	myBone.add_child(jointLine)
 #---------------------------------------
 func is_unit_vector(vector:Vector2):
 	return abs(vector.length_squared() - 1) < 0.001
@@ -188,6 +205,7 @@ func get_random_direction() -> Vector2:
 func _on_bone_collided(myBone:RigidBody2D,collider:Node):
 	if collider.is_in_group("bone"):
 		if (not collider.Joined) and (not myBone.Joined) and (Bones[CenterBoneIndex].linear_velocity.length() > JoinThresold):
+			print(Bones[CenterBoneIndex].linear_velocity.length())
 			attach_bodies(myBone,collider)	
 #---------------------------------------
 func _on_charger_area_entered(area: Area2D) -> void:
@@ -198,12 +216,15 @@ func _on_charger_area_exited(area: Area2D) -> void:
 	if (area.is_in_group("recharge-area")):
 		RechargingAreas.erase(area)
 #---------------------------------------
+func _on_soft_body_2d_joint_removed(rigid_body_a: RefCounted, rigid_body_b: RefCounted) -> void:
+	if (rigid_body_a.rigidbody.name=="Bone-4") or (rigid_body_b.rigidbody.name=="Bone-4"):
+		die()
+#---------------------------------------
 func movement_rules(collision_point:Node):
 	pass
-func contract(bone:RigidBody2D, in_bone_direction:RigidBody2D, withForce:float) -> void:
-	var direction = self.get_direction_vector(bone,in_bone_direction)
-	bone.apply_central_force(direction*withForce)
-
+func contract(bone:RigidBody2D, inBoneDirection:RigidBody2D, withForce:float) -> void:
+	var direction = self.get_direction_vector(bone,inBoneDirection)
+	bone.apply_central_impulse(direction*withForce)
 func _on_timer_timeout() -> void:
 	pass
 	#contract_blue(mult*maxForce)
@@ -244,8 +265,3 @@ func gene_translation() -> void:
 	for i in range(Bones.size()):
 		#print(Gene[bonesLimits[i][0]])
 		pass
-
-
-func _on_soft_body_2d_joint_removed(rigid_body_a: RefCounted, rigid_body_b: RefCounted) -> void:
-	Global.Robots.erase(self)
-	self.queue_free()

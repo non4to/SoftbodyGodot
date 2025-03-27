@@ -1213,7 +1213,7 @@ func _update_soft_body_rigidbodies(skeleton_node:Skeleton2D = null):
 		var joints = rb_children.filter(func (node): return node is Joint2D)
 		for joint in joints:
 			if !(joint.name == "body-link"):
-				print(joint.name)
+				#print(joint.name)
 			# dont add joints we are about to delete
 				if !joint.is_queued_for_deletion():
 					softbodyrb.joints.append(joint)
@@ -1242,11 +1242,12 @@ func _physics_process(delta: float) -> void:
 	for rigid_body in get_rigid_bodies():
 		for node in rigid_body.joints:
 			var joint := node
-			if joint == null:
-				continue
-			if joint.is_queued_for_deletion() || deleted_count >= _max_deletions:
-				continue
-			if _hinges_distances_squared[joint.name] * break_distance_ratio * break_distance_ratio * rigid_body.joints.size() < _hinges_bodies[rigid_body.rigidbody.name].global_position.distance_squared_to(_hinges_bodies[joint.node_b].global_position):
-				deleted_count = deleted_count + 1
-				remove_joint(rigid_body, joint)
-				_last_delete_time = Time.get_ticks_msec()
+			if !(joint.name == "body-link"):
+				if joint == null:
+					continue
+				if joint.is_queued_for_deletion() || deleted_count >= _max_deletions:
+					continue
+				if _hinges_distances_squared[joint.name] * break_distance_ratio * break_distance_ratio * rigid_body.joints.size() < _hinges_bodies[rigid_body.rigidbody.name].global_position.distance_squared_to(_hinges_bodies[joint.node_b].global_position):
+					deleted_count = deleted_count + 1
+					remove_joint(rigid_body, joint)
+					_last_delete_time = Time.get_ticks_msec()

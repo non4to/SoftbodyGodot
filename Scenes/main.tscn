@@ -1,74 +1,132 @@
-[gd_scene load_steps=5 format=3 uid="uid://8ebw7cvndf83"]
+[gd_scene load_steps=7 format=3 uid="uid://8ebw7cvndf83"]
 
 [ext_resource type="Script" uid="uid://x6ihuopwy3x8" path="res://Scenes/main.gd" id="1_7c7pr"]
 [ext_resource type="PackedScene" uid="uid://ob442a1tcbmg" path="res://Scenes/Environment/environment.tscn" id="2_i85tn"]
 [ext_resource type="Script" uid="uid://bi7tr8art64q7" path="res://Scenes/camera_2d.gd" id="2_kry3j"]
 [ext_resource type="PackedScene" uid="uid://ceytao6v6mlyq" path="res://Scenes/Food/food_spawner.tscn" id="4_ckyev"]
+[ext_resource type="PackedScene" uid="uid://s75gnq6i4upv" path="res://Scenes/Robot/robot.tscn" id="5_kry3j"]
+[ext_resource type="PackedScene" uid="uid://dt317af5oy764" path="res://Scenes/Robot/robot_spawner.tscn" id="6_21xkr"]
 
 [node name="main" type="Node2D"]
 script = ExtResource("1_7c7pr")
 
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(520, 338)
-scale = Vector2(-1079.69, -33.2882)
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+offset_right = 1152.0
+offset_bottom = 648.0
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(1152, 648)
+render_target_update_mode = 4
+
+[node name="Camera2D" type="Camera2D" parent="SubViewportContainer/SubViewport"]
+position = Vector2(577, 329)
+rotation = 3.14159
+scale = Vector2(1079.69, 33.2882)
 script = ExtResource("2_kry3j")
 
-[node name="Environment" parent="." instance=ExtResource("2_i85tn")]
-position = Vector2(-51, 13)
+[node name="Environment" parent="SubViewportContainer/SubViewport" instance=ExtResource("2_i85tn")]
+position = Vector2(6, 4)
 
-[node name="food_spawner" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(214, 545)
+[node name="food_spawner" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_ckyev")]
+position = Vector2(227, 447)
 
-[node name="food_spawner2" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(794, 540)
+[node name="food_spawner2" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_ckyev")]
+position = Vector2(240, 447)
 
-[node name="food_spawner4" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(114, 431)
+[node name="Robot" parent="SubViewportContainer/SubViewport" instance=ExtResource("5_kry3j")]
+position = Vector2(221, 412)
 
-[node name="food_spawner5" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(155, 133)
+[node name="Robot2" parent="SubViewportContainer/SubViewport" instance=ExtResource("5_kry3j")]
+position = Vector2(249, 412)
 
-[node name="food_spawner6" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(243, 372)
+[node name="Robot3" parent="SubViewportContainer/SubViewport" instance=ExtResource("5_kry3j")]
+position = Vector2(192, 412)
 
-[node name="food_spawner7" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(745, 170)
+[node name="Robot4" parent="SubViewportContainer/SubViewport" instance=ExtResource("5_kry3j")]
+position = Vector2(192, 439)
 
-[node name="food_spawner8" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(797, 316)
+[node name="Robot5" parent="SubViewportContainer/SubViewport" instance=ExtResource("5_kry3j")]
+position = Vector2(249, 440)
 
-[node name="food_spawner9" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(952, 136)
+[node name="Robot6" parent="SubViewportContainer/SubViewport" instance=ExtResource("5_kry3j")]
+position = Vector2(192, 466)
 
-[node name="food_spawner10" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(943, 292)
+[node name="Robot7" parent="SubViewportContainer/SubViewport" instance=ExtResource("5_kry3j")]
+position = Vector2(219, 466)
 
-[node name="food_spawner11" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(912, 591)
+[node name="Robot8" parent="SubViewportContainer/SubViewport" instance=ExtResource("5_kry3j")]
+position = Vector2(247, 467)
 
-[node name="food_spawner12" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(544, 280)
+[node name="robot-spawner" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(89, 375)
 
-[node name="food_spawner13" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(548, 332)
+[node name="robot-spawner2" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(87, 473)
 
-[node name="food_spawner14" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(578, 353)
+[node name="robot-spawner3" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(84, 578)
 
-[node name="food_spawner15" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(513, 354)
+[node name="robot-spawner4" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(598, 316)
 
-[node name="food_spawner16" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(579, 301)
+[node name="robot-spawner5" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(1091, 81)
 
-[node name="food_spawner17" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(511, 303)
+[node name="robot-spawner6" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(1091, 142)
 
-[node name="food_spawner18" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(285, 179)
+[node name="robot-spawner7" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(730, 399)
 
-[node name="food_spawner3" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(300, 469)
+[node name="robot-spawner8" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(1104, 519)
 
-[node name="food_spawner19" parent="." instance=ExtResource("4_ckyev")]
-position = Vector2(545, 380)
+[node name="robot-spawner9" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(1104, 595)
+
+[node name="robot-spawner10" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(66, 75)
+
+[node name="robot-spawner11" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(67, 139)
+
+[node name="robot-spawner12" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(65, 206)
+
+[node name="robot-spawner13" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(1089, 396)
+
+[node name="robot-spawner14" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(906, 398)
+
+[node name="robot-spawner15" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(1092, 266)
+
+[node name="food_spawner7" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_ckyev")]
+position = Vector2(597, 339)
+
+[node name="food_spawner8" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_ckyev")]
+position = Vector2(1057, 556)
+
+[node name="food_spawner9" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_ckyev")]
+position = Vector2(802, 557)
+
+[node name="food_spawner10" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_ckyev")]
+position = Vector2(159, 97)
+
+[node name="food_spawner11" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_ckyev")]
+position = Vector2(396, 187)
+
+[node name="food_spawner12" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_ckyev")]
+position = Vector2(277, 144)
+
+[node name="food_spawner13" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_ckyev")]
+position = Vector2(373, 555)
+
+[node name="food_spawner14" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_ckyev")]
+position = Vector2(431, 455)
+
+[node name="robot-spawner16" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(457, 339)

@@ -8,10 +8,6 @@
 
 [node name="LinkedBot" type="Node2D"]
 script = ExtResource("1_mvl8q")
-SpringLen = 75.0
-SpringRestLen = 40.0
-SpringStiffness = 1.0
-SpringDamping = 0.01
 
 [node name="Line2D" type="Line2D" parent="."]
 points = PackedVector2Array(28, 0, 0, 0)
@@ -32,17 +28,10 @@ scale = Vector2(0.501219, 0.49815)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="A"]
 shape = SubResource("RectangleShape2D_q48na")
 
-[node name="A-DampedSpringJoint2D" type="DampedSpringJoint2D" parent="A"]
-unique_name_in_owner = true
-rotation = -1.5708
-scale = Vector2(1, 0.56)
+[node name="A-PinJoint2D" type="PinJoint2D" parent="A"]
+position = Vector2(8, 0)
 node_a = NodePath("..")
 node_b = NodePath("../../B")
-disable_collision = false
-length = 75.0
-rest_length = 50.0
-stiffness = 5.0
-damping = 0.5
 
 [node name="B" type="RigidBody2D" parent="."]
 unique_name_in_owner = true
@@ -59,17 +48,10 @@ scale = Vector2(0.499414, 0.500139)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="B"]
 shape = SubResource("RectangleShape2D_mvl8q")
 
-[node name="B-DampedSpringJoint2D" type="DampedSpringJoint2D" parent="B"]
-unique_name_in_owner = true
-rotation = 1.5708
-scale = Vector2(1, 0.56)
+[node name="B-PinJoint2D" type="PinJoint2D" parent="B"]
+position = Vector2(-8, 0)
 node_a = NodePath("..")
 node_b = NodePath("../../A")
-disable_collision = false
-length = 75.0
-rest_length = 50.0
-stiffness = 5.0
-damping = 0.5
 
 [node name="Label" type="Label" parent="."]
 offset_left = 4.0

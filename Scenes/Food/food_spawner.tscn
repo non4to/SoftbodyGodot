@@ -17,7 +17,7 @@ script = ExtResource("1_nagys")
 [node name="FoodSpawner" type="RigidBody2D" parent="."]
 collision_layer = 8
 collision_mask = 11
-mass = 2.0
+mass = 50.0
 can_sleep = false
 
 [node name="RechargeArea" type="Area2D" parent="FoodSpawner" groups=["recharge-area"]]

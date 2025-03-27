@@ -91,10 +91,6 @@ size = Vector2(17, 17)
 
 [node name="Robot" type="Node2D"]
 script = ExtResource("1_0bndf")
-JointDamping = 10000.0
-JointStiffness = 1000.0
-JointLength = 120.0
-JointRestLen = 100.0
 
 [node name="SoftBody2D" type="Polygon2D" parent="."]
 unique_name_in_owner = true
@@ -112,9 +108,10 @@ stiffness = 100.0
 damping = 10.01
 rest_length_ratio = 1.0
 length_ratio = 1.0
+softness = 10.0
 radius = 11
 margin_offset_edge = 2.0
-mass = 1.0
+mass = 0.5
 gravity_scale = 0.0
 collision_mask = 15
 
@@ -243,6 +240,7 @@ metadata/_local_pose_override_enabled_ = true
 [node name="Bone-0" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(4.41421, 4.41421)
 collision_mask = 15
+mass = 0.5
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
 metadata/idx = 0
@@ -263,25 +261,26 @@ visible = false
 rotation = -0.075662
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-1")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-0-Bone-3" type="PinJoint2D" parent="SoftBody2D/Bone-0"]
 visible = false
 rotation = -1.49513
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-3")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-0-Bone-4" type="PinJoint2D" parent="SoftBody2D/Bone-0"]
 visible = false
 rotation = -0.785398
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-4")
-softness = 60.0
+softness = 10.0
 
 [node name="Bone-1" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(4.99724, 12.1051)
 collision_mask = 15
+mass = 0.5
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
 metadata/idx = 1
@@ -301,39 +300,40 @@ visible = false
 rotation = -3.21725
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-0")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-1-Bone-3" type="PinJoint2D" parent="SoftBody2D/Bone-1"]
 visible = false
 rotation = -2.35619
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-3")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-1-Bone-4" type="PinJoint2D" parent="SoftBody2D/Bone-1"]
 visible = false
 rotation = -1.51821
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-4")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-1-Bone-2" type="PinJoint2D" parent="SoftBody2D/Bone-1"]
 visible = false
 rotation = 0.0678969
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-2")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-1-Bone-5" type="PinJoint2D" parent="SoftBody2D/Bone-1"]
 visible = false
 rotation = -0.765813
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-5")
-softness = 60.0
+softness = 10.0
 
 [node name="Bone-2" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(4.45191, 20.1245)
 collision_mask = 15
+mass = 0.5
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
 metadata/idx = 2
@@ -354,25 +354,26 @@ visible = false
 rotation = -3.0737
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-1")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-2-Bone-4" type="PinJoint2D" parent="SoftBody2D/Bone-2"]
 visible = false
 rotation = -2.32917
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-4")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-2-Bone-5" type="PinJoint2D" parent="SoftBody2D/Bone-2"]
 visible = false
 rotation = -1.65176
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-5")
-softness = 60.0
+softness = 10.0
 
 [node name="Bone-3" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(12.1051, 4.99724)
 collision_mask = 15
+mass = 0.5
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
 metadata/idx = 3
@@ -393,47 +394,47 @@ visible = false
 rotation = -4.63673
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-0")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-3-Bone-1" type="PinJoint2D" parent="SoftBody2D/Bone-3"]
 visible = false
 rotation = 0.785398
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-1")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-3-Bone-4" type="PinJoint2D" parent="SoftBody2D/Bone-3"]
 visible = false
 rotation = -0.0525831
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-4")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-3-Bone-6" type="PinJoint2D" parent="SoftBody2D/Bone-3"]
 visible = false
 rotation = -1.63869
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-6")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-3-Bone-7" type="PinJoint2D" parent="SoftBody2D/Bone-3"]
 visible = false
 rotation = -0.804984
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-7")
-softness = 60.0
+softness = 10.0
 
 [node name="Bone-4" type="RigidBody2D" parent="SoftBody2D"]
 unique_name_in_owner = true
 position = Vector2(12.5, 12.5)
 collision_mask = 15
+mass = 0.5
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
 metadata/idx = 4
 metadata/bone_name = &"Bone-4"
 
 [node name="Label" type="Label" parent="SoftBody2D/Bone-4"]
-visible = false
 offset_left = -11.5
 offset_top = -11.5
 offset_right = 28.5
@@ -441,7 +442,6 @@ offset_bottom = 11.5
 scale = Vector2(0.575811, 0.418887)
 
 [node name="Label2" type="Label" parent="SoftBody2D/Bone-4"]
-visible = false
 offset_left = -12.0
 offset_right = 13.0
 offset_bottom = 23.0
@@ -468,60 +468,61 @@ visible = false
 rotation = -3.92699
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-0")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-4-Bone-1" type="PinJoint2D" parent="SoftBody2D/Bone-4"]
 visible = false
 rotation = -4.65981
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-1")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-4-Bone-3" type="PinJoint2D" parent="SoftBody2D/Bone-4"]
 visible = false
 rotation = -3.19418
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-3")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-4-Bone-2" type="PinJoint2D" parent="SoftBody2D/Bone-4"]
 visible = false
 rotation = 0.812419
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-2")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-4-Bone-5" type="PinJoint2D" parent="SoftBody2D/Bone-4"]
 visible = false
 rotation = 0.0554985
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-5")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-4-Bone-6" type="PinJoint2D" parent="SoftBody2D/Bone-4"]
 visible = false
 rotation = -2.38321
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-6")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-4-Bone-7" type="PinJoint2D" parent="SoftBody2D/Bone-4"]
 visible = false
 rotation = -1.62629
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-7")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-4-Bone-8" type="PinJoint2D" parent="SoftBody2D/Bone-4"]
 visible = false
 rotation = -0.785398
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-8")
-softness = 60.0
+softness = 10.0
 
 [node name="Bone-5" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(12.1109, 19.5031)
 collision_mask = 15
+mass = 0.5
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
 metadata/idx = 5
@@ -542,39 +543,40 @@ visible = false
 rotation = -3.90741
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-1")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-5-Bone-2" type="PinJoint2D" parent="SoftBody2D/Bone-5"]
 visible = false
 rotation = 1.48984
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-2")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-5-Bone-4" type="PinJoint2D" parent="SoftBody2D/Bone-5"]
 visible = false
 rotation = -3.08609
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-4")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-5-Bone-7" type="PinJoint2D" parent="SoftBody2D/Bone-5"]
 visible = false
 rotation = -2.35619
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-7")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-5-Bone-8" type="PinJoint2D" parent="SoftBody2D/Bone-5"]
 visible = false
 rotation = -1.49786
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-8")
-softness = 60.0
+softness = 10.0
 
 [node name="Bone-6" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(20.1245, 4.45191)
 collision_mask = 15
+mass = 0.5
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
 metadata/idx = 6
@@ -595,25 +597,26 @@ visible = false
 rotation = 1.5029
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-3")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-6-Bone-4" type="PinJoint2D" parent="SoftBody2D/Bone-6"]
 visible = false
 rotation = 0.758378
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-4")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-6-Bone-7" type="PinJoint2D" parent="SoftBody2D/Bone-6"]
 visible = false
 rotation = 0.0809596
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-7")
-softness = 60.0
+softness = 10.0
 
 [node name="Bone-7" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(19.5031, 12.1109)
 collision_mask = 15
+mass = 0.5
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
 metadata/idx = 7
@@ -634,39 +637,40 @@ visible = false
 rotation = -3.94658
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-3")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-7-Bone-4" type="PinJoint2D" parent="SoftBody2D/Bone-7"]
 visible = false
 rotation = 1.5153
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-4")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-7-Bone-6" type="PinJoint2D" parent="SoftBody2D/Bone-7"]
 visible = false
 rotation = -3.06063
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-6")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-7-Bone-5" type="PinJoint2D" parent="SoftBody2D/Bone-7"]
 visible = false
 rotation = 0.785398
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-5")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-7-Bone-8" type="PinJoint2D" parent="SoftBody2D/Bone-7"]
 visible = false
 rotation = -0.0729386
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-8")
-softness = 60.0
+softness = 10.0
 
 [node name="Bone-8" type="RigidBody2D" parent="SoftBody2D"]
 position = Vector2(20.0858, 20.0858)
 collision_mask = 15
+mass = 0.5
 gravity_scale = 0.0
 script = ExtResource("4_wujyb")
 metadata/idx = 8
@@ -686,21 +690,21 @@ visible = false
 rotation = -3.92699
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-4")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-8-Bone-5" type="PinJoint2D" parent="SoftBody2D/Bone-8"]
 visible = false
 rotation = -4.63945
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-5")
-softness = 60.0
+softness = 10.0
 
 [node name="Joint2D-Bone-8-Bone-7" type="PinJoint2D" parent="SoftBody2D/Bone-8"]
 visible = false
 rotation = -3.21453
 node_a = NodePath("..")
 node_b = NodePath("../../Bone-7")
-softness = 60.0
+softness = 10.0
 
 [node name="Timer" type="Timer" parent="."]
 autostart = true
