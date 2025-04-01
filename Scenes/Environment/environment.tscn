@@ -69,3 +69,8 @@ position = Vector2(1602, 213)
 [node name="mid-wall20" parent="." instance=ExtResource("2_rcjk5")]
 position = Vector2(1772, 374)
 rotation = 1.5708
+
+[node name="wall2" parent="." instance=ExtResource("1_4xs6h")]
+position = Vector2(18, 601)
+rotation = -1.5708
+scale = Vector2(1, 1.72)

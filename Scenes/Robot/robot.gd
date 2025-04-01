@@ -1,27 +1,37 @@
 extends Node2D
+class_name Robot
+## CONSTANTS
+# BODY
+const CenterBoneIndex: int = Global.BOTCenterBoneIndex					#Which is the bone in the center of the robot -> Force is applied on it
+# ENERGY ECONOMY
+const MaxEnergyPossible: int = Global.BOTMaxEnergyPossible				#Maximum Energy possible
+const MovingEnergyMult: float = Global.BOTMovingEnergyMult 				#Multiply this by the Force of the movement to obtain the Energy Cost
+const Metabolism: float = Global.BOTMetabolism							#Metabolism. Every step this value is deduced from Energy
+# MOVEMENT
+const MaxForcePossible: int = Global.BOTMaxForcePossible   				#Maximum Movement Force possible
+const ChangeDirectionDelay: float = Global.BOTChangeDirectionDelay		#Delay to allow change in Movement Direction
+# JOINING MECHANICS
+const JoinThresold: float = Global.BOTJoinThresold						#if a collision happens while above this, they joint
 
-#body
+## VARIABLES
+# BODY
+var Age:int = 0
 var Bones = []
-var RobotID: String 								#Robot unique identifier
-const CenterBoneIndex: int = 4      #Which is the bone in the center of the robot -> Force is applied on it
+var RobotID: String 													#Robot unique identifier
+# ENERGY ECONOMY
+var RechargingAreas: Array[Area2D] = []									#every Recharging area the charger node is colliding to.
+var Energy: float = 0													#Current Energy
+@export var EnergyBankIndex: int = 0											#which energy ban belongs to, 0=alone
+# MOVEMENT
+@export var MovementDirection: Vector2 = Vector2(1,0)					#MovementDirection
+var AllowDirectionChange: bool = false									#Self explanatory
+var StepsToChangeDirection: int = 0										#Counter to allow change in Movement Direction
+# JOINING MECHANICS
+var Attached: bool = false												#Identifies if this robot is attached to any other or not.
+var GroupIndex: int														#Group index this robot belongs to. All attached robots occupy same group index. if 0 = alone
+# ADITIONAL VISUAL FEEDBACK
+const EnergyBar:bool = true
 
-#energy economy
-var Energy: float = 0								#Current Energy
-const MaxEnergyPossible: int = 9999999999  #Maximum Energy possible
-const MovingEnergyMult: float = 0.005 #Multiply this by the Force of the movement to obtain the Energy Cost
-var Metabolism: float = MaxEnergyPossible*0.001		#Metabolism. Every step this value is deduced from Energy
-var RechargingAreas: Array[Area2D] = []							#9 bones, 9 rigidbodies. If at least one rigidbodies is colliding with recharge zone, the robot recharges. this variable is tweaker in food-spawner
-
-#movement
-const MaxLinearVelocity: float = 500				#Maximum velocity that can be produced by a robot
-@export var MaxForcePossible: int = 50   					#Maximum Movement Force possible
-var AllowDirectionChange: bool = false				#Self explanatory
-var StepsToChangeDirection: int = 0					#Counter to allow change in Movement Direction
-var ChangeDirectionDelay: int = 50					#Delay to allow change in Movement Direction
-@export var MovementDirection: Vector2 = Vector2(1,0)						#MovementDirection
-
-#joining mechanics
-const JoinThresold: float = 150						#if a collision happens while above this, they joint
 ########
 #not used yet/ideas
 var Gene: Array[int] = [0]							#Gene Array
@@ -32,12 +42,16 @@ var direction_y = 1
 var power_x = 0
 var power_y = 0
 var current_collisions = 0
+var is_bigger=false
+var oldEnergyBankIndex:int = EnergyBankIndex
+
+@export var x_direction_multiplier:float = -1
 
 ## Genes: velocity value, Energy
 ## 4 sensors: one of each side.
 
 # Called when the node enters the scene tree for the first time.
-func _init(Gene=9) -> void:
+func _init() -> void:
 	pass
 	#Gene
 	#[MaxEnergy,Metabolism]
@@ -47,99 +61,64 @@ func _init(Gene=9) -> void:
 #---------------------------------------
 func _ready() -> void:
 	start_robot() #ID to the robot and its Bones
-	MovementDirection = Vector2(cos(deg_to_rad(randi_range(0,360))),sin(deg_to_rad(randi_range(0,360))))
+	if EnergyBar: create_energy_bar()
+	# MovementDirection = Vector2(cos(deg_to_rad(randi_range(0,360))),sin(deg_to_rad(randi_range(0,360))))
 	
 	#gene_translation()
 #---------------------------------------
+@warning_ignore("UNUSED_PARAMETER")
 func _process(delta: float) -> void:
+	if EnergyBar: update_energy_bar()
+	# print(str(self.name)+": "+str(self.Energy))
+	# if EnergyBankIndex != oldEnergyBankIndex:
+	# 	print(str(self.name)+"OLD: "+str(self.oldEnergyBankIndex))
+	# 	oldEnergyBankIndex = EnergyBankIndex
+	# 	print(str(self.name)+"OLD: "+str(self.EnergyBankIndex))
 	
 	#$"SoftBody2D/Bone-4/Label".text = str(Bones[CenterBoneIndex].linear_velocity[0])
-	#$"SoftBody2D/Bone-4/Label2".text = str(Bones[CenterBoneIndex].linear_velocity[1])
-	
-	
-	
+	#$"SoftBody2D/Bone-4/Label2".text = str(Bones[CenterBoneIndex].linear_velocity[1])	
 	pass
 #---------------------------------------
-func check_unjoint() -> void:
-	pass
-			
-		#if Bones[CenterBoneIndex].linear_velocity.length > Bones[i].ToUnjoint.length:
-			#print(Bones[i],"WOW FAST!")
-		
-		
-		
-#---------------------------------------
+@warning_ignore("UNUSED_PARAMETER")
 func _physics_process(delta: float) -> void:	
+	Age += 1
 	#Energy Economy
 	if RechargingAreas:
 		for eachArea in RechargingAreas:
-			Energy += eachArea.get_parent().get_parent().GivenEnergy
+			sum_to_energy(eachArea.get_parent().get_parent().GivenEnergy)
 	metabolize()
 	#Alive, move!
-	if Energy > 0:	
+	if get_current_energy() > 0:	
 		#My movements
 		if not AllowDirectionChange:
 			StepsToChangeDirection += 1
 			if StepsToChangeDirection > ChangeDirectionDelay:
 				AllowDirectionChange = true
-		change_direction(get_random_direction())
+		# change_direction(get_random_direction_fromNSWE())
 		move_to_direction(MovementDirection,MaxForcePossible)
-
 	#Ded, die: x-x 
 	else:
 		die()
 #---------------------------------------
-func start_robot() -> void:
-	#Start variables
-	Energy = MaxEnergyPossible
-	#Builds an ID to robot and adds robot and its Bones to this group
-	RobotID = "id_" + str(get_instance_id())
-	add_to_group("robot")
-	add_to_group(RobotID)
-	for bone in get_node("SoftBody2D").get_children():
-		if bone.is_class("RigidBody2D") and ("Bone" in bone.name):
-			Bones.append(bone)	
-			bone.add_to_group("bone")
-			bone.add_to_group(RobotID)
-			bone.connect("bone_collided", _on_bone_collided)
-#---------------------------------------
-#---------------------------------------
+# Actions
 func metabolize() -> void:
-	Energy -= Metabolism
-	if Energy < 0: Energy = 0 
-#---------------------------------------
+	sum_to_energy(-Metabolism)
 func die() -> void:
-	for bone in Bones:
-		if (bone.Joined) and (is_instance_valid(bone.JoinedTo)):
-			var jointLine:Line2D = bone.JoinedTo.get_node_or_null("joint")
-			if jointLine: jointLine.queue_free()
-		for joint in bone.RelatedJoints:
-			if is_instance_valid(joint):
-				joint.queue_free()
-	Global.Robots.erase(self)
-	self.queue_free()
-
-#---------------------------------------				
+	if EnergyBankIndex > 0:
+		for cell in Global.BotsAtEnergyBank[EnergyBankIndex]:
+			death(cell)
+	else: death(self)
 func change_direction(direction:Vector2) -> void:
 	if AllowDirectionChange:
 		MovementDirection = direction
 		StepsToChangeDirection = 0
 		AllowDirectionChange = false
-#---------------------------------------
 func move_to_direction(direction:Vector2, withForce:float) -> void:
 		if not is_unit_vector(direction):
 			direction = direction.normalized()
 		Bones[CenterBoneIndex].apply_central_impulse(direction*withForce)
 		#$SoftBody2D.apply_impulse(direction*withForce)
-		Energy -= withForce*MovingEnergyMult
-		
-		##Limit velocity
-		#if Bones[CenterBoneIndex].linear_velocity[0] > MaxLinearVelocity:
-			#Bones[CenterBoneIndex].linear_velocity[0] = MaxLinearVelocity
-			#
-		#if Bones[CenterBoneIndex].linear_velocity[1] > MaxLinearVelocity:
-			#Bones[CenterBoneIndex].linear_velocity[1] = MaxLinearVelocity
-#---------------------------------------
+		sum_to_energy(-1*withForce*MovingEnergyMult)
 func attach_bodies(myBone:RigidBody2D, otherBone: RigidBody2D) -> void:	
 	var joint1: PinJoint2D = PinJoint2D.new()
 	var joint2: PinJoint2D = PinJoint2D.new()
@@ -178,19 +157,112 @@ func attach_bodies(myBone:RigidBody2D, otherBone: RigidBody2D) -> void:
 	jointLine.add_point(otherBone.global_position/100,1)
 	jointLine.default_color = Color(255,255,255)
 	jointLine.width = 3
-	jointLine.z_index = -1
+	jointLine.z_index = +1
 	myBone.add_child(jointLine)
+
+	assign_energy_bank(otherBone.get_parent().get_parent())
+	# Global.energy_bank_assign(self, otherBone.get_parent().get_parent())
+
+func death(bot:Robot) -> void:
+	for bone in bot.Bones:
+		if (bone.Joined) and (is_instance_valid(bone.JoinedTo)):
+			var jointLine:Line2D = bone.JoinedTo.get_node_or_null("joint")
+			if jointLine: jointLine.queue_free()
+		for joint in bone.RelatedJoints:
+			if is_instance_valid(joint):
+				joint.queue_free()
+	Global.BotsAtEnergyBank[bot.EnergyBankIndex].erase(bot)
+	if (bot.EnergyBankIndex>0)and(Global.BotsAtEnergyBank[bot.EnergyBankIndex].size() < 1):
+		Global.FreeBanks.append(EnergyBankIndex)
+	# print(Global.BotsAtEnergyBank)
+	Global.Robots.erase(bot)
+	bot.queue_free()
 #---------------------------------------
+# Energy operations
+func sum_to_energy(value:float) -> void:
+	if EnergyBankIndex > 0:
+		Global.EnergyBank[EnergyBankIndex] += value
+		if Global.EnergyBank[EnergyBankIndex] < 0: 
+			Global.EnergyBank[EnergyBankIndex] = 0
+		elif Global.EnergyBank[EnergyBankIndex] > get_maximum_energy():
+			Global.EnergyBank[EnergyBankIndex] = get_maximum_energy()
+	else:
+		Energy += value	
+		if Energy < 0: Energy = 0
+		elif Energy > MaxEnergyPossible: Energy = MaxEnergyPossible
+func get_maximum_energy() -> float:
+	if EnergyBankIndex > 0:
+		return Global.BotsAtEnergyBank[EnergyBankIndex].size()*MaxEnergyPossible
+	else:
+		return MaxEnergyPossible
+func get_current_energy() -> float:
+	if EnergyBankIndex > 0:
+		return Global.EnergyBank[EnergyBankIndex]
+	else:
+		return Energy
+func create_energy_bar() -> void:
+	var energyBar:ColorRect = ColorRect.new()
+	var squareSize:Vector2 = Vector2(5,5)
+	energyBar.position = Bones[CenterBoneIndex].position-Vector2(12.5,12.5)-squareSize/2
+	energyBar.size = squareSize
+	energyBar.color = Color(0,255,0)
+	energyBar.name = "energy-bar"
+	Bones[CenterBoneIndex].add_child(energyBar)
+func update_energy_bar() -> void:
+	var energyBar:ColorRect = Bones[CenterBoneIndex].get_node_or_null("energy-bar")
+	if energyBar: 
+		var percEnergy:float = get_current_energy()/get_maximum_energy()
+		energyBar.color = lerp(Color.BLACK, Color.RED, percEnergy)
+func move_to_energy_bank(bot:Robot, joiningBank:int) -> void:
+	var leavingBank:int = bot.EnergyBankIndex
+	bot.EnergyBankIndex = joiningBank
+	if not (joiningBank in Global.EnergyBank):
+		Global.EnergyBank[joiningBank] = 0
+		Global.BotsAtEnergyBank[joiningBank] = []
+
+	#LeavingBankEnergyAdjust
+	var proportionalEnergy = Global.EnergyBank[leavingBank] / Global.BotsAtEnergyBank[leavingBank].size()
+	if leavingBank > 0: 
+		Global.EnergyBank[leavingBank] -= proportionalEnergy
+		bot.Energy = proportionalEnergy
+	Global.BotsAtEnergyBank[leavingBank].erase(bot)
+	#JoiningBankEnergyAdjust
+	if joiningBank > 0: 
+		Global.EnergyBank[joiningBank] += bot.Energy
+	Global.BotsAtEnergyBank[joiningBank].append(bot)
+	#BankChecks
+	if (leavingBank>0)and(Global.BotsAtEnergyBank[leavingBank].size()==0):
+		Global.EnergyBank[leavingBank] = 0
+		Global.FreeBanks.append(leavingBank)
+#---------------------------------------
+# Tools
+func start_robot() -> void:
+	#Start variables
+	Energy = MaxEnergyPossible
+	Global.BotsAtEnergyBank[EnergyBankIndex].append(self)
+	#Builds an ID to robot and adds robot and its Bones to this group
+	RobotID = "id_" + str(get_instance_id())
+	add_to_group("robot")
+	add_to_group(RobotID)
+	for bone in get_node("SoftBody2D").get_children():
+		if bone.is_class("RigidBody2D") and ("Bone" in bone.name):
+			Bones.append(bone)	
+			bone.add_to_group("bone")
+			bone.add_to_group(RobotID)
+			bone.connect("bone_collided", _on_bone_collided)
+			bone.connect("joint_broke", _on_joint_break)
+
+	var bonesThatCanotJoin:Array = [0,2,4,6,8]
+	for bone in bonesThatCanotJoin:
+		Bones[bone].CanJoin = false
+
 func is_unit_vector(vector:Vector2):
 	return abs(vector.length_squared() - 1) < 0.001
-#---------------------------------------
 func get_direction_vector(fromA:Node,toB:Node) -> Vector2:
 	var direction_vector = Vector2(0,0)
 	direction_vector = (toB.global_position-fromA.global_position).normalized()	
 	return direction_vector
-#---------------------------------------
 func get_random_direction() -> Vector2:
-	var direction:Vector2 = Vector2(0,0)
 	var collisionDirections = [get_direction_vector(Bones[4],Bones[0]), 
 								get_direction_vector(Bones[4],Bones[1]),
 								get_direction_vector(Bones[4],Bones[2]),
@@ -199,69 +271,89 @@ func get_random_direction() -> Vector2:
 								get_direction_vector(Bones[4],Bones[5]),
 								get_direction_vector(Bones[4],Bones[6]),
 								get_direction_vector(Bones[4],Bones[7]),
-								get_direction_vector(Bones[4],Bones[8])]
+								get_direction_vector(Bones[4],Bones[8]),
+								]
 	return	-1*collisionDirections.pick_random()
+func get_random_direction_fromNSWE() -> Vector2:
+	var collisionDirections = [ 
+								get_direction_vector(Bones[4],Bones[1]),
+								get_direction_vector(Bones[4],Bones[3]),
+								get_direction_vector(Bones[4],Bones[5]),
+								get_direction_vector(Bones[4],Bones[7]),
+								]
+	return	-1*collisionDirections.pick_random()
+func is_alone(robot:Robot) -> bool:
+	print(robot.name)
+	for i in range(robot.Bones.size()):
+		print(i,Bones[i].Joined)
+		if Bones[i].Joined: 
+			return false
+	return true
+func contract(bone:RigidBody2D, inBoneDirection:RigidBody2D, withForce:float) -> void:
+	var direction = self.get_direction_vector(bone,inBoneDirection)
+	bone.apply_central_impulse(direction*withForce)
+func assign_energy_bank(botB: Robot):
+	var botA:Robot = self
+	if (botA.EnergyBankIndex > 0): 
+	#A(in)
+		pass
+
+		if (botB.EnergyBankIndex > 0): 
+		#A(in)B(in)
+			pass
+
+		else: 
+		#A(in)B(out)
+			pass
+
+	else: 
+	#A(out)
+		pass
+
+		if (botB.EnergyBankIndex > 0):
+			pass
+		#A(out)B(in)
+			# move_to_energy_bank(botA,(botB.EnergyBankIndex))
+		else: 
+		#A(out)B(out)
+			var newBank:int = 0
+			if Global.FreeBanks.size() > 0:
+				newBank = Global.FreeBanks.pop_front()
+			else:
+				newBank = Global.EnergyBank.keys().size()
+
+			Global.EnergyBank[newBank] = 0
+			Global.BotsAtEnergyBank[newBank] = []
+
+			move_to_energy_bank(botA,newBank)
+			move_to_energy_bank(botB,newBank)			
 #---------------------------------------
+# Signals
 func _on_bone_collided(myBone:RigidBody2D,collider:Node):
-	if collider.is_in_group("bone"):
-		if (not collider.Joined) and (not myBone.Joined) and (Bones[CenterBoneIndex].linear_velocity.length() > JoinThresold):
-			#print(Bones[CenterBoneIndex].linear_velocity.length())
+	if collider.is_in_group("bone")and(myBone.CanJoin):
+		if (collider.CanJoin) and (not collider.Joined) and (not myBone.Joined) and (Bones[CenterBoneIndex].linear_velocity.length() > JoinThresold):
 			attach_bodies(myBone,collider)	
-#---------------------------------------
+func _on_joint_break(_myBone:RigidBody2D,otherBot:Robot):
+	if EnergyBankIndex == 0: push_error("This block has EnergyBankIndex=0 but just had a joint broken")
+	print(self.name, otherBot.name)
+	if is_alone(self):
+		move_to_energy_bank(self,0)
+
+	print(otherBot.name)
+	if is_alone(otherBot):
+		move_to_energy_bank(otherBot,0)
+
+
 func _on_charger_area_entered(area: Area2D) -> void:
 	if (area.is_in_group("recharge-area")):
-		RechargingAreas.append(area)
-#---------------------------------------	
+		RechargingAreas.append(area)	
 func _on_charger_area_exited(area: Area2D) -> void:
 	if (area.is_in_group("recharge-area")):
 		RechargingAreas.erase(area)
-#---------------------------------------
 func _on_soft_body_2d_joint_removed(rigid_body_a: RefCounted, rigid_body_b: RefCounted) -> void:
 	if (rigid_body_a.rigidbody.name=="Bone-4") or (rigid_body_b.rigidbody.name=="Bone-4"):
 		die()
 #---------------------------------------
-func movement_rules(collision_point:Node):
-	pass
-func contract(bone:RigidBody2D, inBoneDirection:RigidBody2D, withForce:float) -> void:
-	var direction = self.get_direction_vector(bone,inBoneDirection)
-	bone.apply_central_impulse(direction*withForce)
-func _on_timer_timeout() -> void:
-	pass
-	#contract_blue(mult*maxForce)
-	#contract_top(mult*maxForce)
-	
-		#$SoftBody2D.apply_impulse(Vector2(direction_x*power_x, direction_y*power_y))
-#func _on_bone_collided_with_robot(my_bone:RigidBody2D,other_bone:RigidBody2D):
-	#print(my_bone, other_bone)
-
-#func setting_sensors() -> void:
-	#var sensorsNames = ["red","green","yellow","blue"]
-	#var sensorsSizes = [Vector2(12,25),Vector2(25,12),Vector2(12,25),Vector2(25,12)]
-	#var sensorsPositions = [Vector2(-18,0),Vector2(0,-18),Vector2(18,0),Vector2(0,18)]   #point(0,0) is the position of CenterBoneIndex. The position of the rectangle is the center of it. For red: x=12(half of robot size - rounded down) + 6(half of sensor side size - round down). y=same as CenterBoneIndex y.
-	#
-	#for i in range(sensorsNames.size()):
-		#var sensor = Area2D.new()
-		#var collisionShape = CollisionShape2D.new()
-		#var shape = RectangleShape2D.new()	
-		#sensor.name = sensorsNames[i]
-		#shape.size = sensorsSizes[i]
-		#collisionShape.shape = shape
-		#collisionShape.position = sensorsPositions[i]
-		#sensor.add_child(collisionShape)
-		#Bones[CenterBoneIndex].add_child(sensor)
-func gene_translation() -> void:
-	# Each bone has 5 bits: [0~4]=Towards/[5~9]=Avoid/[10~14]=+90deg/[15~19]=-90deg/[20~25]=Stop/[26~31]=Random
-	var bonesLimits = [[0,4],[5,9],[10,14],[15,19],[20,24],[25,29],[30,34],[35,39],[40,44]]
-	# ChangeDirectionDelay has 7 bits -> Delay = Direct binary conversion
-	var towardsValues = [get_direction_vector(Bones[4],Bones[0]), 
-						get_direction_vector(Bones[4],Bones[1]),
-						get_direction_vector(Bones[4],Bones[2]),
-						get_direction_vector(Bones[4],Bones[3]),
-						get_direction_vector(Bones[4],Bones[4]),
-						get_direction_vector(Bones[4],Bones[5]),
-						get_direction_vector(Bones[4],Bones[6]),
-						get_direction_vector(Bones[4],Bones[7]),
-						get_direction_vector(Bones[4],Bones[8])]
-	for i in range(Bones.size()):
-		#print(Gene[bonesLimits[i][0]])
-		pass
+func _input(event):
+	if event.is_action_released("ui_down"):
+		MovementDirection *= Vector2(x_direction_multiplier,1)
