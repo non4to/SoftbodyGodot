@@ -75,7 +75,7 @@ func make_robot(x:int,y:int):
 	Global.Robots.append(robot)	
 
 func get_spawners():
-	for node in $"SubViewportContainer/SubViewport".get_children():
+	for node in get_children():#$"SubViewportContainer/SubViewport".get_children():
 		if (node.is_in_group("robot-spawner")):
 			RobotSpawners.append(node)
 	

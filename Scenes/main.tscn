@@ -42,26 +42,89 @@ MovementDirection = Vector2(-1, 0)
 [node name="Robot3" parent="SubViewportContainer/SubViewport" instance=ExtResource("5_kry3j")]
 position = Vector2(360, 607)
 
-[node name="Label" type="Label" parent="SubViewportContainer/SubViewport"]
-offset_left = 27.0
-offset_top = 3.0
-offset_right = 67.0
-offset_bottom = 26.0
+[node name="Robot4" parent="SubViewportContainer/SubViewport" instance=ExtResource("5_kry3j")]
+position = Vector2(192, 439)
 
-[node name="Label2" type="Label" parent="SubViewportContainer/SubViewport"]
-offset_left = 29.0
-offset_top = 248.0
-offset_right = 69.0
-offset_bottom = 271.0
+[node name="Robot5" parent="SubViewportContainer/SubViewport" instance=ExtResource("5_kry3j")]
+position = Vector2(249, 440)
 
-[node name="Label3" type="Label" parent="SubViewportContainer/SubViewport"]
-offset_left = 30.0
-offset_top = 276.0
-offset_right = 70.0
-offset_bottom = 299.0
+[node name="Robot6" parent="SubViewportContainer/SubViewport" instance=ExtResource("5_kry3j")]
+position = Vector2(192, 466)
 
-[node name="Label4" type="Label" parent="SubViewportContainer/SubViewport"]
-offset_left = 30.0
-offset_top = 302.0
-offset_right = 70.0
-offset_bottom = 325.0
+[node name="Robot7" parent="SubViewportContainer/SubViewport" instance=ExtResource("5_kry3j")]
+position = Vector2(219, 466)
+
+[node name="Robot8" parent="SubViewportContainer/SubViewport" instance=ExtResource("5_kry3j")]
+position = Vector2(247, 467)
+
+[node name="robot-spawner" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(89, 375)
+
+[node name="robot-spawner2" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(87, 473)
+
+[node name="robot-spawner3" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(84, 578)
+
+[node name="robot-spawner4" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(598, 316)
+
+[node name="robot-spawner5" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(1091, 81)
+
+[node name="robot-spawner6" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(1091, 142)
+
+[node name="robot-spawner7" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(730, 399)
+
+[node name="robot-spawner8" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(1104, 519)
+
+[node name="robot-spawner9" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(1104, 595)
+
+[node name="robot-spawner10" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(66, 75)
+
+[node name="robot-spawner11" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(67, 139)
+
+[node name="robot-spawner12" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(65, 206)
+
+[node name="robot-spawner13" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(1089, 396)
+
+[node name="robot-spawner14" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(906, 398)
+
+[node name="robot-spawner15" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(1092, 266)
+
+[node name="food_spawner7" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_ckyev")]
+position = Vector2(597, 339)
+
+[node name="food_spawner8" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_ckyev")]
+position = Vector2(1057, 556)
+
+[node name="food_spawner9" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_ckyev")]
+position = Vector2(802, 557)
+
+[node name="food_spawner10" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_ckyev")]
+position = Vector2(159, 97)
+
+[node name="food_spawner11" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_ckyev")]
+position = Vector2(396, 187)
+
+[node name="food_spawner12" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_ckyev")]
+position = Vector2(277, 144)
+
+[node name="food_spawner13" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_ckyev")]
+position = Vector2(373, 555)
+
+[node name="food_spawner14" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_ckyev")]
+position = Vector2(431, 455)
+
+[node name="robot-spawner16" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
+position = Vector2(457, 339)
