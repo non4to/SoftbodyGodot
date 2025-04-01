@@ -97,6 +97,7 @@ unique_name_in_owner = true
 texture = ExtResource("2_sujim")
 skeleton = NodePath("Skeleton2D")
 polygon = PackedVector2Array(0, 25, 25, 25, 25, 0, 0, 0, 6, 6, 0, 6, 0, 0, 6, 0, 6, 18, 0, 18, 0, 12, 6, 12, 6, 12, 0, 12, 0, 6, 6, 6, 6, 25, 0, 25, 0, 24, 6, 24, 6, 24, 0, 24, 0, 18, 6, 18, 18, 6, 12, 6, 12, 0, 18, 0, 12, 6, 6, 6, 6, 0, 12, 0, 12, 12, 6, 12, 6, 6, 12, 6, 18, 18, 12, 18, 12, 12, 18, 12, 12, 18, 6, 18, 6, 12, 12, 12, 18, 12, 12, 12, 12, 6, 18, 6, 12, 24, 6, 24, 6, 18, 12, 18, 18, 25, 12, 25, 12, 24, 18, 24, 12, 25, 6, 25, 6, 24, 12, 24, 18, 24, 12, 24, 12, 18, 18, 18, 25, 6, 24, 6, 24, 0, 25, 0, 24, 6, 18, 6, 18, 0, 24, 0, 24, 12, 18, 12, 18, 6, 24, 6, 25, 18, 24, 18, 24, 12, 25, 12, 24, 18, 18, 18, 18, 12, 24, 12, 25, 12, 24, 12, 24, 6, 25, 6, 24, 24, 18, 24, 18, 18, 24, 18, 25, 25, 24, 25, 24, 24, 25, 24, 24, 25, 18, 25, 18, 24, 24, 24, 25, 24, 24, 24, 24, 18, 25, 18)
+uv = PackedVector2Array(0, 25, 25, 25, 25, 0, 0, 0, 6, 6, 0, 6, 0, 0, 6, 0, 6, 18, 0, 18, 0, 12, 6, 12, 6, 12, 0, 12, 0, 6, 6, 6, 6, 25, 0, 25, 0, 24, 6, 24, 6, 24, 0, 24, 0, 18, 6, 18, 18, 6, 12, 6, 12, 0, 18, 0, 12, 6, 6, 6, 6, 0, 12, 0, 12, 12, 6, 12, 6, 6, 12, 6, 18, 18, 12, 18, 12, 12, 18, 12, 12, 18, 6, 18, 6, 12, 12, 12, 18, 12, 12, 12, 12, 6, 18, 6, 12, 24, 6, 24, 6, 18, 12, 18, 18, 25, 12, 25, 12, 24, 18, 24, 12, 25, 6, 25, 6, 24, 12, 24, 18, 24, 12, 24, 12, 18, 18, 18, 25, 6, 24, 6, 24, 0, 25, 0, 24, 6, 18, 6, 18, 0, 24, 0, 24, 12, 18, 12, 18, 6, 24, 6, 25, 18, 24, 18, 24, 12, 25, 12, 24, 18, 18, 18, 18, 12, 24, 12, 25, 12, 24, 12, 24, 6, 25, 6, 24, 24, 18, 24, 18, 18, 24, 18, 25, 25, 24, 25, 24, 24, 25, 24, 24, 25, 18, 25, 18, 24, 24, 24, 25, 24, 24, 24, 24, 18, 25, 18)
 polygons = [PackedInt32Array(7, 4, 5), PackedInt32Array(5, 6, 7), PackedInt32Array(11, 8, 9), PackedInt32Array(9, 10, 11), PackedInt32Array(15, 12, 13), PackedInt32Array(13, 14, 15), PackedInt32Array(19, 16, 17), PackedInt32Array(17, 18, 19), PackedInt32Array(23, 20, 21), PackedInt32Array(21, 22, 23), PackedInt32Array(27, 24, 25), PackedInt32Array(25, 26, 27), PackedInt32Array(31, 28, 29), PackedInt32Array(29, 30, 31), PackedInt32Array(35, 32, 33), PackedInt32Array(33, 34, 35), PackedInt32Array(39, 36, 37), PackedInt32Array(37, 38, 39), PackedInt32Array(43, 40, 41), PackedInt32Array(41, 42, 43), PackedInt32Array(47, 44, 45), PackedInt32Array(45, 46, 47), PackedInt32Array(51, 48, 49), PackedInt32Array(49, 50, 51), PackedInt32Array(55, 52, 53), PackedInt32Array(53, 54, 55), PackedInt32Array(59, 56, 57), PackedInt32Array(57, 58, 59), PackedInt32Array(63, 60, 61), PackedInt32Array(61, 62, 63), PackedInt32Array(67, 64, 65), PackedInt32Array(65, 66, 67), PackedInt32Array(71, 68, 69), PackedInt32Array(69, 70, 71), PackedInt32Array(75, 72, 73), PackedInt32Array(73, 74, 75), PackedInt32Array(79, 76, 77), PackedInt32Array(77, 78, 79), PackedInt32Array(83, 80, 81), PackedInt32Array(81, 82, 83), PackedInt32Array(87, 84, 85), PackedInt32Array(85, 86, 87), PackedInt32Array(91, 88, 89), PackedInt32Array(89, 90, 91), PackedInt32Array(95, 92, 93), PackedInt32Array(93, 94, 95), PackedInt32Array(99, 96, 97), PackedInt32Array(97, 98, 99), PackedInt32Array(103, 100, 101), PackedInt32Array(101, 102, 103)]
 bones = ["Bone-0", PackedFloat32Array(0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), "Bone-1", PackedFloat32Array(0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), "Bone-2", PackedFloat32Array(1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), "Bone-3", PackedFloat32Array(0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), "Bone-4", PackedFloat32Array(0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), "Bone-5", PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0), "Bone-6", PackedFloat32Array(0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), "Bone-7", PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1), "Bone-8", PackedFloat32Array(0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)]
 internal_vertex_count = 100
@@ -121,8 +122,7 @@ modification_stack = SubResource("SkeletonModificationStack2D_xd7sw")
 
 [node name="Bone-0" type="Bone2D" parent="SoftBody2D/Skeleton2D"]
 position = Vector2(4.41421, 4.41421)
-rotation = 0.0756619
-scale = Vector2(1, 1)
+rotation = 0.0756632
 rest = Transform2D(0.997139, 0.0755898, -0.0755898, 0.997139, 4.41421, 4.41421)
 auto_calculate_length_and_angle = false
 length = 12.0
@@ -135,7 +135,7 @@ metadata/_local_pose_override_enabled_ = true
 
 [node name="Bone-1" type="Bone2D" parent="SoftBody2D/Skeleton2D"]
 position = Vector2(4.99724, 12.1051)
-rotation = 0.052583
+rotation = 0.0525855
 rest = Transform2D(0.998618, 0.0525588, -0.0525588, 0.998618, 4.99724, 12.1051)
 auto_calculate_length_and_angle = false
 length = 12.0
@@ -148,7 +148,7 @@ metadata/_local_pose_override_enabled_ = true
 
 [node name="Bone-2" type="Bone2D" parent="SoftBody2D/Skeleton2D"]
 position = Vector2(4.45191, 20.1245)
-rotation = -0.758378
+rotation = -0.758377
 rest = Transform2D(0.725953, -0.687745, 0.687745, 0.725953, 4.45191, 20.1245)
 auto_calculate_length_and_angle = false
 length = 12.0
@@ -187,7 +187,7 @@ metadata/_local_pose_override_enabled_ = true
 
 [node name="Bone-5" type="Bone2D" parent="SoftBody2D/Skeleton2D"]
 position = Vector2(12.1109, 19.5031)
-rotation = -1.5153
+rotation = -1.51529
 rest = Transform2D(0.0554701, -0.99846, 0.99846, 0.0554701, 12.1109, 19.5031)
 auto_calculate_length_and_angle = false
 length = 12.0
@@ -226,7 +226,7 @@ metadata/_local_pose_override_enabled_ = true
 
 [node name="Bone-8" type="Bone2D" parent="SoftBody2D/Skeleton2D"]
 position = Vector2(20.0858, 20.0858)
-rotation = -3.06865
+rotation = -3.06866
 rest = Transform2D(-0.997341, -0.0728739, 0.0728739, -0.997341, 20.0858, 20.0858)
 auto_calculate_length_and_angle = false
 length = 12.0
@@ -447,7 +447,7 @@ offset_right = 13.0
 offset_bottom = 23.0
 scale = Vector2(0.974978, 0.530183)
 
-[node name="charger" type="Area2D" parent="SoftBody2D/Bone-4"]
+[node name="charger" type="Area2D" parent="SoftBody2D/Bone-4" groups=["charger"]]
 collision_mask = 8
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SoftBody2D/Bone-4/charger"]

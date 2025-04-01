@@ -28,6 +28,7 @@ enabled=PackedStringArray("res://addons/softbody2d/plugin.cfg")
 
 robot-spawner=""
 magnezone=""
+charger=""
 
 [input]
 
@@ -56,6 +57,7 @@ dash={
 
 [physics]
 
+2d/run_on_separate_thread=true
 3d/physics_engine="JoltPhysics3D"
 2d/default_gravity=0.0
 2d/default_linear_damp=1.0

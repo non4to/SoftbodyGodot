@@ -53,5 +53,5 @@ offset_top = -34.0
 offset_right = 20.0
 offset_bottom = -11.0
 
-[connection signal="body_entered" from="FoodSpawner/RechargeArea" to="." method="_on_recharge_area_body_entered"]
-[connection signal="body_exited" from="FoodSpawner/RechargeArea" to="." method="_on_recharge_area_body_exited"]
+[connection signal="area_entered" from="FoodSpawner/RechargeArea" to="." method="_on_recharge_area_area_entered"]
+[connection signal="area_exited" from="FoodSpawner/RechargeArea" to="." method="_on_recharge_area_area_exited"]
