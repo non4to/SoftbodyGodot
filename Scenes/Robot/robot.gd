@@ -69,6 +69,7 @@ func _ready() -> void:
 @warning_ignore("UNUSED_PARAMETER")
 func _process(delta: float) -> void:
 	if EnergyBar: update_energy_bar()
+
 	# print(str(self.name)+": "+str(self.Energy))
 	# if EnergyBankIndex != oldEnergyBankIndex:
 	# 	print(str(self.name)+"OLD: "+str(self.oldEnergyBankIndex))
@@ -94,7 +95,7 @@ func _physics_process(delta: float) -> void:
 			StepsToChangeDirection += 1
 			if StepsToChangeDirection > ChangeDirectionDelay:
 				AllowDirectionChange = true
-		# change_direction(get_random_direction_fromNSWE())
+		change_direction(get_random_direction_fromNSWE())
 		move_to_direction(MovementDirection,MaxForcePossible)
 	#Ded, die: x-x 
 	else:
@@ -119,49 +120,7 @@ func move_to_direction(direction:Vector2, withForce:float) -> void:
 		Bones[CenterBoneIndex].apply_central_impulse(direction*withForce)
 		#$SoftBody2D.apply_impulse(direction*withForce)
 		sum_to_energy(-1*withForce*MovingEnergyMult)
-func attach_bodies(myBone:RigidBody2D, otherBone: RigidBody2D) -> void:	
-	var joint1: PinJoint2D = PinJoint2D.new()
-	var joint2: PinJoint2D = PinJoint2D.new()
 
-	joint1.position = Vector2(0,0)
-	joint1.node_a = myBone.get_path()
-	joint1.node_b = otherBone.get_path()
-	joint1.softness = 0.001
-	joint1.disable_collision =false
-	joint1.name = "body-link"
-	myBone.Joined = true
-	myBone.JoinedTo = otherBone
-	myBone.JointDirection = get_direction_vector(myBone,otherBone)
-	myBone.add_child(joint1)
-	
-	
-	joint2.position = Vector2(0,0)
-	joint2.node_a = otherBone.get_path()
-	joint2.node_b = myBone.get_path()
-	joint2.softness = 0.001
-	joint2.disable_collision =false
-	joint2.name = "body-link"
-	otherBone.Joined = true
-	otherBone.JoinedTo = myBone
-	otherBone.JointDirection = get_direction_vector(otherBone,myBone)
-	otherBone.add_child(joint2)
-	
-	myBone.RelatedJoints.append(joint1)
-	myBone.RelatedJoints.append(joint2)
-	otherBone.RelatedJoints.append(joint1)
-	otherBone.RelatedJoints.append(joint2)
-	
-	var jointLine:Line2D = Line2D.new()
-	jointLine.name = "joint"
-	jointLine.add_point(myBone.global_position/100,0)
-	jointLine.add_point(otherBone.global_position/100,1)
-	jointLine.default_color = Color(255,255,255)
-	jointLine.width = 3
-	jointLine.z_index = +1
-	myBone.add_child(jointLine)
-
-	assign_energy_bank(otherBone.get_parent().get_parent())
-	# Global.energy_bank_assign(self, otherBone.get_parent().get_parent())
 
 func death(bot:Robot) -> void:
 	for bone in bot.Bones:
@@ -258,28 +217,25 @@ func start_robot() -> void:
 
 func is_unit_vector(vector:Vector2):
 	return abs(vector.length_squared() - 1) < 0.001
-func get_direction_vector(fromA:Node,toB:Node) -> Vector2:
-	var direction_vector = Vector2(0,0)
-	direction_vector = (toB.global_position-fromA.global_position).normalized()	
-	return direction_vector
+
 func get_random_direction() -> Vector2:
-	var collisionDirections = [get_direction_vector(Bones[4],Bones[0]), 
-								get_direction_vector(Bones[4],Bones[1]),
-								get_direction_vector(Bones[4],Bones[2]),
-								get_direction_vector(Bones[4],Bones[3]),
-								get_direction_vector(Bones[4],Bones[4]),
-								get_direction_vector(Bones[4],Bones[5]),
-								get_direction_vector(Bones[4],Bones[6]),
-								get_direction_vector(Bones[4],Bones[7]),
-								get_direction_vector(Bones[4],Bones[8]),
+	var collisionDirections = [Global.get_direction_vector(Bones[4],Bones[0]), 
+								Global.get_direction_vector(Bones[4],Bones[1]),
+								Global.get_direction_vector(Bones[4],Bones[2]),
+								Global.get_direction_vector(Bones[4],Bones[3]),
+								Global.get_direction_vector(Bones[4],Bones[4]),
+								Global.get_direction_vector(Bones[4],Bones[5]),
+								Global.get_direction_vector(Bones[4],Bones[6]),
+								Global.get_direction_vector(Bones[4],Bones[7]),
+								Global.get_direction_vector(Bones[4],Bones[8]),
 								]
 	return	-1*collisionDirections.pick_random()
 func get_random_direction_fromNSWE() -> Vector2:
 	var collisionDirections = [ 
-								get_direction_vector(Bones[4],Bones[1]),
-								get_direction_vector(Bones[4],Bones[3]),
-								get_direction_vector(Bones[4],Bones[5]),
-								get_direction_vector(Bones[4],Bones[7]),
+								Global.get_direction_vector(Bones[4],Bones[1]),
+								Global.get_direction_vector(Bones[4],Bones[3]),
+								Global.get_direction_vector(Bones[4],Bones[5]),
+								Global.get_direction_vector(Bones[4],Bones[7]),
 								]
 	return	-1*collisionDirections.pick_random()
 func is_alone(robot:Robot) -> bool:
@@ -290,7 +246,7 @@ func is_alone(robot:Robot) -> bool:
 			return false
 	return true
 func contract(bone:RigidBody2D, inBoneDirection:RigidBody2D, withForce:float) -> void:
-	var direction = self.get_direction_vector(bone,inBoneDirection)
+	var direction = self.Global.get_direction_vector(bone,inBoneDirection)
 	bone.apply_central_impulse(direction*withForce)
 func assign_energy_bank(botB: Robot):
 	var botA:Robot = self
@@ -332,7 +288,8 @@ func assign_energy_bank(botB: Robot):
 func _on_bone_collided(myBone:RigidBody2D,collider:Node):
 	if collider.is_in_group("bone")and(myBone.CanJoin):
 		if (collider.CanJoin) and (not collider.Joined) and (not myBone.Joined) and (Bones[CenterBoneIndex].linear_velocity.length() > JoinThresold):
-			attach_bodies(myBone,collider)	
+			AttachmentManager.attach_bodies(myBone,  collider)
+
 func _on_joint_break(_myBone:RigidBody2D,otherBot:Robot):
 	if EnergyBankIndex == 0: push_error("This block has EnergyBankIndex=0 but just had a joint broken")
 	print(self.name, otherBot.name)
@@ -342,7 +299,6 @@ func _on_joint_break(_myBone:RigidBody2D,otherBot:Robot):
 	print(otherBot.name)
 	if is_alone(otherBot):
 		move_to_energy_bank(otherBot,0)
-
 
 func _on_charger_area_entered(area: Area2D) -> void:
 	if (area.is_in_group("recharge-area")):
