@@ -8,7 +8,7 @@ const FSRechargeRate:float = FSStandardGivenEnergy*1.25
 
 #RobotConst
 const BOTCenterBoneIndex:int = 4
-const BOTMaxEnergyPossible: int = 500  						#Maximum Energy possible
+const BOTMaxEnergyPossible: int = 10000  						#Maximum Energy possible
 const BOTMovingEnergyMult: float = 0.00 					#Multiply this by the Force of the movement to obtain the Energy Cost
 const BOTMetabolism: float = FSStandardGivenEnergy*0.5				#Metabolism. Every step this value is deduced from Energy
 const BOTMaxForcePossible: int = 30  						#Maximum Movement Force possible
@@ -16,15 +16,42 @@ const BOTJoinThresold: float = 0#BOTMaxForcePossible*2.5		#if a collision happen
 const BOTChangeDirectionDelay: float = 10					#How many steps before being allowed to change direction
 
 ###
-var Robots = []										# All Robots currently in the simulation
 var EnergyBank: Dictionary = {0: 0} 				# All existing energybanks -> Robots with the same index share the energy contained in the bank
 var BotsAtEnergyBank: Dictionary = {0: []}				# Saves the bots qty occupy EnergyBank
-var FreeBanks: Array = []
+var QtyEnergyBanksCreated: int = 0
+var QtyRobotsCreated: int = 0 
+###
+var Step:int = 0
+var FinalStep:int = 9999999999
+var FPS:int = 1
+var SaveFrames:bool = false
 
-var EnergyBank2: Dictionary = {0: 0, 1: 1000, 2: 1500}
-var BotsAtEnergyBank2: Dictionary = {0: 12, 1: 2, 2: 3}
+###
+var OldestAge:int = 0
 
 func get_direction_vector(fromA:Node,toB:Node) -> Vector2:
 	var direction_vector = Vector2(0,0)
 	direction_vector = (toB.global_position-fromA.global_position).normalized()	
 	return direction_vector
+func is_unit_vector(vector:Vector2):
+	return abs(vector.length_squared() - 1) < 0.001
+func save_frame() -> void:
+	await RenderingServer.frame_post_draw  
+	var img = get_viewport().get_texture().get_image()
+	img.save_png("res://frames/frame_%08d.png" % Step)
+func _physics_process(_delta: float) -> void:
+	if Global.Step > Global.FinalStep:
+		get_tree().quit()
+
+	################
+	print("Step: "+str(Step))
+	print(EnergyBank)
+	for bank in BotsAtEnergyBank:
+		print("-----"+str(bank)+": "+str(BotsAtEnergyBank[bank].size()))
+	##################
+
+	#SaveFrame
+	if (SaveFrames) and (Step%FPS==0):
+		save_frame()
+	##########
+	Step += 1

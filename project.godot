@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 Global="*res://Singletons/Global.gd"
 AttachmentManager="*res://Singletons/AttachmentManager.gd"
+EnergyBankManager="*res://EnergyBankManager.gd"
 screen_size="*res://screen_size.gd"
 
 [editor_plugins]
