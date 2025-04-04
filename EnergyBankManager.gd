@@ -61,10 +61,11 @@ func assign_energy_bank(botA: Robot, botB:Robot) -> void:
 
 			move_to_energy_bank(botA,newBank)
 			move_to_energy_bank(botB,newBank)	
+
+
 func _on_joint_break(botA:Robot,botB:Robot):
 	if botA.EnergyBankIndex == 0: 
 		assert(false,"Robot has EnergyBankIndex=0 but just had a joint broken")
-		get_tree().quit()
 	if botA.is_alone():
 		move_to_energy_bank(botA,0)
 	if botB.is_alone():

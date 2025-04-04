@@ -58,7 +58,7 @@ func _init() -> void:
 func _ready() -> void:
 	start_robot() #ID to the robot and its Bones
 	if EnergyBar: create_energy_bar()
-	# MovementDirection = Vector2(cos(deg_to_rad(randi_range(0,360))),sin(deg_to_rad(randi_range(0,360))))
+	MovementDirection = Vector2(cos(deg_to_rad(randi_range(0,360))),sin(deg_to_rad(randi_range(0,360))))
 	
 #---------------------------------------
 func _process(_delta: float) -> void:
@@ -79,7 +79,7 @@ func _physics_process(_delta: float) -> void:
 			StepsToChangeDirection += 1
 			if StepsToChangeDirection > ChangeDirectionDelay:
 				AllowDirectionChange = true
-		# change_direction(get_random_direction_fromNSWE())
+		change_direction(get_random_direction_fromNSWE())
 		move_to_direction(MovementDirection,MaxForcePossible)
 		check_joints()
 	#Ded, die: x-x 
@@ -211,12 +211,13 @@ func is_alone() -> bool:
 	return true
 func check_joints() -> void:
 	for bone in Bones:
+		var jointLine:Line2D = get_node_or_null(str(str(bone.get_path())+"/jointline"))
 		if bone.Joined and is_instance_valid(bone.JoinedTo):
 			var otherBot = bone.JoinedTo.get_parent().get_parent()
 			var jointAngleDif = abs(rad_to_deg(MovementDirection.angle_to(bone.JointDirection)))
 			var velAngleDif = abs(rad_to_deg(MovementDirection.angle_to(otherBot.MovementDirection)))
-			var jointLine:Line2D = get_node_or_null(str(str(bone.get_path())+"/jointline"))
 			if (jointAngleDif > (180-bone.AngleVariationToBreakJoint)) and (velAngleDif > (180-bone.AngleVariationToBreakJoint)):
+				if not jointLine: jointLine = get_node_or_null(str(str(bone.JoinedTo.get_path())+"/jointline"))
 				AttachmentManager.break_joint(bone.JoinedTo,jointLine)
 				AttachmentManager.break_joint(bone,jointLine)	
 				joint_broke.emit(self,otherBot)
@@ -226,6 +227,12 @@ func check_joints() -> void:
 					var point2 = jointLine.to_local(bone.JoinedTo.global_position)
 					jointLine.set_point_position(0, point1)
 					jointLine.set_point_position(1, point2)
+		else:
+			if jointLine:
+				print(bone.Joined)
+				print(bone.JoinedTo)
+				print(bone,jointLine)
+				assert(false, str(self)+" has a jointLine but is not Joined or has a JoinedTo")
 #---------------------------------------
 # Signals
 func _on_bone_collided(myBone:RigidBody2D,collider:Node):
