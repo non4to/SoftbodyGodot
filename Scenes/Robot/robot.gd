@@ -58,7 +58,7 @@ func _init() -> void:
 func _ready() -> void:
 	start_robot() #ID to the robot and its Bones
 	if EnergyBar: create_energy_bar()
-	MovementDirection = Vector2(cos(deg_to_rad(randi_range(0,360))),sin(deg_to_rad(randi_range(0,360))))
+	# MovementDirection = Vector2(cos(deg_to_rad(randi_range(0,360))),sin(deg_to_rad(randi_range(0,360))))
 	
 #---------------------------------------
 func _process(_delta: float) -> void:
@@ -79,7 +79,7 @@ func _physics_process(_delta: float) -> void:
 			StepsToChangeDirection += 1
 			if StepsToChangeDirection > ChangeDirectionDelay:
 				AllowDirectionChange = true
-		change_direction(get_random_direction_fromNSWE())
+		# change_direction(get_random_direction_fromNSWE())
 		move_to_direction(MovementDirection,MaxForcePossible)
 		check_joints()
 	#Ded, die: x-x 
@@ -91,6 +91,7 @@ func _physics_process(_delta: float) -> void:
 # Actions
 func metabolize() -> void:
 	sum_to_energy(-Metabolism)
+
 func die(reason:int) -> void:
 	#ways to die: 0 = out of energy / 1 = joint 4 broke
 	if (reason==1): #central bone-joint broke
@@ -100,17 +101,20 @@ func die(reason:int) -> void:
 			for cell in Global.BotsAtEnergyBank[EnergyBankIndex]:
 				death(cell)
 		else: death(self)
+
 func change_direction(direction:Vector2) -> void:
 	if AllowDirectionChange:
 		MovementDirection = direction
 		StepsToChangeDirection = 0
 		AllowDirectionChange = false
+		
 func move_to_direction(direction:Vector2, withForce:float) -> void:
 		if not Global.is_unit_vector(direction):
 			direction = direction.normalized()
 		Bones[CenterBoneIndex].apply_central_impulse(direction*withForce)
 		#$SoftBody2D.apply_impulse(direction*withForce)
 		sum_to_energy(-1*withForce*MovingEnergyMult)
+
 func death(bot:Robot) -> void:
 	for bone in bot.Bones:
 		if (bone.Joined) and (is_instance_valid(bone.JoinedTo)):
@@ -123,6 +127,7 @@ func death(bot:Robot) -> void:
 	bot.queue_free()
 	if (bot.EnergyBankIndex>0)and(Global.BotsAtEnergyBank[bot.EnergyBankIndex].size() < 1):
 		EnergyBankManager.remove_energy_bank.call_deferred(bot.EnergyBankIndex)
+
 #---------------------------------------
 # Energy operations
 func sum_to_energy(value:float) -> void:
@@ -136,16 +141,19 @@ func sum_to_energy(value:float) -> void:
 		Energy += value	
 		if Energy < 0: Energy = 0
 		elif Energy > MaxEnergyPossible: Energy = MaxEnergyPossible
+
 func get_maximum_energy() -> float:
 	if EnergyBankIndex > 0:
 		return Global.BotsAtEnergyBank[EnergyBankIndex].size()*MaxEnergyPossible
 	else:
 		return MaxEnergyPossible
+
 func get_current_energy() -> float:
 	if EnergyBankIndex > 0:
 		return Global.EnergyBank[EnergyBankIndex]
 	else:
 		return Energy
+
 func create_energy_bar() -> void:
 	var energyBar:ColorRect = ColorRect.new()
 	var squareSize:Vector2 = Vector2(5,5)
@@ -154,6 +162,7 @@ func create_energy_bar() -> void:
 	energyBar.color = Color(0,255,0)
 	energyBar.name = "energy-bar"
 	Bones[CenterBoneIndex].add_child(energyBar)
+
 func update_energy_bar() -> void:
 	var energyBar:ColorRect = Bones[CenterBoneIndex].get_node_or_null("energy-bar")
 	if energyBar: 
@@ -168,7 +177,7 @@ func start_robot() -> void:
 	Energy = MaxEnergyPossible
 	Global.BotsAtEnergyBank[EnergyBankIndex].append(self)
 	#Builds an ID to robot and adds robot and its Bones to this group
-	RobotID = "id_" + str(get_instance_id())
+	RobotID = self.name#"id_" + str(get_instance_id())
 	add_to_group("robot")
 	add_to_group(RobotID)
 	
@@ -184,6 +193,7 @@ func start_robot() -> void:
 	var bonesThatCanotJoin:Array = [0,2,4,6,8]
 	for bone in bonesThatCanotJoin:
 		Bones[bone].CanJoin = false
+
 func get_random_direction() -> Vector2:
 	var collisionDirections = [Global.get_direction_vector(Bones[4],Bones[0]), 
 								Global.get_direction_vector(Bones[4],Bones[1]),
@@ -196,6 +206,7 @@ func get_random_direction() -> Vector2:
 								Global.get_direction_vector(Bones[4],Bones[8]),
 								]
 	return	-1*collisionDirections.pick_random()
+
 func get_random_direction_fromNSWE() -> Vector2:
 	var collisionDirections = [ 
 								Global.get_direction_vector(Bones[4],Bones[1]),
@@ -204,11 +215,13 @@ func get_random_direction_fromNSWE() -> Vector2:
 								Global.get_direction_vector(Bones[4],Bones[7]),
 								]
 	return	-1*collisionDirections.pick_random()
+
 func is_alone() -> bool:
 	for i in range(Bones.size()):
 		if Bones[i].Joined: 
 			return false
 	return true
+
 func check_joints() -> void:
 	for bone in Bones:
 		var jointLine:Line2D = get_node_or_null(str(str(bone.get_path())+"/jointline"))
@@ -240,12 +253,15 @@ func _on_bone_collided(myBone:RigidBody2D,collider:Node):
 		if (collider.CanJoin) and (not collider.Joined) and (not myBone.Joined) and (Bones[CenterBoneIndex].linear_velocity.length() > JoinThresold):
 			AttachmentManager.attach_bodies(myBone,  collider)
 			joint_made.emit(myBone,collider)
+
 func _on_charger_area_entered(area: Area2D) -> void:
 	if (area.is_in_group("recharge-area")):
 		RechargingAreas.append(area)	
+
 func _on_charger_area_exited(area: Area2D) -> void:
 	if (area.is_in_group("recharge-area")):
 		RechargingAreas.erase(area)
+
 func _on_soft_body_2d_joint_removed(rigid_body_a: RefCounted, rigid_body_b: RefCounted) -> void:
 	if (rigid_body_a.rigidbody.name=="Bone-4") or (rigid_body_b.rigidbody.name=="Bone-4"):
 		die(1)

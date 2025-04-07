@@ -83,14 +83,13 @@ position = Vector2(431, 455)
 
 [node name="Robot" parent="SubViewportContainer/SubViewport" instance=ExtResource("5_kry3j")]
 position = Vector2(531, 606)
-MovementDirection = Vector2(-1, 0)
 
 [node name="Robot2" parent="SubViewportContainer/SubViewport" instance=ExtResource("5_kry3j")]
 position = Vector2(557, 606)
 MovementDirection = Vector2(-1, 0)
 
 [node name="Robot3" parent="SubViewportContainer/SubViewport" instance=ExtResource("5_kry3j")]
-position = Vector2(449, 606)
+position = Vector2(458, 606)
 
 [node name="Robot4" parent="SubViewportContainer/SubViewport" instance=ExtResource("5_kry3j")]
-position = Vector2(475, 606)
+position = Vector2(432, 606)

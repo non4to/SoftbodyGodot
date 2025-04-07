@@ -18,6 +18,7 @@ const BOTChangeDirectionDelay: float = 10					#How many steps before being allow
 ###
 var EnergyBank: Dictionary = {0: 0} 				# All existing energybanks -> Robots with the same index share the energy contained in the bank
 var BotsAtEnergyBank: Dictionary = {0: []}				# Saves the bots qty occupy EnergyBank
+var EnergyBankConnections: Dictionary = {0: []}
 var QtyEnergyBanksCreated: int = 0
 var QtyRobotsCreated: int = 0 
 ###
@@ -47,7 +48,10 @@ func _physics_process(_delta: float) -> void:
 	print("Step: "+str(Step))
 	print(EnergyBank)
 	for bank in BotsAtEnergyBank:
-		print("-----"+str(bank)+": "+str(BotsAtEnergyBank[bank].size()))
+		print("-----"+str(bank)+": "+str(BotsAtEnergyBank[bank].size())+" -> "+str(EnergyBankConnections[bank]))
+		# print("-----"+str(bank)+": "+str(EnergyBankConnections[bank]))
+	# print(EnergyBankConnections)
+	print("-------------------------------------")
 	##################
 
 	#SaveFrame
