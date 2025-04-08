@@ -58,14 +58,15 @@ func _init() -> void:
 func _ready() -> void:
 	start_robot() #ID to the robot and its Bones
 	if EnergyBar: create_energy_bar()
-	# MovementDirection = Vector2(cos(deg_to_rad(randi_range(0,360))),sin(deg_to_rad(randi_range(0,360))))
+	MovementDirection = Vector2(cos(deg_to_rad(randi_range(0,360))),sin(deg_to_rad(randi_range(0,360))))
 	
 #---------------------------------------
 func _process(_delta: float) -> void:
 	if EnergyBar: update_energy_bar()
+	if RobotID:
+		$"SoftBody2D/Bone-4/Label".text = RobotID
 #---------------------------------------
 func _physics_process(_delta: float) -> void:	
-
 	Age += 1
 	#Energy Economy
 	if RechargingAreas:
@@ -79,12 +80,13 @@ func _physics_process(_delta: float) -> void:
 			StepsToChangeDirection += 1
 			if StepsToChangeDirection > ChangeDirectionDelay:
 				AllowDirectionChange = true
-		# change_direction(get_random_direction_fromNSWE())
+		change_direction(get_random_direction_fromNSWE())
 		move_to_direction(MovementDirection,MaxForcePossible)
 		check_joints()
 	#Ded, die: x-x 
 	else:
 		die(0)
+	LogManager.log_frame_data(Global.Step,self)
 	
 	# print(""+str(name)+" "+str(EnergyBankIndex))
 #---------------------------------------
@@ -172,7 +174,7 @@ func update_energy_bar() -> void:
 # Tools
 func start_robot() -> void:
 	Global.QtyRobotsCreated += 1
-	self.name = ("Bot-"+str(Global.QtyRobotsCreated))
+	self.name = ("Bot"+str(Global.QtyRobotsCreated))
 	#Start variables
 	Energy = MaxEnergyPossible
 	Global.BotsAtEnergyBank[EnergyBankIndex].append(self)
@@ -188,6 +190,7 @@ func start_robot() -> void:
 			bone.add_to_group("bone")
 			bone.add_to_group(RobotID)
 			bone.connect("bone_collided", _on_bone_collided)
+			bone.BoneOf=RobotID
 			# bone.connect("joint_broke", _on_joint_break)
 
 	var bonesThatCanotJoin:Array = [0,2,4,6,8]
@@ -242,6 +245,7 @@ func check_joints() -> void:
 					jointLine.set_point_position(1, point2)
 		else:
 			if jointLine:
+				LogManager.print_state()
 				print(bone.Joined)
 				print(bone.JoinedTo)
 				print(bone,jointLine)

@@ -2,6 +2,7 @@ extends RigidBody2D
 
 class_name Bone
 
+var BoneOf = null
 var CanJoin:bool = true
 var Joined:bool = false						# if this bone is joint to something else or not
 var JoinedTo:Bone = null					# bone is joint to

@@ -7,11 +7,10 @@ func _ready() -> void:
 	pass # Replace with function body.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	pass
 		
-func spawn_robot(position:Vector2):
+func spawn_robot(origin:Vector2):
 	var robot = ROBOT.instantiate()
-	robot.position = Vector2(position)
+	robot.position = origin
 	get_parent().add_child(robot)
-	Global.Robots.append(robot)	

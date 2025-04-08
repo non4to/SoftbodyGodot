@@ -13,9 +13,10 @@ func connect_signals(robot:Robot) -> void:
 	robot.connect("joint_made", _on_joint_made)
 
 func move_to_energy_bank(bot:Robot, joiningBank:int) -> void:
+	if bot.name=="Bot5": pass
 	var leavingBank:int = bot.EnergyBankIndex
 	bot.EnergyBankIndex = joiningBank
-
+	
 	if not (joiningBank in Global.EnergyBank):
 		Global.EnergyBank[joiningBank] = 0
 		Global.BotsAtEnergyBank[joiningBank] = []
@@ -36,32 +37,33 @@ func move_to_energy_bank(bot:Robot, joiningBank:int) -> void:
 
 func assign_energy_bank(botA: Robot, botB:Robot) -> void:
 	if (botA.EnergyBankIndex > 0): 
+		if botA.name=="Bot3" or botB.name=="Bot3": pass
+
 		if (botB.EnergyBankIndex > 0): 
 			#A(in)B(in)
 			var bot:Robot
+			var bankToBeEmpty:int
 			if botA.EnergyBankIndex < botB.EnergyBankIndex:
-				for i in range(Global.BotsAtEnergyBank[botB.EnergyBankIndex].size()):
-					bot = Global.BotsAtEnergyBank[botB.EnergyBankIndex][0]
+				bankToBeEmpty = botB.EnergyBankIndex
+				merge_energy_bank_conections(bankToBeEmpty,botA.EnergyBankIndex)
+				for i in range(Global.BotsAtEnergyBank[bankToBeEmpty].size()):
+					bot = Global.BotsAtEnergyBank[bankToBeEmpty][0]
 					move_to_energy_bank(bot, botA.EnergyBankIndex)
-				merge_energy_bank_conections(botB.EnergyBankIndex,botA.EnergyBankIndex)
-				# connect_energy_bank_conections(botB,botA)
 
 
 			elif botA.EnergyBankIndex > botB.EnergyBankIndex:
-				for i in range(Global.BotsAtEnergyBank[botA.EnergyBankIndex].size()):
+				bankToBeEmpty = botA.EnergyBankIndex
+				merge_energy_bank_conections(bankToBeEmpty,botB.EnergyBankIndex)
+				for i in range(Global.BotsAtEnergyBank[bankToBeEmpty].size()):
 					bot = Global.BotsAtEnergyBank[botB.EnergyBankIndex][0]
 					move_to_energy_bank(bot, botB.EnergyBankIndex)
-				merge_energy_bank_conections(botA.EnergyBankIndex,botB.EnergyBankIndex)
-				# connect_energy_bank_conections(botB,botA)
 		else: 
 			#A(in)B(out)
 			move_to_energy_bank(botB,(botA.EnergyBankIndex))
-			connect_energy_bank_conections(botB,botA)
 	else: 
 		if (botB.EnergyBankIndex > 0):
 			#A(out)B(in)
 			move_to_energy_bank(botA,(botB.EnergyBankIndex))
-			connect_energy_bank_conections(botA,botB)
 		else: 
 			#A(out)B(out)
 			Global.QtyEnergyBanksCreated  += 1
@@ -72,15 +74,17 @@ func assign_energy_bank(botA: Robot, botB:Robot) -> void:
 
 			move_to_energy_bank(botA,newBank)
 			move_to_energy_bank(botB,newBank)	
-			connect_energy_bank_conections(botA,botB)
+			# connect_energy_bank_conections(botA,botB)
 
 func merge_energy_bank_conections(oldBank:int, mergedBank:int):
 	if not (oldBank in Global.EnergyBankConnections) or not (mergedBank in Global.EnergyBankConnections):
+		print(LogManager.print_state())
+		LogManager.save_log()
 		assert(false,"Both banks need to exist already to be merged")
 
-	print(Global.EnergyBankConnections[oldBank])
-	print(Global.EnergyBankConnections[mergedBank])
-	print()
+	# print(Global.EnergyBankConnections[oldBank])
+	# print(Global.EnergyBankConnections[mergedBank])
+	# print()
 	
 	for robotKey in Global.EnergyBankConnections[oldBank]:
 		# print(robotKey,Global.EnergyBankConnections[mergedBank])
@@ -90,14 +94,18 @@ func merge_energy_bank_conections(oldBank:int, mergedBank:int):
 		for eachConnection in Global.EnergyBankConnections[oldBank][robotKey]:
 			Global.EnergyBankConnections[mergedBank][robotKey].append(eachConnection)
 			# print(Global.EnergyBankConnections[mergedBank][robotKey])
-
-			assert(false,"derp")
+			# assert(false,"derp")
 
 func connect_energy_bank_conections(botA:Robot, botB:Robot):
 	#Creates a conections between botA and botB
 	if not(botA.EnergyBankIndex==botB.EnergyBankIndex):
-		print(botA.name,botB.name)
+		print(LogManager.print_state())
+		print(str(botA.name)+":"+str(botA.EnergyBankIndex)+", "+str(botB.name)+":"+str(botB.EnergyBankIndex))	
+		print(LogManager.get_robots_joints(botA))
+		print(LogManager.get_robots_joints(botB))
+		LogManager.save_log()
 		assert(false,"Bots need to be in the same bank for a connection to be made")
+	
 	var currentBank:int = botA.EnergyBankIndex
 
 	if not (currentBank in Global.EnergyBankConnections):
@@ -117,9 +125,62 @@ func connect_energy_bank_conections(botA:Robot, botB:Robot):
 	if not (botB.RobotID in Global.EnergyBankConnections[currentBank][botA.RobotID]):
 		Global.EnergyBankConnections[currentBank][botA.RobotID].append(botB.RobotID)
 
+func disconnect_energy_bank_conections(botA:Robot, botB:Robot):
+	if not(botA.EnergyBankIndex==botB.EnergyBankIndex):
+			print(LogManager.print_state())
+			print(str(botA.name)+":"+str(botA.EnergyBankIndex)+", "+str(botB.name)+":"+str(botB.EnergyBankIndex))	
+			LogManager.save_log()	
+			assert(false,"Bots need to be in the same bank for a connection to be unmade")
+	
+	var currentBank:int = botA.EnergyBankIndex
+
+	if not(currentBank in Global.EnergyBankConnections):
+		print(LogManager.print_state())
+		print(str(botA.name)+":"+str(botA.EnergyBankIndex)+", "+str(botB.name)+":"+str(botB.EnergyBankIndex))
+		print(Global.EnergyBankConnections)
+
+		print(LogManager.get_robots_joints(botA))
+		print(LogManager.get_robots_joints(botB))
+		LogManager.save_log()
+		assert(false,"EnergyBank needs to exist in EnergyBankConnections")
+
+	if not (botB.RobotID in Global.EnergyBankConnections[currentBank]):
+		print(LogManager.print_state())
+		print(str(botA.name)+":"+str(botA.EnergyBankIndex)+", "+str(botB.name)+":"+str(botB.EnergyBankIndex))
+		print(Global.EnergyBankConnections[currentBank])
+		print(LogManager.get_robots_joints(botA))
+		print(LogManager.get_robots_joints(botB))
+		LogManager.save_log()	
+		assert(false,"Strange error")
+
+	if (botA.RobotID in Global.EnergyBankConnections[currentBank][botB.RobotID]):
+		Global.EnergyBankConnections[currentBank][botB.RobotID].erase(botA.RobotID)
+		if Global.EnergyBankConnections[currentBank][botB.RobotID].size()<1:
+			Global.EnergyBankConnections[currentBank].erase(botB.RobotID)
+
+	if not (botA.RobotID in Global.EnergyBankConnections[currentBank]):
+		print(LogManager.print_state())
+		print(str(botA.name)+":"+str(botA.EnergyBankIndex)+", "+str(botB.name)+":"+str(botB.EnergyBankIndex))
+		print(Global.EnergyBankConnections[currentBank])
+		print(LogManager.get_robots_joints(botA))
+		print(LogManager.get_robots_joints(botB))
+		LogManager.save_log()	
+		assert(false,"Strange error")
+
+	if (botB.RobotID in Global.EnergyBankConnections[currentBank][botA.RobotID]):
+		Global.EnergyBankConnections[currentBank][botA.RobotID].erase(botB.RobotID)	
+		if Global.EnergyBankConnections[currentBank][botA.RobotID].size()<1:
+			Global.EnergyBankConnections[currentBank].erase(botA.RobotID)
+
+
 func _on_joint_break(botA:Robot,botB:Robot):
 	if botA.EnergyBankIndex == 0: 
-		assert(false,"Robot has EnergyBankIndex=0 but just had a joint broken")
+		print(LogManager.print_state())
+		LogManager.save_log()
+		assert(false,"Robot has EnergyBankIndex=0 but just had a joint broken")	
+
+	disconnect_energy_bank_conections(botA,botB)
+
 	if botA.is_alone():
 		move_to_energy_bank(botA,0)
 	if botB.is_alone():
@@ -129,4 +190,31 @@ func _on_joint_made(boneA:Bone, boneB:Bone):
 	var botA:Robot = boneA.get_parent().get_parent()
 	var botB:Robot = boneB.get_parent().get_parent()
 	assign_energy_bank(botA,botB)
+	connect_energy_bank_conections(botA,botB)
 
+func assert_Njoints_Nconnections(bot:Robot):
+	var jointsNumber:int = 0
+	var joinedBones:Array = []
+	var joinedToBones:Array = []
+	for bone in bot.Bones:
+		if bone.Joined: 
+			jointsNumber += 1
+			joinedBones.append(bone.name)
+			joinedToBones.append(bone.JoinedTo.get_parent().get_parent().name)
+
+	if bot.EnergyBankIndex>0:
+		if not(jointsNumber==Global.EnergyBankConnections[bot.EnergyBankIndex][bot.name].size()):
+			print(LogManager.print_state())
+			print("Joined Bones: ",joinedBones)
+			print("JoinedTo Bots:",joinedToBones)
+			print("Conections:    ",Global.EnergyBankConnections[bot.EnergyBankIndex][bot.name])
+			LogManager.save_log()
+			assert(false,str(bot.name)+" - "+str(jointsNumber)+" joints but "+str(Global.EnergyBankConnections[bot.EnergyBankIndex][bot.name].size())+" connections.")
+		
+		
+
+	
+
+
+	# for conection in Global.EnergyBankConnections[bot.EnergyBankIndex][bot.name]:
+	# 	print(conection)

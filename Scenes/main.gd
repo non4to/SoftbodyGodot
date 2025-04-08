@@ -13,9 +13,9 @@ func _ready() -> void:
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
-	# $SubViewportContainer/SubViewport/Label.text = "Robots Number: "+str(Global.Robots.size())+"; Oldest age: "+str(Global.OldestAge)
-	$SubViewportContainer/SubViewport/Label2.text = str(Global.EnergyBank)
-	$SubViewportContainer/SubViewport/Label3.text = str(Global.BotsAtEnergyBank)
+	$SubViewportContainer/SubViewport/Label.text = "Robots Number: "+str(Global.QtyRobotsCreated)+"; Oldest age: "+str(Global.OldestAge)
+	$SubViewportContainer/SubViewport/Label2.text = str(Global.Step)
+	# $SubViewportContainer/SubViewport/Label3.text = str(Global.BotsAtEnergyBank)
 	# $SubViewportContainer/SubViewport/Label4.text = str(Global.FreeBanks)
 
 	#$SubViewportContainer/SubViewport/Label2.text = "Robot1EnBank: "+str($SubViewportContainer/SubViewport/Robot.EnergyBankIndex)+ "; Robot1En: "+ str($SubViewportContainer/SubViewport/Robot.get_current_energy())
@@ -23,20 +23,15 @@ func _process(_delta: float) -> void:
 	# print(Global.BotsAtEnergyBank)
 	# print("Step: "+str(Step)+"; E.Bank: " + str(Global.EnergyBank))
 	
-	#if Global.Robots.size() < RobotSpawners.size():
-		#for i in range(RobotSpawners.size()):
-			#var rand_index:int = randi() % RobotSpawners.size()
-			#while rand_index in used:
-				#rand_index = randi() % RobotSpawners.size()			
-			#used.append(rand_index)
-			#RobotSpawners[rand_index].spawn_robot(RobotSpawners[rand_index].position)
+	if Global.Step%150==0:
+		for spawner in RobotSpawners:
+			spawner.spawn_robot(spawner.position)
 
 func _input(event):
 	if event.is_action_released("toogle_spawn_robot"):
 		make_robot(50,50)
 	if event.is_action_released("left_mouse_click"):  # Ou use "ui_accept" se for a tecla padrão
 		var mouse_position =  get_viewport().get_final_transform().basis_xform(get_global_mouse_position())
-		
 		# var mouse_position = get_global_mouse_position()  # Obtém a posição global do mouse
 		make_robot(mouse_position.x, mouse_position.y)  # Spawna o robô nessa posição
 
@@ -48,6 +43,6 @@ func make_robot(x:int,y:int):
 	$SubViewportContainer/SubViewport.add_child(robot)
 
 func get_spawners():
-	for node in get_children():#$"SubViewportContainer/SubViewport".get_children():
+	for node in get_tree().get_nodes_in_group("robot-spawner"):#$"SubViewportContainer/SubViewport".get_children():
 		if (node.is_in_group("robot-spawner")):
 			RobotSpawners.append(node)

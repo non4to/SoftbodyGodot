@@ -11,7 +11,7 @@ const BOTCenterBoneIndex:int = 4
 const BOTMaxEnergyPossible: int = 10000  						#Maximum Energy possible
 const BOTMovingEnergyMult: float = 0.00 					#Multiply this by the Force of the movement to obtain the Energy Cost
 const BOTMetabolism: float = FSStandardGivenEnergy*0.5				#Metabolism. Every step this value is deduced from Energy
-const BOTMaxForcePossible: int = 30  						#Maximum Movement Force possible
+const BOTMaxForcePossible: int = 30*2  						#Maximum Movement Force possible
 const BOTJoinThresold: float = 0#BOTMaxForcePossible*2.5		#if a collision happens while above this, they joint
 const BOTChangeDirectionDelay: float = 10					#How many steps before being allowed to change direction
 
@@ -45,15 +45,20 @@ func _physics_process(_delta: float) -> void:
 		get_tree().quit()
 
 	################
-	print("Step: "+str(Step))
-	print(EnergyBank)
-	for bank in BotsAtEnergyBank:
-		print("-----"+str(bank)+": "+str(BotsAtEnergyBank[bank].size())+" -> "+str(EnergyBankConnections[bank]))
-		# print("-----"+str(bank)+": "+str(EnergyBankConnections[bank]))
-	# print(EnergyBankConnections)
-	print("-------------------------------------")
+	# print("Step: "+str(Step))
+	# print(BotsAtEnergyBank)
+	# for bank in BotsAtEnergyBank:
+	# 	print("-----"+str(bank)+": "+str(BotsAtEnergyBank[bank].size())+" -> "+str(EnergyBankConnections[bank])) #str(BotsAtEnergyBank[bank]))
+	# 	# print("-----"+str(bank)+": "+str(EnergyBankConnections[bank]))
+
+
+	# 	for bot in BotsAtEnergyBank[bank]:
+	# 		EnergyBankManager.assert_Njoints_Nconnections(bot)
+	# # print(EnergyBankConnections)
+	# print("-------------------------------------")
 	##################
 
+	LogManager.log_general(Step,"general")
 	#SaveFrame
 	if (SaveFrames) and (Step%FPS==0):
 		save_frame()
