@@ -28,7 +28,4 @@ func _on_body_entered(collider:Node): #emits bone collided, if any bone collided
 func _on_body_exited(collider:Node): #emits bone exited, if any bone exited anything outside the robot.
 	var my_id = self.get_groups()[1]
 	if not(collider.is_in_group(my_id)):
-		bone_exited.emit(self,collider)
-	
-
-		
+		bone_exited.emit(self,collider)	

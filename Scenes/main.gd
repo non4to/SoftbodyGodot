@@ -27,6 +27,10 @@ func _process(_delta: float) -> void:
 		for spawner in RobotSpawners:
 			spawner.spawn_robot(spawner.position)
 
+	if (Global.StopStep>0)and(Global.Step > Global.StopStep):
+		LogManager.save_log()
+		get_tree().quit()
+
 func _input(event):
 	if event.is_action_released("toogle_spawn_robot"):
 		make_robot(50,50)
@@ -34,6 +38,9 @@ func _input(event):
 		var mouse_position =  get_viewport().get_final_transform().basis_xform(get_global_mouse_position())
 		# var mouse_position = get_global_mouse_position()  # Obtém a posição global do mouse
 		make_robot(mouse_position.x, mouse_position.y)  # Spawna o robô nessa posição
+	if event.is_action_released("esc"):
+		LogManager.save_log()
+		get_tree().quit()
 
 func make_robot(x:int,y:int):
 	var robot = ROBOT.instantiate()

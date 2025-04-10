@@ -8,7 +8,7 @@ const MaxEnergyPossible: int = Global.BOTMaxEnergyPossible				#Maximum Energy po
 const MovingEnergyMult: float = Global.BOTMovingEnergyMult 				#Multiply this by the Force of the movement to obtain the Energy Cost
 const Metabolism: float = Global.BOTMetabolism							#Metabolism. Every step this value is deduced from Energy
 # MOVEMENT
-const MaxForcePossible: int = Global.BOTMaxForcePossible   				#Maximum Movement Force possible
+const MaxForcePossible: float = Global.BOTMaxForcePossible   				#Maximum Movement Force possible
 const ChangeDirectionDelay: float = Global.BOTChangeDirectionDelay		#Delay to allow change in Movement Direction
 # JOINING MECHANICS
 const JoinThresold: float = Global.BOTJoinThresold						#if a collision happens while above this, they joint
@@ -16,6 +16,7 @@ const JoinThresold: float = Global.BOTJoinThresold						#if a collision happens 
 ## VARIABLES
 # BODY
 var Age:int = 0
+var BornIn:int = 0
 var Bones = []
 var RobotID: String 													#Robot unique identifier
 # ENERGY ECONOMY
@@ -29,12 +30,6 @@ var StepsToChangeDirection: int = 0										#Counter to allow change in Movemen
 
 # ADITIONAL VISUAL FEEDBACK
 const EnergyBar:bool = true
-
-
-# Signals
-signal joint_broke(myself:Robot, otherBot:Robot)
-signal joint_made(myself:Robot, otherBot:Robot)
-
 
 ########
 #not used yet/ideas
@@ -86,8 +81,8 @@ func _physics_process(_delta: float) -> void:
 	#Ded, die: x-x 
 	else:
 		die(0)
-	LogManager.log_frame_data(Global.Step,self)
-	
+
+	LogManager.log_frame_data(Global.Step,"step",self)
 	# print(""+str(name)+" "+str(EnergyBankIndex))
 #---------------------------------------
 # Actions
@@ -97,12 +92,16 @@ func metabolize() -> void:
 func die(reason:int) -> void:
 	#ways to die: 0 = out of energy / 1 = joint 4 broke
 	if (reason==1): #central bone-joint broke
-		death(self)
+		Global.death(self)
+		LogManager.log_frame_data(Global.Step,"Death-nucleos break",self)
+		# if Global.StopStep<1: Global.StopStep = Global.Step+2
+
 	elif (reason==0): #out of energy
 		if (EnergyBankIndex > 0):
 			for cell in Global.BotsAtEnergyBank[EnergyBankIndex]:
-				death(cell)
-		else: death(self)
+				LogManager.log_frame_data(Global.Step,"Death-no energy",cell)
+				Global.death(cell)
+		else: Global.death(self)
 
 func change_direction(direction:Vector2) -> void:
 	if AllowDirectionChange:
@@ -113,22 +112,10 @@ func change_direction(direction:Vector2) -> void:
 func move_to_direction(direction:Vector2, withForce:float) -> void:
 		if not Global.is_unit_vector(direction):
 			direction = direction.normalized()
-		Bones[CenterBoneIndex].apply_central_impulse(direction*withForce)
-		#$SoftBody2D.apply_impulse(direction*withForce)
-		sum_to_energy(-1*withForce*MovingEnergyMult)
-
-func death(bot:Robot) -> void:
-	for bone in bot.Bones:
-		if (bone.Joined) and (is_instance_valid(bone.JoinedTo)):
-			var jointLine:Line2D = bone.JoinedTo.get_node_or_null("jointline")
-			if jointLine: jointLine.queue_free()
-		for joint in bone.RelatedJoints:
-			if is_instance_valid(joint):
-				joint.queue_free()
-	Global.BotsAtEnergyBank[bot.EnergyBankIndex].erase(bot)
-	bot.queue_free()
-	if (bot.EnergyBankIndex>0)and(Global.BotsAtEnergyBank[bot.EnergyBankIndex].size() < 1):
-		EnergyBankManager.remove_energy_bank.call_deferred(bot.EnergyBankIndex)
+		if is_instance_valid(Bones[CenterBoneIndex]):
+			Bones[CenterBoneIndex].apply_central_impulse(direction*withForce)
+			#$SoftBody2D.apply_impulse(direction*withForce)
+			sum_to_energy(-1*withForce*MovingEnergyMult)
 
 #---------------------------------------
 # Energy operations
@@ -175,6 +162,7 @@ func update_energy_bar() -> void:
 func start_robot() -> void:
 	Global.QtyRobotsCreated += 1
 	self.name = ("Bot"+str(Global.QtyRobotsCreated))
+	self.BornIn = Global.Step
 	#Start variables
 	Energy = MaxEnergyPossible
 	Global.BotsAtEnergyBank[EnergyBankIndex].append(self)
@@ -183,7 +171,6 @@ func start_robot() -> void:
 	add_to_group("robot")
 	add_to_group(RobotID)
 	
-	EnergyBankManager.connect_signals(self)
 	for bone in get_node("SoftBody2D").get_children():
 		if bone.is_class("RigidBody2D") and ("Bone" in bone.name):
 			Bones.append(bone)	
@@ -193,7 +180,7 @@ func start_robot() -> void:
 			bone.BoneOf=RobotID
 			# bone.connect("joint_broke", _on_joint_break)
 
-	var bonesThatCanotJoin:Array = [0,2,4,6,8]
+	var bonesThatCanotJoin:Array = [4]
 	for bone in bonesThatCanotJoin:
 		Bones[bone].CanJoin = false
 
@@ -234,9 +221,12 @@ func check_joints() -> void:
 			var velAngleDif = abs(rad_to_deg(MovementDirection.angle_to(otherBot.MovementDirection)))
 			if (jointAngleDif > (180-bone.AngleVariationToBreakJoint)) and (velAngleDif > (180-bone.AngleVariationToBreakJoint)):
 				if not jointLine: jointLine = get_node_or_null(str(str(bone.JoinedTo.get_path())+"/jointline"))
+				LogManager.log_event(Global.Step,"[check_joints] de-attachment",self.RobotID,bone.name,otherBot.name,bone.JoinedTo.name)
+				EnergyBankManager.joint_broke(self,otherBot)
 				AttachmentManager.break_joint(bone.JoinedTo,jointLine)
 				AttachmentManager.break_joint(bone,jointLine)	
-				joint_broke.emit(self,otherBot)
+
+
 			else:
 				if jointLine:	
 					var point1 = jointLine.to_local(bone.global_position)
@@ -249,14 +239,16 @@ func check_joints() -> void:
 				print(bone.Joined)
 				print(bone.JoinedTo)
 				print(bone,jointLine)
+				LogManager.save_log()
 				assert(false, str(self)+" has a jointLine but is not Joined or has a JoinedTo")
 #---------------------------------------
 # Signals
 func _on_bone_collided(myBone:RigidBody2D,collider:Node):
 	if collider.is_in_group("bone")and(myBone.CanJoin):
 		if (collider.CanJoin) and (not collider.Joined) and (not myBone.Joined) and (Bones[CenterBoneIndex].linear_velocity.length() > JoinThresold):
+			LogManager.log_event(Global.Step,"[bone_collisions] attachment",self.RobotID,myBone.name,collider.BoneOf,collider.name)
 			AttachmentManager.attach_bodies(myBone,  collider)
-			joint_made.emit(myBone,collider)
+			EnergyBankManager.joint_made(myBone,collider)
 
 func _on_charger_area_entered(area: Area2D) -> void:
 	if (area.is_in_group("recharge-area")):
