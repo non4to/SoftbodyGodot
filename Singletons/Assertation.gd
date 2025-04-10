@@ -3,8 +3,8 @@ extends Node
 func _physics_process(_delta: float) -> void:
     for energyBank in Global.BotsAtEnergyBank.keys():
         for bot in Global.BotsAtEnergyBank[energyBank]:
-            assert_energy_bank_index(bot,energyBank)
-            # assert_bot_connections(bot,energyBank)
+            call_deferred("assert_energy_bank_index",bot,energyBank)
+            # call_deferred("assert_bot_connections",bot,energyBank)
     pass
 
 func assert_energy_bank_index(bot:Robot,energyBank:int) -> void:
@@ -30,6 +30,7 @@ func assert_bot_connections(bot:Robot,energyBank:int) -> void:
         var errorMsg:String = "[ERROR] "+str(bot.name)+" connected joints do no match connections in energyBank." 
         LogManager.log_event(Global.Step,errorMsg,"","","","")
         LogManager.save_log()
+        assert(false,errorMsg)
     else:
         var countA:Dictionary = {}
         var countB:Dictionary = {}

@@ -39,18 +39,21 @@ func attach_bodies(boneA:Bone, boneB: Bone) -> void:
 	jointLine.add_point(boneB.global_position/100,1)
 	jointLine.default_color = Color(255,255,255)
 	jointLine.width = 3
-	jointLine.z_index = -1
+	jointLine.z_index = +2
 	boneA.add_child(jointLine)
 	LogManager.log_event(Global.Step,"[attach_bodies] attachment",boneA.BoneOf,boneA.name,boneB.BoneOf,boneB.name)
 
 #--------------------------------------
 func break_joint(bone:Bone, jointLine:Line2D=null) -> void:
 	for joint in bone.RelatedJoints:
-		if is_instance_valid(joint):
-			joint.queue_free()
+		if is_instance_valid(joint): joint.free()
+	if jointLine: jointLine.free()
+	else:
+		var jointLine2:Line2D = get_node_or_null(str(str(bone.JoinedTo.get_path())+"/jointline"))
+		if is_instance_valid(jointLine2): jointLine2.free()
 
-	if jointLine: jointLine.queue_free()
 	call_deferred("reset_variables",bone)
+	call_deferred("reset_variables",bone.JoinedTo)
 #--------------------------------------
 func reset_variables(bone:Bone) -> void:
 	bone.Joined = false

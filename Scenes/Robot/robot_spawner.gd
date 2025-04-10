@@ -16,7 +16,6 @@ func spawn_robot(origin:Vector2):
 	if AllowedToSpawn:
 		var robot = ROBOT.instantiate()
 		robot.position = origin
-		robot.name = robot.RobotID
 		get_parent().add_child(robot)
 
 func _on_body_entered(body: Node2D) -> void:

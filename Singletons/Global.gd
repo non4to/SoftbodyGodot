@@ -8,7 +8,7 @@ const FSRechargeRate:float = FSStandardGivenEnergy*1.25
 
 #RobotConst
 const BOTCenterBoneIndex:int = 4
-const BOTMaxEnergyPossible: int = 100  						#Maximum Energy possible
+const BOTMaxEnergyPossible: int = 500  						#Maximum Energy possible
 const BOTMovingEnergyMult: float = 0.00 					#Multiply this by the Force of the movement to obtain the Energy Cost
 const BOTMetabolism: float = FSStandardGivenEnergy*0.5				#Metabolism. Every step this value is deduced from Energy
 const BOTMaxForcePossible: float = 30*1.5  						#Maximum Movement Force possible
@@ -21,6 +21,7 @@ var BotsAtEnergyBank: Dictionary = {0: []}				# Saves the bots qty occupy Energy
 var EnergyBankConnections: Dictionary = {0: []}
 var QtyEnergyBanksCreated: int = 0
 var QtyRobotsCreated: int = 0 
+var QtyRobotsAlive: int = 0
 ###
 var Step:int = 0
 var FinalStep:int = 9999999999
@@ -43,6 +44,7 @@ func save_frame() -> void:
 	var img = get_viewport().get_texture().get_image()
 	img.save_png("res://frames/frame_%08d.png" % Step)
 func death(bot:Robot) -> void:
+	QtyRobotsAlive -= 1
 	for bone in bot.Bones:
 		if (bone.Joined) and (is_instance_valid(bone.JoinedTo)):
 			var jointLine:Line2D = bone.JoinedTo.get_node_or_null("jointline")
@@ -53,10 +55,10 @@ func death(bot:Robot) -> void:
 	bot.queue_free()
 	Global.BotsAtEnergyBank[bot.EnergyBankIndex].erase(bot)
 	if (bot.EnergyBankIndex>0):
-		
-		for connectedBot in Global.EnergyBankConnections[bot.EnergyBankIndex][bot.RobotID]:
-			Global.EnergyBankConnections[bot.EnergyBankIndex][connectedBot].erase(bot.RobotID)	
-		Global.EnergyBankConnections[bot.EnergyBankIndex].erase(bot.RobotID)
+		if bot.RobotID in Global.EnergyBankConnections[bot.EnergyBankIndex]:
+			for connectedBot in Global.EnergyBankConnections[bot.EnergyBankIndex][bot.RobotID]:
+				Global.EnergyBankConnections[bot.EnergyBankIndex][connectedBot].erase(bot.RobotID)	
+			Global.EnergyBankConnections[bot.EnergyBankIndex].erase(bot.RobotID)
 		if (Global.BotsAtEnergyBank[bot.EnergyBankIndex].size() < 1):
 			EnergyBankManager.remove_energy_bank.call_deferred(bot.EnergyBankIndex)
 

@@ -13,7 +13,7 @@ func _ready() -> void:
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
-	$SubViewportContainer/SubViewport/Label.text = "Robots Number: "+str(Global.QtyRobotsCreated)+"; Oldest age: "+str(Global.OldestAge)
+	$SubViewportContainer/SubViewport/Label.text = "Robots Number: "+str(Global.QtyRobotsAlive)+"; Oldest age: "+str(Global.OldestAge)
 	$SubViewportContainer/SubViewport/Label2.text = str(Global.Step)
 	# $SubViewportContainer/SubViewport/Label3.text = str(Global.BotsAtEnergyBank)
 	# $SubViewportContainer/SubViewport/Label4.text = str(Global.FreeBanks)
@@ -46,7 +46,6 @@ func make_robot(x:int,y:int):
 	var robot = ROBOT.instantiate()
 	#var robot = TESTSPRING.instantiate()
 	robot.position = Vector2(x,y)
-	robot.name = robot.RobotID
 	$SubViewportContainer/SubViewport.add_child(robot)
 
 func get_spawners():

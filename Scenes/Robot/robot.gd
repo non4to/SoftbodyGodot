@@ -161,6 +161,7 @@ func update_energy_bar() -> void:
 # Tools
 func start_robot() -> void:
 	Global.QtyRobotsCreated += 1
+	Global.QtyRobotsAlive += 1
 	self.name = ("Bot"+str(Global.QtyRobotsCreated))
 	self.BornIn = Global.Step
 	#Start variables
@@ -223,10 +224,7 @@ func check_joints() -> void:
 				if not jointLine: jointLine = get_node_or_null(str(str(bone.JoinedTo.get_path())+"/jointline"))
 				LogManager.log_event(Global.Step,"[check_joints] de-attachment",self.RobotID,bone.name,otherBot.name,bone.JoinedTo.name)
 				EnergyBankManager.joint_broke(self,otherBot)
-				AttachmentManager.break_joint(bone.JoinedTo,jointLine)
 				AttachmentManager.break_joint(bone,jointLine)	
-
-
 			else:
 				if jointLine:	
 					var point1 = jointLine.to_local(bone.global_position)
