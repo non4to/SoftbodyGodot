@@ -122,3 +122,5 @@ func death(bot:Robot) -> void:
 		if (Global.BotsAtEnergyBank[bot.EnergyBankIndex].size() < 1):
 			EnergyBankManager.remove_energy_bank.call_deferred(bot.EnergyBankIndex)
 #--------------------------------------
+
+#
