@@ -15,6 +15,7 @@ const JoinThresold: float = Global.BOTJoinThresold						#if a collision happens 
 
 ## VARIABLES
 # BODY
+var MarkedForDeath = true
 var Age:int = 0
 var BornIn:int = 0
 var Bones = []
@@ -53,37 +54,38 @@ func _init() -> void:
 func _ready() -> void:
 	start_robot() #ID to the robot and its Bones
 	if EnergyBar: create_energy_bar()
-	MovementDirection = Vector2(cos(deg_to_rad(randi_range(0,360))),sin(deg_to_rad(randi_range(0,360))))
+	# MovementDirection = Vector2(cos(deg_to_rad(randi_range(0,360))),sin(deg_to_rad(randi_range(0,360))))
 	
 #---------------------------------------
 func _process(_delta: float) -> void:
 	if EnergyBar: update_energy_bar()
-	if RobotID:
-		$"SoftBody2D/Bone-4/Label".text = RobotID
+	if RobotID: pass
+		# $"SoftBody2D/Bone-4/Label".text = RobotID
 #---------------------------------------
 func _physics_process(_delta: float) -> void:	
 	Age += 1
-	#Energy Economy
-	if RechargingAreas:
-		for eachArea in RechargingAreas:
-			sum_to_energy(eachArea.get_parent().get_parent().GivenEnergy)
-	metabolize()
-	#Alive, move!
-	if get_current_energy() > 0:	
-		#My movements
-		if not AllowDirectionChange:
-			StepsToChangeDirection += 1
-			if StepsToChangeDirection > ChangeDirectionDelay:
-				AllowDirectionChange = true
-		change_direction(get_random_direction_fromNSWE())
-		move_to_direction(MovementDirection,MaxForcePossible)
-		check_joints()
-	#Ded, die: x-x 
-	else:
-		die(0)
+	if not MarkedForDeath:
+		#Energy Economy
+		if RechargingAreas:
+			for eachArea in RechargingAreas:
+				sum_to_energy(eachArea.get_parent().get_parent().GivenEnergy)
+		metabolize()
+		#Alive, move!
+		if get_current_energy() > 0:	
+			#My movements
+			if not AllowDirectionChange:
+				StepsToChangeDirection += 1
+				if StepsToChangeDirection > ChangeDirectionDelay:
+					AllowDirectionChange = true
+			change_direction(get_random_direction_fromNSWE())
+			move_to_direction(MovementDirection,MaxForcePossible)
+			check_joints()
+		#Ded, die: x-x 
+		else:
+			die(0)
 
-	LogManager.log_frame_data(Global.Step,"step",self)
-	# print(""+str(name)+" "+str(EnergyBankIndex))
+		LogManager.log_frame_data(Global.Step,"step",self)
+		# print(""+str(name)+" "+str(EnergyBankIndex))
 #---------------------------------------
 # Actions
 func metabolize() -> void:
@@ -223,8 +225,9 @@ func check_joints() -> void:
 			if (jointAngleDif > (180-bone.AngleVariationToBreakJoint)) and (velAngleDif > (180-bone.AngleVariationToBreakJoint)):
 				if not jointLine: jointLine = get_node_or_null(str(str(bone.JoinedTo.get_path())+"/jointline"))
 				LogManager.log_event(Global.Step,"[check_joints] de-attachment",self.RobotID,bone.name,otherBot.name,bone.JoinedTo.name)
-				EnergyBankManager.joint_broke(self,otherBot)
-				AttachmentManager.break_joint(bone,jointLine)	
+				EventManager.add_joints_to_break_queue(self,otherBot,bone,jointLine)
+				# EnergyBankManager.joint_broke(self,otherBot)
+				# EventManager.break_joint(bone,jointLine)	
 			else:
 				if jointLine:	
 					var point1 = jointLine.to_local(bone.global_position)
@@ -245,8 +248,9 @@ func _on_bone_collided(myBone:RigidBody2D,collider:Node):
 	if collider.is_in_group("bone")and(myBone.CanJoin):
 		if (collider.CanJoin) and (not collider.Joined) and (not myBone.Joined) and (Bones[CenterBoneIndex].linear_velocity.length() > JoinThresold):
 			LogManager.log_event(Global.Step,"[bone_collisions] attachment",self.RobotID,myBone.name,collider.BoneOf,collider.name)
-			AttachmentManager.attach_bodies(myBone,  collider)
-			EnergyBankManager.joint_made(myBone,collider)
+			EventManager.add_joints_to_create_queue(myBone,collider)
+			# EventManager.attach_bodies(myBone,  collider)
+			# EnergyBankManager.joint_made(myBone,collider)
 
 func _on_charger_area_entered(area: Area2D) -> void:
 	if (area.is_in_group("recharge-area")):

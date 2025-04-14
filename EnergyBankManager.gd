@@ -28,7 +28,8 @@ func move_to_energy_bank(bot:Robot, joiningBank:int) -> void:
 	Global.BotsAtEnergyBank[joiningBank].append(bot)
 	#BankChecks
 	if (leavingBank>0)and(Global.BotsAtEnergyBank[leavingBank].size()==0):
-		call_deferred("remove_energy_bank",leavingBank)
+		# call_deferred("remove_energy_bank",leavingBank)
+		remove_energy_bank(leavingBank)
 	LogManager.log_energyBank_ops(Global.Step,"moved bank",bot.name, leavingBank,bot.name, bot.EnergyBankIndex,joiningBank)
 
 func assign_energy_bank(botA: Robot, botB:Robot) -> void:
@@ -176,14 +177,17 @@ func disconnect_energy_bank_conections(botA:Robot, botB:Robot):
 		if Global.EnergyBankConnections[currentBank][botA.RobotID].size()<1:
 			Global.EnergyBankConnections[currentBank].erase(botA.RobotID)
 
+	if Global.EnergyBankConnections[currentBank].keys().size()<1:
+		Global.EnergyBankConnections.erase(currentBank)
+
 func joint_broke(botA:Robot,botB:Robot):
 	if botA.EnergyBankIndex == 0: 
 		print(LogManager.print_state())
 		LogManager.save_log()
 		assert(false,"Robot has EnergyBankIndex=0 but just had a joint broken")	
 
-	# disconnect_energy_bank_conections(botA,botB)
-	call_deferred("disconnect_energy_bank_conections",botA,botB)
+	disconnect_energy_bank_conections(botA,botB)
+	# call_deferred("disconnect_energy_bank_conections",botA,botB)
 	LogManager.log_energyBank_ops(Global.Step,"joint_broke_aft",botA.name, botA.EnergyBankIndex,botB.name,botB.EnergyBankIndex,999999)
 
 	if botA.is_alone():

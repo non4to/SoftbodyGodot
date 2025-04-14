@@ -85,12 +85,13 @@ func save_log():
 	energyBankFile.close()
 
 func print_state():
-	var output:String = "=========STATE=========\n"
-	output += str(Global.BotsAtEnergyBank)
-	for bank in Global.BotsAtEnergyBank:
-		output += "\n-----"+str(bank)+": "+str(Global.BotsAtEnergyBank[bank].size())+" -> "+str(Global.EnergyBankConnections[bank])
-	output += "\n======================="
-	return output
+	pass
+	# var output:String = "=========STATE=========\n"
+	# output += str(Global.BotsAtEnergyBank)
+	# for bank in Global.BotsAtEnergyBank:
+	# 	output += "\n-----"+str(bank)+": "+str(Global.BotsAtEnergyBank[bank].size())+" -> "+str(Global.EnergyBankConnections[bank])
+	# output += "\n======================="
+	# return output
 
 	# print("=========STATE=========")
 	# print(Global.BotsAtEnergyBank)
