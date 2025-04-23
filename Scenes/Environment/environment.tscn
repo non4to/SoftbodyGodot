@@ -6,71 +6,63 @@
 [node name="Environment1" type="Node2D"]
 
 [node name="wall" parent="." instance=ExtResource("1_4xs6h")]
-position = Vector2(-1, 0)
+scale = Vector2(1.31836, 1.54467)
 
 [node name="wall3" parent="." instance=ExtResource("1_4xs6h")]
-position = Vector2(1133, 1)
+position = Vector2(1480, 0)
+scale = Vector2(1, 1.52875)
 
 [node name="wall5" parent="." instance=ExtResource("1_4xs6h")]
-position = Vector2(1133, 629)
+position = Vector2(1500, 980)
 rotation = 1.5708
-scale = Vector2(1, 1.74793)
+scale = Vector2(1.00014, 2.29888)
 
 [node name="wall7" parent="." instance=ExtResource("1_4xs6h")]
-position = Vector2(1152, 0)
+position = Vector2(1491, 0)
 rotation = 1.5708
-scale = Vector2(1.11111, 1.77987)
+scale = Vector2(1.11131, 2.28924)
 
 [node name="mid-wall7" parent="." instance=ExtResource("2_rcjk5")]
-position = Vector2(493, 162)
+position = Vector2(521, 299)
 scale = Vector2(1.70427, 0.525683)
 
 [node name="mid-wall11" parent="." instance=ExtResource("2_rcjk5")]
-position = Vector2(659, 162)
+position = Vector2(1000, 299)
 scale = Vector2(1.74427, 0.525683)
 
 [node name="mid-wall13" parent="." instance=ExtResource("2_rcjk5")]
-position = Vector2(1, 245)
+position = Vector2(26, 459)
 rotation = 1.5708
 scale = Vector2(2.59895, -0.782642)
 
 [node name="mid-wall14" parent="." instance=ExtResource("2_rcjk5")]
-position = Vector2(1134, 424)
+position = Vector2(1479, 456)
 rotation = 1.5708
 scale = Vector2(2.26427, 0.685683)
 
 [node name="mid-wall3" parent="." instance=ExtResource("2_rcjk5")]
-position = Vector2(588, 468)
+position = Vector2(616, 605)
 rotation = 1.5708
 scale = Vector2(1.70427, 0.125683)
 
 [node name="mid-wall4" parent="." instance=ExtResource("2_rcjk5")]
-position = Vector2(675, 162)
+position = Vector2(1016, 299)
 rotation = 1.5708
 scale = Vector2(2.02771, 0.102208)
 
-[node name="mid-wall15" parent="." instance=ExtResource("2_rcjk5")]
-position = Vector2(1717, 214)
-
-[node name="mid-wall16" parent="." instance=ExtResource("2_rcjk5")]
-position = Vector2(1486, 214)
-
-[node name="mid-wall17" parent="." instance=ExtResource("2_rcjk5")]
-position = Vector2(1774, 214)
-rotation = 1.5708
-
-[node name="mid-wall18" parent="." instance=ExtResource("2_rcjk5")]
-position = Vector2(1771, 536)
-rotation = 1.5708
-
-[node name="mid-wall19" parent="." instance=ExtResource("2_rcjk5")]
-position = Vector2(1602, 213)
-
-[node name="mid-wall20" parent="." instance=ExtResource("2_rcjk5")]
-position = Vector2(1772, 374)
-rotation = 1.5708
-
 [node name="wall2" parent="." instance=ExtResource("1_4xs6h")]
-position = Vector2(18, 601)
+position = Vector2(446, 856)
+scale = Vector2(1, 0.128364)
+
+[node name="wall4" parent="." instance=ExtResource("1_4xs6h")]
+position = Vector2(1109, 850)
+scale = Vector2(1.20561, 0.126321)
+
+[node name="wall6" parent="." instance=ExtResource("1_4xs6h")]
+position = Vector2(288, 952)
 rotation = -1.5708
-scale = Vector2(1, 1.72)
+scale = Vector2(0.999981, 1.55462)
+
+[node name="wall8" parent="." instance=ExtResource("1_4xs6h")]
+position = Vector2(1110, 834)
+rotation = 1.5708

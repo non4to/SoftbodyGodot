@@ -6,11 +6,9 @@ var FrameLog:Array = []
 var GeneralLog:Array = []
 var EnergyBankOpsLog:Array = []
 
-func log_event(step:int, eventType:String, botA:String, boneA:String, botB:String, boneB:String):
+func log_event(step:int, message:String):
 	EventLog.append([step, 
-					eventType,
-					botA,boneA,
-					botB,boneB])
+					message,])
 
 func log_frame_data(step:int, message:String, bot:Robot):
 	FrameLog.append([step, 
@@ -32,12 +30,9 @@ func log_general(step:int,message:String,energyBank:Dictionary, botsAtEnergyBank
 						energyBankConnections.duplicate(true)                         
 						])
 
-func log_energyBank_ops(step:int,message:String,botA:String, botABank:int, botB:String="", botBBank:int=999999, targetBank:int=999999):
+func log_energyBank_ops(step:int,message:String):
 	EnergyBankOpsLog.append([step,
-							message,
-							botA, botABank, 
-							botB, botBBank,
-							targetBank])
+							message])
 
 func get_string_from_array(array:Array) -> String:
 	var output:String = ""
@@ -85,13 +80,12 @@ func save_log():
 	energyBankFile.close()
 
 func print_state():
-	pass
-	# var output:String = "=========STATE=========\n"
-	# output += str(Global.BotsAtEnergyBank)
-	# for bank in Global.BotsAtEnergyBank:
-	# 	output += "\n-----"+str(bank)+": "+str(Global.BotsAtEnergyBank[bank].size())+" -> "+str(Global.EnergyBankConnections[bank])
-	# output += "\n======================="
-	# return output
+	var output:String = "=========STATE=========\n"
+	output += str(Global.BotsAtEnergyBank)
+	for bank in Global.BotsAtEnergyBank:
+		output += "\n-----"+str(bank)+": "+str(Global.BotsAtEnergyBank[bank].size())+" -> "+str(Global.EnergyBankConnections[bank])
+	output += "\n======================="
+	return output
 
 	# print("=========STATE=========")
 	# print(Global.BotsAtEnergyBank)
@@ -111,5 +105,5 @@ func snapshot_bots_at_energybank(botsAtEnergyBank:Dictionary) -> Dictionary:
 	for energyBank in botsAtEnergyBank.keys():
 		snapshot[energyBank] = []
 		for bot in botsAtEnergyBank[energyBank]:
-			snapshot[energyBank].append(str(bot.name))
+			snapshot[energyBank].append(str(bot.RobotID))
 	return snapshot

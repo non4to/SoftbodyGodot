@@ -17,12 +17,16 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-EventManager="*res://Singletons/EventManager.gd"
 Global="*res://Singletons/Global.gd"
 EnergyBankManager="*res://EnergyBankManager.gd"
+EventManager="*res://Singletons/EventManager.gd"
 LogManager="*res://Singletons/LogManager.gd"
 Assertation="*res://Singletons/Assertation.gd"
-screen_size="*res://screen_size.gd"
+
+[display]
+
+window/size/viewport_width=1500
+window/size/viewport_height=1000
 
 [editor_plugins]
 

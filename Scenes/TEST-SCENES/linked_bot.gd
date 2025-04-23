@@ -5,7 +5,7 @@ var ForceToMove: Vector2 = Vector2(0,5)
 var Step:int = 0
 var NoMovementStep: int = 100
 
-func _physics_process(delta: float) -> void:	
+func _physics_process(_delta: float) -> void:	
 	updating_joints()	
 
 	$Label.text = str(Step)

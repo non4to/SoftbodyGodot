@@ -8,8 +8,8 @@ const FSRechargeRate:float = FSStandardGivenEnergy*1.25
 
 #RobotConst
 const BOTCenterBoneIndex:int = 4
-const BOTMaxEnergyPossible: int = 500  						#Maximum Energy possible
-const BOTMovingEnergyMult: float = 0.00 					#Multiply this by the Force of the movement to obtain the Energy Cost
+const BOTMaxEnergyPossible: int = 409990  						#Maximum Energy possible
+const BOTMovingEnergyMult: float = 0.001 					#Multiply this by the Force of the movement to obtain the Energy Cost
 const BOTMetabolism: float = FSStandardGivenEnergy*0.5				#Metabolism. Every step this value is deduced from Energy
 const BOTMaxForcePossible: float = 30*1.5  						#Maximum Movement Force possible
 const BOTJoinThresold: float = 0#BOTMaxForcePossible*2.5		#if a collision happens while above this, they joint
@@ -27,6 +27,7 @@ var Step:int = 0
 var FinalStep:int = 9999999999
 var FPS:int = 1
 var SaveFrames:bool = false
+var RobotSpawners = []
 
 ###
 var OldestAge:int = 0
@@ -46,24 +47,17 @@ func save_frame() -> void:
 	var img = get_viewport().get_texture().get_image()
 	img.save_png("res://frames/frame_%08d.png" % Step)
 #--------------------------------------
-
+func deferred_assert() -> void:
+	Assertation.resolve_assert()
+#--------------------------------------
 func _physics_process(_delta: float) -> void:
 	if Global.Step > Global.FinalStep:
 		get_tree().quit()
-	################
-	# print("Step: "+str(Step))
-	# print(BotsAtEnergyBank)
-	# for bank in BotsAtEnergyBank:
-	# 	print("-----"+str(bank)+": "+str(BotsAtEnergyBank[bank].size())+" -> "+str(EnergyBankConnections[bank])) #str(BotsAtEnergyBank[bank]))
-	# 	# print("-----"+str(bank)+": "+str(EnergyBankConnections[bank]))
-
-
-	# 	for bot in BotsAtEnergyBank[bank]:
-	# 		EnergyBankManager.assert_Njoints_Nconnections(bot)
-	# # print(EnergyBankConnections)
-	# print("-------------------------------------")
-	##################
-
+	#-------------------------------------
+	EventManager.resolve_events()
+	#-------------------------------------
+	Assertation.assert_dicts_size()
+	#-------------------------------------
 	LogManager.log_general(Step,"general",Global.EnergyBank,Global.BotsAtEnergyBank,Global.EnergyBankConnections)
 	#SaveFrame
 	if (SaveFrames) and (Step%FPS==0):

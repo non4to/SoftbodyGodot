@@ -5,11 +5,14 @@ const ROBOT = preload("res://Scenes/Robot/robot.tscn")
 var JointsToBreak:Array = []
 var JointsToCreate:Array = []
 var BotsToDie:Array = []
+var BanksToErase:Array = []
 
-func _physics_process(_delta: float) -> void:
-	call_deferred("resolve_joints_to_create_queue")
-	call_deferred("resolve_joints_to_break_queue")
-	call_deferred("resolve_deaths")
+#--------------------------------------
+func resolve_events():
+	resolve_deaths()
+	resolve_joints_to_create_queue()
+	resolve_joints_to_break_queue()
+	resolve_erase_banks()
 #--------------------------------------
 func attach_bodies(boneA:Bone, boneB: Bone) -> void:	
 	var joint1: PinJoint2D = PinJoint2D.new()
@@ -41,6 +44,8 @@ func attach_bodies(boneA:Bone, boneB: Bone) -> void:
 	boneA.RelatedJoints.append(joint2)
 	boneB.RelatedJoints.append(joint1)
 	boneB.RelatedJoints.append(joint2)
+	boneA.Joined = true
+	boneB.Joined = true
 	
 	var jointLine:Line2D = Line2D.new()
 	jointLine.name = "jointline"
@@ -48,14 +53,18 @@ func attach_bodies(boneA:Bone, boneB: Bone) -> void:
 	jointLine.add_point(boneB.global_position/100,1)
 	jointLine.default_color = Color(255,255,255)
 	jointLine.width = 3
-	jointLine.z_index = +2
+	jointLine.z_index = -1
 	boneA.add_child(jointLine)
-	LogManager.log_event(Global.Step,"[attach_bodies] jointLine In",boneA.BoneOf,boneA.name,"","")
+
+	LogManager.log_event(Global.Step,"[attach_bodies] jointLine In" +str(boneA.BoneOf)+","+str(boneA.name))
 #--------------------------------------
-func break_joint(bone:Bone, jointLine:Line2D=null) -> void:
+func break_joint(bone:Bone, jointLine=null) -> void:
 	var otherBone = bone.JoinedTo
 	for joint in bone.RelatedJoints:
 		if is_instance_valid(joint): joint.free()
+	for joint in otherBone.RelatedJoints:
+		if is_instance_valid(joint): joint.free()
+	
 	if jointLine: jointLine.free()
 	else:
 		var jointLine2:Line2D = get_node_or_null(str(str(bone.JoinedTo.get_path())+"/jointline"))
@@ -63,64 +72,100 @@ func break_joint(bone:Bone, jointLine:Line2D=null) -> void:
 
 	reset_variables(bone)
 	reset_variables(otherBone)
+	LogManager.log_event(Global.Step,"[break_joint] broken joint of "+str(bone)+" with "+str(otherBone))
+
 	# call_deferred("reset_variables",bone)
 	# call_deferred("reset_variables",bone.JoinedTo)
 #--------------------------------------
 func reset_variables(bone:Bone) -> void:
 	bone.Joined = false
 	bone.JoinedTo = null
-	bone.RelatedJoints = []
+	bone.RelatedJoints.clear()
 #--------------------------------------
 func add_joints_to_create_queue(boneA:Bone,boneB:Bone):
-	boneA.Joined = true
-	boneB.Joined = true
 	JointsToCreate.append([boneA,boneB])
 #--------------------------------------
-func add_joints_to_break_queue(botA:Robot,botB:Robot,boneA:Bone,JointLine=null):
-	JointsToBreak.append([botA,botB,boneA,JointLine])
+func add_joints_to_break_queue(botA:Robot,botB:Robot,boneA:Bone,jointLine=null):
+	JointsToBreak.append([botA,botB,boneA,jointLine])
+#--------------------------------------
+func add_bot_to_die(bot:Robot):
+	bot.MarkedForDeath = true
+	BotsToDie.append(bot)
+#--------------------------------------
+func add_bank_to_erase(bank:int):
+	BanksToErase.append(bank)
 #--------------------------------------
 func resolve_joints_to_create_queue():
 	if JointsToCreate:
-		for joint in JointsToCreate:
-			print
-			if not(joint[0].get_parent().get_parent().MarkedForDeath) and not(joint[1].get_parent().get_parent().MarkedForDeath):
-				attach_bodies(joint[0],joint[1])
-				EnergyBankManager.joint_made(joint[0],joint[1])
-				LogManager.log_event(Global.Step,"[resolve_union] attachment",joint[0].BoneOf,joint[0].name,joint[1].BoneOf,joint[1].name)
-			JointsToCreate.clear()
+		LogManager.log_event(Global.Step,"[resolving unions...]")
+		for bonesToJoint in JointsToCreate:
+			var botA = bonesToJoint[0].get_parent().get_parent()
+			var botB = bonesToJoint[1].get_parent().get_parent()
+			if is_instance_valid(botA) and is_instance_valid(botB) and not(bonesToJoint[0].Joined) and not(bonesToJoint[1].Joined):
+				attach_bodies(bonesToJoint[0],bonesToJoint[1])
+				EnergyBankManager.joint_made(bonesToJoint[0],bonesToJoint[1])
+				LogManager.log_event(Global.Step,"[resolved_union] Attachment "+str(bonesToJoint[0].BoneOf)+","+str(bonesToJoint[0].name)+" x "+str(bonesToJoint[1].BoneOf)+","+str(bonesToJoint[1].name))
+		JointsToCreate.clear()
 #--------------------------------------
 func resolve_joints_to_break_queue():
-
 	if JointsToBreak:
-		for joint in JointsToBreak:
-			if not(joint[0].MarkedForDeath) and not (joint[1].MarkedForDeath):
-				LogManager.log_event(Global.Step,"[resolve_break] de-attachment",joint[0].RobotID, joint[2].name,joint[1].RobotID ,"")
-				if is_instance_valid(joint[3]):
-					break_joint(joint[2],joint[3])	
-					EnergyBankManager.joint_broke(joint[0],joint[1])
-			JointsToBreak.clear()
+		LogManager.log_event(Global.Step,"[resolving breaks...]")
+		for joints in JointsToBreak:
+			var botA = joints[0]
+			var botB = joints[1]
+			var boneA = joints[2]
+			var jointLine = joints[3]
+			if is_instance_valid(botA) and is_instance_valid(botB) and (boneA.Joined):
+				break_joint(boneA,jointLine)	
+				EnergyBankManager.joint_broke(botA,botB)
+				LogManager.log_event(Global.Step,"[resolved_break] De-attachment "+str(botA.RobotID)+","+str(boneA.name)+"x"+str(botB.RobotID)+" -j.line "+str(jointLine))
+		JointsToBreak.clear()
 #--------------------------------------
-func resolve_deaths():
-	pass
+func resolve_erase_banks():
+	if BanksToErase:
+		for bank in BanksToErase:
+			remove_bank(bank)
+		BanksToErase.clear()
+
+#--------------------------------------
+func resolve_deaths() -> void:
+	if BotsToDie:
+		for bot in BotsToDie:
+			if is_instance_valid(bot):
+				LogManager.log_event(Global.Step,"[resolve_death] death "+str(bot.RobotID))
+				death(bot)
+		BotsToDie.clear()
 #--------------------------------------
 func death(bot:Robot) -> void: 
 	Global.QtyRobotsAlive -= 1
 	for bone in bot.Bones:
 		if (bone.Joined) and (is_instance_valid(bone.JoinedTo)):
-			var jointLine:Line2D = bone.JoinedTo.get_node_or_null("jointline")
-			if jointLine: jointLine.free()
-		for joint in bone.RelatedJoints:
-			if is_instance_valid(joint):
-				joint.free()
-	bot.free()
-	Global.BotsAtEnergyBank[bot.EnergyBankIndex].erase(bot)
+			break_joint(bone)
+		# 	var jointLine:Line2D = bone.JoinedTo.get_node_or_null("jointline")
+		# 	if jointLine: jointLine.free()
+		# for joint in bone.RelatedJoints:
+		# 	if is_instance_valid(joint):
+		# 		joint.free()
 	if (bot.EnergyBankIndex>0):
+		if not(bot.EnergyBankIndex in Global.EnergyBankConnections):
+			LogManager.save_log()
+			assert(false,"Error. Trying to access a energy bank connection that does not exist.")
 		if bot.RobotID in Global.EnergyBankConnections[bot.EnergyBankIndex]:
 			for connectedBot in Global.EnergyBankConnections[bot.EnergyBankIndex][bot.RobotID]:
 				Global.EnergyBankConnections[bot.EnergyBankIndex][connectedBot].erase(bot.RobotID)	
 			Global.EnergyBankConnections[bot.EnergyBankIndex].erase(bot.RobotID)
 		if (Global.BotsAtEnergyBank[bot.EnergyBankIndex].size() < 1):
-			EnergyBankManager.remove_energy_bank.call_deferred(bot.EnergyBankIndex)
+			EnergyBankManager.remove_energy_bank(bot.EnergyBankIndex)
+	Global.BotsAtEnergyBank[bot.EnergyBankIndex].erase(bot)
+	bot.free()
 #--------------------------------------
+func remove_bank(bank:int) ->void:
+	if (Global.BotsAtEnergyBank[bank].size()>0):
+		LogManager.save_log()
+		assert(false,"Bank ["+str(bank)+"] cannot be erased if there are bots in it")
 
+	Global.EnergyBank.erase(bank)
+	Global.BotsAtEnergyBank.erase(bank)
+	Global.EnergyBankConnections.erase(bank)
+	pass
 #
