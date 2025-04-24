@@ -1,38 +1,43 @@
 extends Node
 var address:String = "/home/nonato/GodotProjects/Projects/LogsFromSoftbodyGodot/"#"res://Logs/"
 
+var DEBUGEventLog:Array = []
 var EventLog:Array = []
-var FrameLog:Array = []
+var BotStepLog:Array = []
 var GeneralLog:Array = []
 var EnergyBankOpsLog:Array = []
 
-func log_event(step:int, message:String):
-	EventLog.append([step, 
-					message,])
+func log_break_event(botA:Robot, botB:Robot, message:String="") -> void:
+	var log_line = ["[BREAK]", Global.Step,	botA.RobotID, botB.RobotID]
+	if not (message==""): log_line.append(message)
+	EventLog.append(log_line)
 
-func log_frame_data(step:int, message:String, bot:Robot):
-	FrameLog.append([step, 
-					bot.name,
-					bot.Age,
-					bot.BornIn,
-					message, 
-					bot.EnergyBankIndex,
-					bot.MovementDirection,
-					bot.Bones[bot.CenterBoneIndex].linear_velocity,
-					get_robots_joints(bot),
-					])
+func log_join_event(botA:Robot, botB:Robot, message:String="") -> void:
+	var log_line = ["[JOIN]", Global.Step,	botA.RobotID, botB.RobotID]
+	if not (message==""): log_line.append(message)
+	EventLog.append(log_line)
+
+func log_death_event(botA:Robot, message:String="") -> void:
+	var log_line = ["[DEATH]", Global.Step,	botA.RobotID]
+	if not (message==""): log_line.append(message)
+	EventLog.append(log_line)
+
+func log_event(message:String):
+	DEBUGEventLog.append([Global.Step, 
+					message])
+
+func log_bot_snapshot(bot:Robot, message:String=""):
+	var log_line = bot_snapshot(bot)
+	if not (message==""): log_line.append(message)
+	BotStepLog.append(log_line)
 			
-func log_general(step:int,message:String,energyBank:Dictionary, botsAtEnergyBank:Dictionary, energyBankConnections:Dictionary):
-	GeneralLog.append([step,
+func log_general(message:String,energyBank:Dictionary, botsAtEnergyBank:Dictionary, energyBankConnections:Dictionary):
+	GeneralLog.append([Global.Step,
 						message,
 						energyBank.duplicate(true),
 						snapshot_bots_at_energybank(botsAtEnergyBank),
 						energyBankConnections.duplicate(true)                         
 						])
-
-func log_energyBank_ops(step:int,message:String):
-	EnergyBankOpsLog.append([step,
-							message])
 
 func get_string_from_array(array:Array) -> String:
 	var output:String = ""
@@ -52,32 +57,32 @@ func save_log():
 			dir.make_dir(time)
 
 	address += "/"+time
-	# print(FrameLog)
+	# print(BotStepLog)
 	var eventFile = FileAccess.open(address+"/EventLog.csv",FileAccess.WRITE)
-	eventFile.store_line("step, eventType, botA.name, boneA, botB.name, boneB")
-	var frameFile = FileAccess.open(address+"/FrameLog.csv",FileAccess.WRITE)
+	eventFile.store_line("[BREAK],Global.Step,botA.RobotID,botB.RobotID,message")
+	var debugEventFile = FileAccess.open(address+"/DEBUGEventLog.csv",FileAccess.WRITE)
+	debugEventFile.store_line("step, eventType, botA.name, boneA, botB.name, boneB")
+	var frameFile = FileAccess.open(address+"/BotStepLog.csv",FileAccess.WRITE)
 	frameFile.store_line("step, bot.name, bot.movementDirection, bot.linearVelocity, bot.joints")
 	var generalFile = FileAccess.open(address+"/GeneralLog.csv",FileAccess.WRITE)
 	generalFile.store_line("step, message, EnergyBank, BotsAtEnergyBank, EnergyBankConnections")
-	var energyBankFile = FileAccess.open(address+"/EnergyBankOps.csv",FileAccess.WRITE)
-	energyBankFile.store_line("step, message, botA.name, botA.EnergyBank, botB.name, botB.EnergyBank (999999=place holder), targetBank (999999=place holder)")
-
+	
 	for line in EventLog:
 		eventFile.store_line(get_string_from_array(line))
+
+	for line in DEBUGEventLog:
+		debugEventFile.store_line(get_string_from_array(line))
 	
-	for line in FrameLog:
+	for line in BotStepLog:
 		frameFile.store_line(get_string_from_array(line))
 
 	for line in GeneralLog:
 		generalFile.store_line(get_string_from_array(line))
 
-	for line in EnergyBankOpsLog:
-		energyBankFile.store_line(get_string_from_array(line))
-
 	eventFile.close()
+	debugEventFile.close()
 	frameFile.close()
 	generalFile.close()
-	energyBankFile.close()
 
 func print_state():
 	var output:String = "=========STATE=========\n"
@@ -93,12 +98,7 @@ func print_state():
 	#     print("-----"+str(bank)+": "+str(Global.BotsAtEnergyBank[bank].size())+" -> "+str(Global.EnergyBankConnections[bank]))
 	# print("=======================")
 
-func get_robots_joints(bot:Robot) -> String:
-	var output:String = ""
-	for bone in bot.Bones:
-		if bone.Joined and is_instance_valid(bone.JoinedTo):
-			output += str(bone.JoinedTo.BoneOf)+","
-	return output
+
 
 func snapshot_bots_at_energybank(botsAtEnergyBank:Dictionary) -> Dictionary:
 	var snapshot:Dictionary = {}
@@ -107,3 +107,16 @@ func snapshot_bots_at_energybank(botsAtEnergyBank:Dictionary) -> Dictionary:
 		for bot in botsAtEnergyBank[energyBank]:
 			snapshot[energyBank].append(str(bot.RobotID))
 	return snapshot
+
+func bot_snapshot(bot:Robot) -> Array:
+	var output:Array = []
+	output.append([Global.Step, 
+				bot.RobotID,
+				bot.Age,
+				bot.BornIn,
+				bot.EnergyBankIndex,
+				bot.MovementDirection,
+				bot.Bones[bot.CenterBoneIndex].linear_velocity,
+				Assertation.get_robots_joints(bot),
+				])
+	return output

@@ -8,7 +8,7 @@ const FSRechargeRate:float = FSStandardGivenEnergy*1.25
 
 #RobotConst
 const BOTCenterBoneIndex:int = 4
-const BOTMaxEnergyPossible: int = 409990  						#Maximum Energy possible
+const BOTMaxEnergyPossible: int = 300  						#Maximum Energy possible
 const BOTMovingEnergyMult: float = 0.001 					#Multiply this by the Force of the movement to obtain the Energy Cost
 const BOTMetabolism: float = FSStandardGivenEnergy*0.5				#Metabolism. Every step this value is deduced from Energy
 const BOTMaxForcePossible: float = 30*1.5  						#Maximum Movement Force possible
@@ -58,7 +58,10 @@ func _physics_process(_delta: float) -> void:
 	#-------------------------------------
 	Assertation.assert_dicts_size()
 	#-------------------------------------
-	LogManager.log_general(Step,"general",Global.EnergyBank,Global.BotsAtEnergyBank,Global.EnergyBankConnections)
+	for bank in BotsAtEnergyBank:
+		for bot in BotsAtEnergyBank[bank]:
+			LogManager.log_bot_snapshot(bot)
+	LogManager.log_general("general",Global.EnergyBank,Global.BotsAtEnergyBank,Global.EnergyBankConnections)
 	#SaveFrame
 	if (SaveFrames) and (Step%FPS==0):
 		save_frame()

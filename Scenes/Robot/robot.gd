@@ -82,8 +82,6 @@ func _physics_process(_delta: float) -> void:
 		#Ded, die: x-x 
 		else:
 			die(0)
-
-		LogManager.log_frame_data(Global.Step,"step",self)
 		# print(""+str(name)+" "+str(EnergyBankIndex))
 #---------------------------------------
 # Actions
@@ -95,21 +93,21 @@ func die(reason:int) -> void:
 	if (reason==1): #central bone-joint broke
 		# Global.death(self)
 		EventManager.add_bot_to_die(self)
-		LogManager.log_frame_data(Global.Step,"Death-nucleos break",self)
-		LogManager.log_event(Global.Step,"[event] Death by nucleos break "+str(RobotID))
+		LogManager.log_bot_snapshot(self,"Death-nucleos break")
+		LogManager.log_event("[event] Death by nucleos break "+str(RobotID))
 		# if Global.StopStep<1: Global.StopStep = Global.Step+2
 
 	elif (reason==0): #out of energy
 		if (EnergyBankIndex > 0):
 			for cell in Global.BotsAtEnergyBank[EnergyBankIndex]:
 				EventManager.add_bot_to_die(cell)
-				LogManager.log_frame_data(Global.Step,"Death-no energy",cell)
-				LogManager.log_event(Global.Step,"[event] Death by no energy "+str(RobotID))
+				LogManager.log_bot_snapshot(cell,"Death-no energy")
+				LogManager.log_event("[event] Death by no energy "+str(RobotID))
 				# Global.death(cell)
 		else: 
 			EventManager.add_bot_to_die(self) #Global.death(self)
-			LogManager.log_frame_data(Global.Step,"Death-no energy",self)
-			LogManager.log_event(Global.Step,"[event] Death by no energy "+str(RobotID))
+			LogManager.log_bot_snapshot(self,"Death-no energy")
+			LogManager.log_event("[event] Death by no energy "+str(RobotID))
 #---------------------------------------
 func change_direction(direction:Vector2) -> void:
 	if AllowDirectionChange:
@@ -188,7 +186,7 @@ func start_robot() -> void:
 			bone.BoneOf=RobotID
 			# bone.connect("joint_broke", _on_joint_break)
 
-	var bonesThatCanotJoin:Array = [4]
+	var bonesThatCanotJoin:Array = [0,2,6,8,4]
 	for bone in bonesThatCanotJoin:
 		Bones[bone].CanJoin = false
 #---------------------------------------
@@ -236,10 +234,12 @@ func check_joints() -> void:
 			var otherBot = bone.JoinedTo.get_parent().get_parent()
 			var jointAngleDif = abs(rad_to_deg(MovementDirection.angle_to(bone.JointDirection)))
 			var velAngleDif = abs(rad_to_deg(MovementDirection.angle_to(otherBot.MovementDirection)))
-			if (jointAngleDif > (180-bone.AngleVariationToBreakJoint)) and (velAngleDif > (180-bone.AngleVariationToBreakJoint)) and (Bones[CenterBoneIndex].linear_velocity.length() > JoinThresold):
+			if (jointAngleDif > (180-bone.AngleVariationToBreakJoint)) and (velAngleDif > (180-bone.AngleVariationToBreakJoint)):# and (Bones[CenterBoneIndex].linear_velocity.length() > JoinThresold):
 				if not jointLine: jointLine = get_node_or_null(str(str(bone.JoinedTo.get_path())+"/jointline"))
-				EventManager.add_joints_to_break_queue(self,otherBot,bone,jointLine)
-				LogManager.log_event(Global.Step,"[event][check_joints] de-attachment, "+ str(self.RobotID)+","+str(bone.name)+" x "+str(otherBot.name)+","+str(bone.JoinedTo.name))
+				# EventManager.add_joints_to_break_queue(self,otherBot,bone,jointLine)
+				LogManager.log_event("\n [event][check_joints] Break a Joint, {0}, {1} x {2}, {3}".format([self.RobotID, bone.name, otherBot.RobotID, bone.JoinedTo.name]))				
+				EventManager.resolve_break_joint(self,otherBot,bone,jointLine)
+				LogManager.log_break_event(self,otherBot)
 				# EnergyBankManager.joint_broke(self,otherBot)
 				# EventManager.break_joint(bone,jointLine)	
 			else:
@@ -261,9 +261,10 @@ func check_joints() -> void:
 func _on_bone_collided(myBone:RigidBody2D,collider:Node):
 	if collider.is_in_group("bone")and(myBone.CanJoin):
 		if (collider.CanJoin) and (not collider.Joined) and (not myBone.Joined) and (Bones[CenterBoneIndex].linear_velocity.length() > JoinThresold):
-			EventManager.add_joints_to_create_queue(myBone,collider)
-			LogManager.log_event(Global.Step,"[event][bone_collisions] added to attachment queue: " +str(self.RobotID)+","+str(myBone.name)+" x "+str(collider.BoneOf)+","+str(collider.name))
-
+			# EventManager.add_joints_to_create_queue(myBone,collider)
+			LogManager.log_event("\n [event][bone_collisions] " +str(self.RobotID)+","+str(myBone.name)+" x "+str(collider.BoneOf)+","+str(collider.name))
+			EventManager.resolve_create_joint(myBone,collider)
+			LogManager.log_join_event(self,collider.get_parent().get_parent())
 			# EventManager.attach_bodies(myBone,  collider)
 			# EnergyBankManager.joint_made(myBone,collider)
 #---------------------------------------

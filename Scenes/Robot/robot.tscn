@@ -462,7 +462,6 @@ debug_color = Color(0.752941, 0.458824, 0, 0.682353)
 shape = SubResource("RectangleShape2D_xry5a")
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="SoftBody2D/Bone-4"]
-visible = false
 remote_path = NodePath("../../Skeleton2D/Bone-4")
 update_rotation = false
 update_scale = false
