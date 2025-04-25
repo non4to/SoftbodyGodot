@@ -38,7 +38,6 @@ shape = SubResource("CapsuleShape2D_jub1s")
 
 [node name="Label" type="Label" parent="FoodSpawner"]
 unique_name_in_owner = true
-visible = false
 offset_left = -6.0
 offset_top = -6.0
 offset_right = 34.0
@@ -47,7 +46,6 @@ scale = Vector2(0.310424, 0.531978)
 
 [node name="Label2" type="Label" parent="FoodSpawner"]
 unique_name_in_owner = true
-visible = false
 offset_left = -20.0
 offset_top = -34.0
 offset_right = 20.0

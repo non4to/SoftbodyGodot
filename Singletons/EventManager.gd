@@ -10,7 +10,7 @@ var BanksToErase:Array = []
 #--------------------------------------
 func resolve_events():
 	pass
-	# resolve_deaths()
+	resolve_deaths()
 	# resolve_joints_to_create_queue()
 	# resolve_joints_to_break_queue()
 	resolve_erase_banks()
@@ -129,24 +129,18 @@ func resolve_deaths() -> void:
 #--------------------------------------
 func death(bot:Robot) -> void: 
 	Global.QtyRobotsAlive -= 1
-	for bone in bot.Bones:
-		if (bone.Joined) and (is_instance_valid(bone.JoinedTo)):
-			break_joint(bone)
-		# 	var jointLine:Line2D = bone.JoinedTo.get_node_or_null("jointline")
-		# 	if jointLine: jointLine.free()
-		# for joint in bone.RelatedJoints:
-		# 	if is_instance_valid(joint):
-		# 		joint.free()
 	if (bot.EnergyBankIndex>0):
 		if not(bot.EnergyBankIndex in Global.EnergyBankConnections):
 			LogManager.save_log()
 			assert(false,"Error. Trying to access a energy bank connection that does not exist.")
-		if bot.RobotID in Global.EnergyBankConnections[bot.EnergyBankIndex]:
-			for connectedBot in Global.EnergyBankConnections[bot.EnergyBankIndex][bot.RobotID]:
-				Global.EnergyBankConnections[bot.EnergyBankIndex][connectedBot].erase(bot.RobotID)	
-			Global.EnergyBankConnections[bot.EnergyBankIndex].erase(bot.RobotID)
-		if (Global.BotsAtEnergyBank[bot.EnergyBankIndex].size() < 1):
-			EnergyBankManager.remove_energy_bank(bot.EnergyBankIndex)
+
+		#All this is probably not necessary, as the most necessary thing would be just to update the CONNECTIONS 
+		for bone in bot.Bones:
+			if is_instance_valid(bone.JoinedTo):
+				var otherBot = bone.JoinedTo.get_parent().get_parent()
+				var jointLine = get_node_or_null(str(str(bone.get_path())+"/jointline"))
+				if (bone.Joined) and (is_instance_valid(bone.JoinedTo)):
+					resolve_break_joint(bot,otherBot,bone,jointLine)
 	Global.BotsAtEnergyBank[bot.EnergyBankIndex].erase(bot)
 	bot.free()
 #--------------------------------------

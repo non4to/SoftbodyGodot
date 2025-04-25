@@ -62,12 +62,14 @@ func _process(_delta: float) -> void:
 		# $"SoftBody2D/Bone-4/Label".text = RobotID
 #---------------------------------------
 func _physics_process(_delta: float) -> void:	
-	Age += 1
-	if not MarkedForDeath:
+	if not(MarkedForDeath):
+		Age += 1
 		#Energy Economy
-		if RechargingAreas:
+		# if RechargingAreas:
+		if RechargingAreas and (get_current_energy() < get_maximum_energy()):
 			for eachArea in RechargingAreas:
-				sum_to_energy(eachArea.get_parent().get_parent().GivenEnergy)
+				sum_to_energy(eachArea.get_parent().get_parent().give_energy())
+				# sum_to_energy(eachArea.get_parent().get_parent().GivenEnergy)
 		metabolize()
 		#Alive, move!
 		if get_current_energy() > 0:	
@@ -82,7 +84,7 @@ func _physics_process(_delta: float) -> void:
 		#Ded, die: x-x 
 		else:
 			die(0)
-		# print(""+str(name)+" "+str(EnergyBankIndex))
+	# print(""+str(name)+" "+str(EnergyBankIndex))
 #---------------------------------------
 # Actions
 func metabolize() -> void:
@@ -92,9 +94,9 @@ func die(reason:int) -> void:
 	#ways to die: 0 = out of energy / 1 = joint 4 broke
 	if (reason==1): #central bone-joint broke
 		# Global.death(self)
-		EventManager.add_bot_to_die(self)
 		LogManager.log_bot_snapshot(self,"Death-nucleos break")
 		LogManager.log_event("[event] Death by nucleos break "+str(RobotID))
+		EventManager.add_bot_to_die(self)
 		# if Global.StopStep<1: Global.StopStep = Global.Step+2
 
 	elif (reason==0): #out of energy
@@ -105,7 +107,7 @@ func die(reason:int) -> void:
 				LogManager.log_event("[event] Death by no energy "+str(RobotID))
 				# Global.death(cell)
 		else: 
-			EventManager.add_bot_to_die(self) #Global.death(self)
+			EventManager.add_bot_to_die(self)
 			LogManager.log_bot_snapshot(self,"Death-no energy")
 			LogManager.log_event("[event] Death by no energy "+str(RobotID))
 #---------------------------------------
@@ -282,5 +284,5 @@ func _on_soft_body_2d_joint_removed(rigid_body_a: RefCounted, rigid_body_b: RefC
 #---------------------------------------
 func _input(event):
 	if event.is_action_released("ui_down"):
-		MovementDirection *= Vector2(x_direction_multiplier,1)
+		MovementDirection *= Vector2(x_direction_multiplier,1)		
 #---------------------------------------

@@ -3,7 +3,7 @@ extends Area2D
 const ROBOT = preload("res://Scenes/Robot/robot.tscn")
 var bodiesInside:int = 0
 var AllowedToSpawn:bool = true
-@export var delay:int = 150
+@export var delay:int = 50
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

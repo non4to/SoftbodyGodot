@@ -45,9 +45,12 @@ func _physics_process(_delta: float) -> void:
 			Recharging = false
 	else:
 		GivenEnergy = StandardGivenEnergy
-		# if EnergyStorage < MaxEnergyStorage:
-		# 	EnergyStorage += RechargeRate*0.5
-		EnergyStorage -= GivenEnergy*RobotsInRechargeArea
+		if EnergyStorage < MaxEnergyStorage:
+			EnergyStorage += RechargeRate*0.5
+
+func give_energy() -> float:
+	EnergyStorage -= GivenEnergy
+	return GivenEnergy
 
 func adjust_transparency() -> void:
 	$FoodSpawner/RechargeArea/Sprite2D.modulate = Color(1,1,1,EnergyStorage/MaxEnergyStorage)	
