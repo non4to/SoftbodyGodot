@@ -36,8 +36,11 @@ func _input(event):
 		# var mouse_position = get_global_mouse_position()  # Obtém a posição global do mouse
 		make_robot(mouse_position.x, mouse_position.y)  # Spawna o robô nessa posição
 	if event.is_action_released("esc"):
-		LogManager.save_log()
-		get_tree().quit()
+		call_deferred("finish_sim")
+		
+func finish_sim() -> void:
+	LogManager.save_log()
+	get_tree().quit()
 
 func make_robot(x:int,y:int):
 	var robot = ROBOT.instantiate()
