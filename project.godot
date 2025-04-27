@@ -25,7 +25,7 @@ Assertation="*res://Singletons/Assertation.gd"
 
 [display]
 
-window/size/viewport_width=1500
+window/size/viewport_width=1000
 window/size/viewport_height=1000
 
 [editor_plugins]

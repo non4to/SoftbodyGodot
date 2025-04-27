@@ -3,7 +3,7 @@ extends RigidBody2D
 class_name Bone
 
 var BoneOf = null
-var CanJoin:bool = true
+var CanJoin:bool = false
 var Joined:bool = false						# if this bone is joint to something else or not
 var JoinedTo:Bone = null					# bone is joint to
 var RelatedJoints:Array[PinJoint2D]=[]		# All existing joints to other robots relates with this bone

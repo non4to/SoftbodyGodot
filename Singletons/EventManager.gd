@@ -53,8 +53,8 @@ func attach_bodies(boneA:Bone, boneB: Bone) -> void:
 	jointLine.add_point(boneA.global_position/100,0)
 	jointLine.add_point(boneB.global_position/100,1)
 	jointLine.default_color = Color(255,255,255)
-	jointLine.width = 3
-	jointLine.z_index = +2
+	jointLine.width = 5
+	jointLine.z_index = -1
 	boneA.add_child(jointLine)
 
 	LogManager.log_event("[attach_bodies] jointLine In" +str(boneA.BoneOf)+","+str(boneA.name))

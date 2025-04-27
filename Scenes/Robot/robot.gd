@@ -1,20 +1,25 @@
 extends Node2D
 class_name Robot
+
 ## CONSTANTS
 # BODY
-const CenterBoneIndex: int = Global.BOTCenterBoneIndex					#Which is the bone in the center of the robot -> Force is applied on it
+var CenterBoneIndex: int = Global.BOTCenterBoneIndex					#Which is the bone in the center of the robot -> Force is applied on it
+var ReplicationCoolDown:int = Global.BOTReplicationCoolDown 
+
 # ENERGY ECONOMY
-const MaxEnergyPossible: int = Global.BOTMaxEnergyPossible				#Maximum Energy possible
-const MovingEnergyMult: float = Global.BOTMovingEnergyMult 				#Multiply this by the Force of the movement to obtain the Energy Cost
-const Metabolism: float = Global.BOTMetabolism							#Metabolism. Every step this value is deduced from Energy
+var MaxEnergyPossible: int = Global.BOTMaxEnergyPossible				#Maximum Energy possible
+var MovingEnergyMult: float = Global.BOTMovingEnergyMult 				#Multiply this by the Force of the movement to obtain the Energy Cost
+var Metabolism: float = Global.BOTMetabolism							#Metabolism. Every step this value is deduced from Energy
 # MOVEMENT
-const MaxForcePossible: float = Global.BOTMaxForcePossible   				#Maximum Movement Force possible
-const ChangeDirectionDelay: float = Global.BOTChangeDirectionDelay		#Delay to allow change in Movement Direction
+var MaxForcePossible: float = Global.BOTMaxForcePossible   				#Maximum Movement Force possible
+var ChangeDirectionDelay: float = Global.BOTChangeDirectionDelay		#Delay to allow change in Movement Direction
 # JOINING MECHANICS
-const JoinThresold: float = Global.BOTJoinThresold						#if a collision happens while above this, they joint
+var JoinThresold: float = Global.BOTJoinThresold						#if a collision happens while above this, they joint
 
 ## VARIABLES
 # BODY
+var ReplicationCount:int = ReplicationCoolDown
+var BonesThatCanJoin:Array = Global.BOTBonesThatCanJoin				#Which bones can join during the simulation
 var MarkedForDeath = false
 var Age:int = 0
 var BornIn:int = 0
@@ -25,25 +30,25 @@ var RechargingAreas: Array[Area2D] = []									#every Recharging area the charg
 var Energy: float = 0													#Current Energy
 @export var EnergyBankIndex: int = 0											#which energy ban belongs to, 0=alone
 # MOVEMENT
-@export var MovementDirection: Vector2 = Vector2(1,0)					#MovementDirection
+@export var MovementDirection: Vector2 = Vector2(0,0)					#MovementDirection
 var AllowDirectionChange: bool = false									#Self explanatory
 var StepsToChangeDirection: int = 0										#Counter to allow change in Movement Direction
 
+### GENE/PARAMETERS
+var MovementProbs:Dictionary = {"G":0.1,"B":0.1,"R":0.1,"Y":0.1,"Z":0.6} #Green direction, Blue direction, Red direction, Yellow direction, (Zero movement)
+var AttachProbability:Dictionary = {0:1, 1:0.8, 2:0.4, 3:0.6} # Qty of links robot has
+var DettachProbability:Dictionary = {1:0.0001, 2:0.0001, 3:0.005, 4:0.5} # Qty of links robot has
+var DeathLimit:int = 3 #If this number of links or more, die.
+var LimitToReplicate:int = 2
+var Gene: Array = [MovementProbs, AttachProbability, DettachProbability, DeathLimit, LimitToReplicate]						
+
+
 # ADITIONAL VISUAL FEEDBACK
-const EnergyBar:bool = true
+const EnergyBar:bool = false
 
 ########
 #not used yet/ideas
-var Gene: Array[int] = [0]							#Gene Array
 var MovementRules: Array[Vector2] = []				#Has the movement direction that will be taken after a collision happens in the corresponding bone
-const ReproductionConst: float = 0.5   #Multiply this value by the max Energy value of created (not max Energy possible)
-var direction_x = 1
-var direction_y = 1
-var power_x = 0
-var power_y = 0
-var current_collisions = 0
-var is_bigger=false
-var oldEnergyBankIndex:int = EnergyBankIndex
 
 @export var x_direction_multiplier:float = -1
 
@@ -64,13 +69,18 @@ func _process(_delta: float) -> void:
 func _physics_process(_delta: float) -> void:	
 	if not(MarkedForDeath):
 		Age += 1
+		#Self-replication cooldown
+		if ReplicationCount > 0:
+			ReplicationCount -= 1
+		if (get_joinedTo_number() >= LimitToReplicate) and (ReplicationCount==0):
+			self_replicate()
 		#Energy Economy
-		# if RechargingAreas:
-		if RechargingAreas and (get_current_energy() < get_maximum_energy()):
-			for eachArea in RechargingAreas:
-				sum_to_energy(eachArea.get_parent().get_parent().give_energy())
-				# sum_to_energy(eachArea.get_parent().get_parent().GivenEnergy)
-		metabolize()
+		if get_joinedTo_number() >= DeathLimit:
+			die(2)			
+		# if RechargingAreas and (get_current_energy() < get_maximum_energy()):
+		# 	for eachArea in RechargingAreas:
+		# 		sum_to_energy(eachArea.get_parent().get_parent().give_energy())
+		# metabolize()
 		#Alive, move!
 		if get_current_energy() > 0:	
 			#My movements
@@ -78,8 +88,10 @@ func _physics_process(_delta: float) -> void:
 				StepsToChangeDirection += 1
 				if StepsToChangeDirection > ChangeDirectionDelay:
 					AllowDirectionChange = true
-			change_direction(get_random_direction_fromNSWE())
+			change_direction(get_direction())
+			# change_direction(get_random_direction_fromNSWE())
 			move_to_direction(MovementDirection,MaxForcePossible)
+			# Global.wrap_position(self)
 			check_joints()
 		#Ded, die: x-x 
 		else:
@@ -87,12 +99,33 @@ func _physics_process(_delta: float) -> void:
 	# print(""+str(name)+" "+str(EnergyBankIndex))
 #---------------------------------------
 # Actions
+#---------------------------------------
+func self_replicate() -> void:
+	var descendent:Robot = Global.ROBOT.instantiate()
+	var new_gene:Array = []
+
+	if randf() <= Global.MutationRate:
+		new_gene = Global.mutate_gene(Gene)
+	else: 
+		new_gene = Gene.duplicate(true)
+
+	descendent.initialize_gene(new_gene)
+	descendent.global_position = Bones[CenterBoneIndex].global_position + Vector2(50,50)
+	ReplicationCount = ReplicationCoolDown
+	get_parent().add_child(descendent)
+
+#---------------------------------------
 func metabolize() -> void:
 	sum_to_energy(-Metabolism)
 #---------------------------------------
 func die(reason:int) -> void:
-	#ways to die: 0 = out of energy / 1 = joint 4 broke
-	if (reason==1): #central bone-joint broke
+	#ways to die: 0 = out of energy / 1 = joint 4 broke / 2 = death rule
+	if (reason==2): #death rule
+		LogManager.log_bot_snapshot(self,"Death-rule")
+		LogManager.log_event("[event] Death by RULE "+str(RobotID))
+		EventManager.add_bot_to_die(self)
+
+	elif (reason==1): #central bone-joint broke
 		# Global.death(self)
 		LogManager.log_bot_snapshot(self,"Death-nucleos break")
 		LogManager.log_event("[event] Death by nucleos break "+str(RobotID))
@@ -110,6 +143,7 @@ func die(reason:int) -> void:
 			EventManager.add_bot_to_die(self)
 			LogManager.log_bot_snapshot(self,"Death-no energy")
 			LogManager.log_event("[event] Death by no energy "+str(RobotID))
+
 #---------------------------------------
 func change_direction(direction:Vector2) -> void:
 	if AllowDirectionChange:
@@ -166,6 +200,16 @@ func update_energy_bar() -> void:
 		energyBar.color = lerp(Color.RED, Color.GREEN, percEnergy)
 #---------------------------------------
 # Tools
+#---------------------------------------
+func initialize_gene(gene:Array) -> void:
+	Gene = gene
+	MovementProbs = gene[0]
+	AttachProbability = gene[1]
+	DettachProbability = gene[2]
+	DeathLimit = gene[3]
+	LimitToReplicate = gene[4]
+
+#---------------------------------------
 func start_robot() -> void:
 	Global.QtyRobotsCreated += 1
 	Global.QtyRobotsAlive += 1
@@ -188,39 +232,25 @@ func start_robot() -> void:
 			bone.BoneOf=RobotID
 			# bone.connect("joint_broke", _on_joint_break)
 
-	var bonesThatCanotJoin:Array = [0,2,6,8,4]
-	for bone in bonesThatCanotJoin:
-		Bones[bone].CanJoin = false
+	for bone in BonesThatCanJoin:
+		Bones[bone].CanJoin = true
 #---------------------------------------
-func get_random_direction() -> Vector2:
-	var collisionDirections = [Global.get_direction_vector(Bones[4],Bones[0]), 
-								Global.get_direction_vector(Bones[4],Bones[1]),
-								Global.get_direction_vector(Bones[4],Bones[2]),
-								Global.get_direction_vector(Bones[4],Bones[3]),
-								Global.get_direction_vector(Bones[4],Bones[4]),
-								Global.get_direction_vector(Bones[4],Bones[5]),
-								Global.get_direction_vector(Bones[4],Bones[6]),
-								Global.get_direction_vector(Bones[4],Bones[7]),
-								Global.get_direction_vector(Bones[4],Bones[8]),
-								]
-	return	-1*collisionDirections.pick_random()
+func get_joinedTo_number() -> int:
+	#Returns the number of bots self is joined to
+	var output:int = 0
+	for bone in BonesThatCanJoin:
+		if Bones[bone].Joined:
+			output += 1
+	return output
 #---------------------------------------
-func get_random_direction_fromNSWE() -> Vector2:
-	var collisionDirections = [ 
-								Global.get_direction_vector(Bones[4],Bones[1]),
-								Global.get_direction_vector(Bones[4],Bones[3]),
-								Global.get_direction_vector(Bones[4],Bones[5]),
-								Global.get_direction_vector(Bones[4],Bones[7]),
-								Vector2(0,0),
-								Vector2(0,0),
-								Vector2(0,0),
-								Vector2(0,0),
-								Vector2(0,0),
-								Vector2(0,0),
-								Vector2(0,0),
-								Vector2(0,0)
-								]
-	return	-1*collisionDirections.pick_random()
+func get_direction() -> Vector2:
+	var directionCode:String = Global.weighted_choice(MovementProbs)
+	var movementTranslationDict:Dictionary = {"G": Global.get_direction_vector(Bones[CenterBoneIndex],Bones[3]),
+									"B": Global.get_direction_vector(Bones[CenterBoneIndex],Bones[5]),
+									"R": Global.get_direction_vector(Bones[CenterBoneIndex],Bones[1]),
+									"Y": Global.get_direction_vector(Bones[CenterBoneIndex],Bones[7]),
+									"Z": Vector2(0,0)}
+	return movementTranslationDict[directionCode]
 #---------------------------------------
 func is_alone() -> bool:
 	for i in range(Bones.size()):
@@ -234,9 +264,11 @@ func check_joints() -> void:
 		if bone.Joined and is_instance_valid(bone.JoinedTo):
 			
 			var otherBot = bone.JoinedTo.get_parent().get_parent()
-			var jointAngleDif = abs(rad_to_deg(MovementDirection.angle_to(bone.JointDirection)))
-			var velAngleDif = abs(rad_to_deg(MovementDirection.angle_to(otherBot.MovementDirection)))
-			if (jointAngleDif > (180-bone.AngleVariationToBreakJoint)) and (velAngleDif > (180-bone.AngleVariationToBreakJoint)):# and (Bones[CenterBoneIndex].linear_velocity.length() > JoinThresold):
+			# var jointAngleDif = abs(rad_to_deg(MovementDirection.angle_to(bone.JointDirection)))
+			# var velAngleDif = abs(rad_to_deg(MovementDirection.angle_to(otherBot.MovementDirection)))
+			var rand:float = randf()
+			if rand <= DettachProbability[get_joinedTo_number()]:
+			# if (jointAngleDif > (180-bone.AngleVariationToBreakJoint)) and (velAngleDif > (180-bone.AngleVariationToBreakJoint)):# and (Bones[CenterBoneIndex].linear_velocity.length() > JoinThresold):
 				if not jointLine: jointLine = get_node_or_null(str(str(bone.JoinedTo.get_path())+"/jointline"))
 				# EventManager.add_joints_to_break_queue(self,otherBot,bone,jointLine)
 				LogManager.log_event("\n [event][check_joints] Break a Joint, {0}, {1} x {2}, {3}".format([self.RobotID, bone.name, otherBot.RobotID, bone.JoinedTo.name]))				
@@ -262,13 +294,16 @@ func check_joints() -> void:
 # Signals
 func _on_bone_collided(myBone:RigidBody2D,collider:Node):
 	if collider.is_in_group("bone")and(myBone.CanJoin):
-		if (collider.CanJoin) and (not collider.Joined) and (not myBone.Joined) and (Bones[CenterBoneIndex].linear_velocity.length() > JoinThresold):
-			# EventManager.add_joints_to_create_queue(myBone,collider)
-			LogManager.log_event("\n [event][bone_collisions] " +str(self.RobotID)+","+str(myBone.name)+" x "+str(collider.BoneOf)+","+str(collider.name))
-			EventManager.resolve_create_joint(myBone,collider)
-			LogManager.log_join_event(self,collider.get_parent().get_parent())
-			# EventManager.attach_bodies(myBone,  collider)
-			# EnergyBankManager.joint_made(myBone,collider)
+		var rand:float = randf()
+		var joinedToNumber = get_joinedTo_number()
+		if joinedToNumber < BonesThatCanJoin.size():
+			if (rand <= AttachProbability[joinedToNumber]) and (collider.CanJoin) and (not collider.Joined) and (not myBone.Joined) and (Bones[CenterBoneIndex].linear_velocity.length() > JoinThresold):
+				# EventManager.add_joints_to_create_queue(myBone,collider)
+				LogManager.log_event("\n [event][bone_collisions] " +str(self.RobotID)+","+str(myBone.name)+" x "+str(collider.BoneOf)+","+str(collider.name))
+				EventManager.resolve_create_joint(myBone,collider)
+				LogManager.log_join_event(self,collider.get_parent().get_parent())
+				# EventManager.attach_bodies(myBone,  collider)
+				# EnergyBankManager.joint_made(myBone,collider)
 #---------------------------------------
 func _on_charger_area_entered(area: Area2D) -> void:
 	if (area.is_in_group("recharge-area")):
@@ -278,9 +313,10 @@ func _on_charger_area_exited(area: Area2D) -> void:
 	if (area.is_in_group("recharge-area")):
 		RechargingAreas.erase(area)
 #---------------------------------------
-func _on_soft_body_2d_joint_removed(rigid_body_a: RefCounted, rigid_body_b: RefCounted) -> void:
-	if (rigid_body_a.rigidbody.name=="Bone-4") or (rigid_body_b.rigidbody.name=="Bone-4"):
-		die(1)
+func _on_soft_body_2d_joint_removed(_rigid_body_a: RefCounted, _rigid_body_b: RefCounted) -> void:
+	die(1)
+	# if (_rigid_body_a.rigidbody.name=="Bone-4") or (_rigid_body_b.rigidbody.name=="Bone-4"):
+	# 	die(1)
 #---------------------------------------
 func _input(event):
 	if event.is_action_released("ui_down"):

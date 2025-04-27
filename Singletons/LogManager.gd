@@ -1,5 +1,5 @@
 extends Node
-var address:String = "/home/nonato/GodotProjects/Projects/LogsFromSoftbodyGodot/"#"res://Logs/"
+var address:String = "/home/non4to/Documentos/SoftBodyLogs"
 
 var DEBUGEventLog:Array = []
 var EventLog:Array = []
@@ -59,13 +59,13 @@ func save_log():
 	address += "/"+time
 	# print(BotStepLog)
 	var eventFile = FileAccess.open(address+"/EventLog.csv",FileAccess.WRITE)
-	eventFile.store_line("[BREAK],Global.Step,botA.RobotID,botB.RobotID,message")
+	# eventFile.store_line("[BREAK],Global.Step,botA.RobotID,botB.RobotID,message")
 	var debugEventFile = FileAccess.open(address+"/DEBUGEventLog.csv",FileAccess.WRITE)
-	debugEventFile.store_line("step, eventType, botA.name, boneA, botB.name, boneB")
+	# debugEventFile.store_line("step, eventType, botA.name, boneA, botB.name, boneB")
 	var frameFile = FileAccess.open(address+"/BotStepLog.csv",FileAccess.WRITE)
-	frameFile.store_line("step, bot.name, bot.movementDirection, bot.linearVelocity, bot.joints")
+	# frameFile.store_line("step, bot.name, bot.movementDirection, bot.linearVelocity, bot.joints")
 	var generalFile = FileAccess.open(address+"/GeneralLog.csv",FileAccess.WRITE)
-	generalFile.store_line("step, message, EnergyBank, BotsAtEnergyBank, EnergyBankConnections")
+	# generalFile.store_line("step, message, EnergyBank, BotsAtEnergyBank, EnergyBankConnections")
 	
 	for line in EventLog:
 		eventFile.store_line(get_string_from_array(line))
@@ -109,8 +109,7 @@ func snapshot_bots_at_energybank(botsAtEnergyBank:Dictionary) -> Dictionary:
 	return snapshot
 
 func bot_snapshot(bot:Robot) -> Array:
-	var output:Array = []
-	output.append([Global.Step, 
+	return [Global.Step, 
 				bot.RobotID,
 				bot.Age,
 				bot.BornIn,
@@ -118,5 +117,4 @@ func bot_snapshot(bot:Robot) -> Array:
 				bot.MovementDirection,
 				bot.Bones[bot.CenterBoneIndex].linear_velocity,
 				Assertation.get_robots_joints(bot),
-				])
-	return output
+				]
