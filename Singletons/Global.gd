@@ -3,20 +3,24 @@ const ROBOT = preload("res://Scenes/Robot/robot.tscn")
 
 const WorldSize:Vector2 = Vector2(1000,1000)
 #FoodSpawnerConst
-const FSEnergyArea: float = 50
+const FSEnergyArea: float = 500
 const FSMaxEnergyStorage: float = 500
 const FSStandardGivenEnergy:float = 1
 const FSRechargeRate:float = FSStandardGivenEnergy*1.25
+const FSInfiniteFood:bool = true
 
 #RobotConst
 const BOTCenterBoneIndex:int = 4
-const BOTMaxEnergyPossible: int = 100  						#Maximum Energy possible
-const BOTMovingEnergyMult: float = 0#0.001 					#Multiply this by the Force of the movement to obtain the Energy Cost
-const BOTMetabolism: float = 0#FSStandardGivenEnergy*0.5				#Metabolism. Every step this value is deduced from Energy
+const BOTMaxEnergyPossible: int = 250  						#Maximum Energy possible
+const BOTMovingEnergyMult: float = 0.010 					#Multiply this by the Force of the movement to obtain the Energy Cost
+const BOTMetabolism: float = FSStandardGivenEnergy*0.5				#Metabolism. Every step this value is deduced from Energy
 const BOTMaxForcePossible: float = 30*1.5  						#Maximum Movement Force possible
-const BOTJoinThresold: float = 0#BOTMaxForcePossible*2.5		#if a collision happens while above this, they joint
-const BOTChangeDirectionDelay: float = 10					#How many steps before being allowed to change direction
+const BOTJoinThresold: float = BOTMaxForcePossible*2.5		#if a collision happens while above this, they joint
+const BOTChangeDirectionDelay: float = 0#10					#How many steps before being allowed to change direction
 const BOTReplicationCoolDown:int = 1000
+const BOTCriticalAge:int = 5000
+const BOTDeathOfAge:bool = false
+const BOTMaxDeathProb:float = 0.8
 var BOTBonesThatCanJoin:Array = [1,3,5,7]
 
 ###
@@ -32,7 +36,7 @@ var FinalStep:int = 9999999999
 var FPS:int = 1
 var SaveFrames:bool = false
 var RobotSpawners = []
-var MutationRate:float = 0.9
+var MutationRate:float = 0
 
 ###
 var OldestAge:int = 0
@@ -55,6 +59,9 @@ func normalize_probs(itemsDict:Dictionary) -> Dictionary:
 	var total:float = 0
 	for value in itemsDict.values():
 		total += value
+
+	if total==0.0:
+		assert(false,"cant normalize")
 	var normalizedDict:Dictionary = {}
 	for item in itemsDict.keys():
 		normalizedDict[item] = itemsDict[item]/total
@@ -72,6 +79,7 @@ func weighted_choice(itemsDict:Dictionary) -> String:
 #--------------------------------------
 func mutate_gene(gene:Array) -> Array:
 	var partToMutate: int = randi_range(0,gene.size()-1)
+	# var partToMutate: int = randi_range(1,2)
 	var mutated_gene: Array = gene.duplicate(true)
 	if (partToMutate>=0)and(partToMutate<=2):
 		var keys = mutated_gene[partToMutate].keys()

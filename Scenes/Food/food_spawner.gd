@@ -8,12 +8,13 @@ extends Node2D
 #var FoodAvailable = MaxFoodSpawn
 
 #use this if area and not food pixel
-@export var EnergyArea = Global.FSEnergyArea
+@export var EnergyArea = 500
 @export var MaxEnergyStorage:float = Global.FSMaxEnergyStorage
 @export var StandardGivenEnergy:float = Global.FSStandardGivenEnergy
 @export var RechargeRate:float = Global.FSRechargeRate
 @export var EnergyStorage:float = MaxEnergyStorage
 
+var InfiniteFood:bool = Global.FSInfiniteFood
 var GivenEnergy:float = StandardGivenEnergy
 var Recharging:bool = true
 var RobotsInRechargeArea:int = 0
@@ -21,11 +22,23 @@ var BodiesInArea = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	$FoodSpawner/RechargeArea/CollisionShape2D.shape.radius = EnergyArea
-	$FoodSpawner/RechargeArea/Sprite2D.scale = Vector2.ONE * (EnergyArea*2/$FoodSpawner/RechargeArea/Sprite2D.texture.get_width())
+	var shape = $FoodSpawner/RechargeArea/CollisionShape2D.shape
 	$FoodSpawner/RechargeArea/Sprite2D.modulate = Color(1,1,1,1)
+
+	if shape:
+		var new_shape = shape.duplicate()	
+		var texture_size = $FoodSpawner/RechargeArea/Sprite2D.texture.get_size()
+		
+		if $FoodSpawner/RechargeArea/CollisionShape2D.shape is CircleShape2D:
+			new_shape.radius = EnergyArea
+			$FoodSpawner/RechargeArea/CollisionShape2D.shape = new_shape
+			$FoodSpawner/RechargeArea/Sprite2D.scale = Vector2(EnergyArea*2/texture_size.x, EnergyArea*2/texture_size.y)
+			
+		if $FoodSpawner/RechargeArea/CollisionShape2D.shape is RectangleShape2D:
+			new_shape.size = Vector2(EnergyArea,EnergyArea)
+			$FoodSpawner/RechargeArea/CollisionShape2D.shape = new_shape
+			$FoodSpawner/RechargeArea/Sprite2D.scale = Vector2(EnergyArea/texture_size.x, EnergyArea/texture_size.y)
 	adjust_transparency()
-	pass # Replace with function body.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #-----------------------------------------------------
@@ -49,11 +62,15 @@ func _physics_process(_delta: float) -> void:
 			EnergyStorage += RechargeRate*0.5
 
 func give_energy() -> float:
-	EnergyStorage -= GivenEnergy
+	if not(InfiniteFood):
+		EnergyStorage -= GivenEnergy
 	return GivenEnergy
 
 func adjust_transparency() -> void:
-	$FoodSpawner/RechargeArea/Sprite2D.modulate = Color(1,1,1,EnergyStorage/MaxEnergyStorage)	
+	if InfiniteFood:
+		$FoodSpawner/RechargeArea/Sprite2D.modulate = Color(1,1,1,0.15)	
+	else:
+		$FoodSpawner/RechargeArea/Sprite2D.modulate = Color(1,1,1,EnergyStorage/MaxEnergyStorage)	
 #
 	#if EnergyStorage <= 0:
 		#$FoodSpawner/RechargeArea/Sprite2D.modulate = Color(1,1,1,0.05*max_transparency)	

@@ -5,6 +5,9 @@ class_name Robot
 # BODY
 var CenterBoneIndex: int = Global.BOTCenterBoneIndex					#Which is the bone in the center of the robot -> Force is applied on it
 var ReplicationCoolDown:int = Global.BOTReplicationCoolDown 
+var CriticalAge:int = Global.BOTCriticalAge
+var MaxDeathProb:float = Global.BOTMaxDeathProb
+var DeathOfAge:bool = Global.BOTDeathOfAge
 
 # ENERGY ECONOMY
 var MaxEnergyPossible: int = Global.BOTMaxEnergyPossible				#Maximum Energy possible
@@ -39,12 +42,12 @@ var MovementProbs:Dictionary = {"G":0.1,"B":0.1,"R":0.1,"Y":0.1,"Z":0.6} #Green 
 var AttachProbability:Dictionary = {0:1, 1:0.8, 2:0.4, 3:0.6} # Qty of links robot has
 var DettachProbability:Dictionary = {1:0.0001, 2:0.0001, 3:0.005, 4:0.5} # Qty of links robot has
 var DeathLimit:int = 3 #If this number of links or more, die.
-var LimitToReplicate:int = 2
+var LimitToReplicate:int = 0
 var Gene: Array = [MovementProbs, AttachProbability, DettachProbability, DeathLimit, LimitToReplicate]						
 
 
 # ADITIONAL VISUAL FEEDBACK
-const EnergyBar:bool = false
+const EnergyBar:bool = true
 
 ########
 #not used yet/ideas
@@ -63,39 +66,48 @@ func _ready() -> void:
 #---------------------------------------
 func _process(_delta: float) -> void:
 	if EnergyBar: update_energy_bar()
-	if RobotID: pass
-		# $"SoftBody2D/Bone-4/Label".text = RobotID
+	$"SoftBody2D/Bone-4/Label2".text = str(get_current_energy())
 #---------------------------------------
 func _physics_process(_delta: float) -> void:	
 	if not(MarkedForDeath):
 		Age += 1
-		#Self-replication cooldown
-		if ReplicationCount > 0:
-			ReplicationCount -= 1
-		if (get_joinedTo_number() >= LimitToReplicate) and (ReplicationCount==0):
-			self_replicate()
-		#Energy Economy
+		#Check deaths:
+		if DeathOfAge:
+			check_die_of_age()
 		if get_joinedTo_number() >= DeathLimit:
-			die(2)			
-		# if RechargingAreas and (get_current_energy() < get_maximum_energy()):
-		# 	for eachArea in RechargingAreas:
-		# 		sum_to_energy(eachArea.get_parent().get_parent().give_energy())
-		# metabolize()
-		#Alive, move!
-		if get_current_energy() > 0:	
-			#My movements
+			die(2)		
+		if get_current_energy() <= 0:
+			die(0)
+
+		#Self-replication cooldown
+		if not(MarkedForDeath):
+
+			#Eat if possible
+			if RechargingAreas and (get_current_energy() < get_maximum_energy()):
+				for eachArea in RechargingAreas:
+					sum_to_energy(eachArea.get_parent().get_parent().give_energy())
+
+			#Consume to stay alive
+			metabolize()
+
+			#Replication if possible
+			if ReplicationCount > 0:
+				ReplicationCount -= 1
+			if (get_joinedTo_number() >= LimitToReplicate) and (ReplicationCount==0):
+				self_replicate()
+				
+			#Move if possible
 			if not AllowDirectionChange:
 				StepsToChangeDirection += 1
 				if StepsToChangeDirection > ChangeDirectionDelay:
 					AllowDirectionChange = true
 			change_direction(get_direction())
-			# change_direction(get_random_direction_fromNSWE())
 			move_to_direction(MovementDirection,MaxForcePossible)
-			# Global.wrap_position(self)
+
+			#check if is to break joints
 			check_joints()
-		#Ded, die: x-x 
-		else:
-			die(0)
+		
+			
 	# print(""+str(name)+" "+str(EnergyBankIndex))
 #---------------------------------------
 # Actions
@@ -114,21 +126,31 @@ func self_replicate() -> void:
 	ReplicationCount = ReplicationCoolDown
 	get_parent().add_child(descendent)
 
+	LogManager.log_bot(descendent, "Self-Replication of "+str(RobotID))
 #---------------------------------------
 func metabolize() -> void:
 	sum_to_energy(-Metabolism)
 #---------------------------------------
 func die(reason:int) -> void:
-	#ways to die: 0 = out of energy / 1 = joint 4 broke / 2 = death rule
+	#ways to die: 0 = out of energy / 1 = joint 4 broke / 2 = death rule / 3 = death of age
+	if (reason==3): #death of age
+		LogManager.log_bot_snapshot(self,"Death-Age")
+		LogManager.log_event("[event] Death by Age "+str(RobotID))
+		LogManager.log_death_event(self,"Died of Age")
+		EventManager.add_bot_to_die(self)
+
 	if (reason==2): #death rule
 		LogManager.log_bot_snapshot(self,"Death-rule")
 		LogManager.log_event("[event] Death by RULE "+str(RobotID))
+		LogManager.log_death_event(self,"Rule (Linked to "+str(DeathLimit)+" bots")
 		EventManager.add_bot_to_die(self)
 
 	elif (reason==1): #central bone-joint broke
 		# Global.death(self)
 		LogManager.log_bot_snapshot(self,"Death-nucleos break")
 		LogManager.log_event("[event] Death by nucleos break "+str(RobotID))
+		LogManager.log_death_event(self,"Bot broke")
+
 		EventManager.add_bot_to_die(self)
 		# if Global.StopStep<1: Global.StopStep = Global.Step+2
 
@@ -138,12 +160,14 @@ func die(reason:int) -> void:
 				EventManager.add_bot_to_die(cell)
 				LogManager.log_bot_snapshot(cell,"Death-no energy")
 				LogManager.log_event("[event] Death by no energy "+str(RobotID))
+				LogManager.log_death_event(self,"No energy on EnergyBank")
+
 				# Global.death(cell)
 		else: 
 			EventManager.add_bot_to_die(self)
 			LogManager.log_bot_snapshot(self,"Death-no energy")
 			LogManager.log_event("[event] Death by no energy "+str(RobotID))
-
+			LogManager.log_death_event(self,"No energy")
 #---------------------------------------
 func change_direction(direction:Vector2) -> void:
 	if AllowDirectionChange:
@@ -156,7 +180,6 @@ func move_to_direction(direction:Vector2, withForce:float) -> void:
 			direction = direction.normalized()
 		if is_instance_valid(Bones[CenterBoneIndex]) and direction != Vector2(0,0):
 			Bones[CenterBoneIndex].apply_central_impulse(direction*withForce)
-			#$SoftBody2D.apply_impulse(direction*withForce)
 			sum_to_energy(-1*withForce*MovingEnergyMult)
 #---------------------------------------
 # Energy operations
@@ -171,6 +194,15 @@ func sum_to_energy(value:float) -> void:
 		Energy += value	
 		if Energy < 0: Energy = 0
 		elif Energy > MaxEnergyPossible: Energy = MaxEnergyPossible
+#---------------------------------------
+func check_die_of_age() -> void:
+	var a:float = 0.000001 #influences death prob before critical age
+	var b:float = 0.8 #influences how steep curve is near critical age, but also how long
+	var c:float = 1 #influences how steep curve is near critical age
+
+	var probToDie:float = Age*a + pow(b,-c*(Age-CriticalAge*0.8))
+	if randf() <= probToDie:
+		die(3)
 #---------------------------------------
 func get_maximum_energy() -> float:
 	if EnergyBankIndex > 0:
@@ -201,25 +233,44 @@ func update_energy_bar() -> void:
 #---------------------------------------
 # Tools
 #---------------------------------------
+#--------------------------------------
 func initialize_gene(gene:Array) -> void:
 	Gene = gene
-	MovementProbs = gene[0]
-	AttachProbability = gene[1]
-	DettachProbability = gene[2]
-	DeathLimit = gene[3]
-	LimitToReplicate = gene[4]
+	MovementProbs = Gene[0]
+	AttachProbability = Gene[1]
+	DettachProbability = Gene[2]
+	DeathLimit = Gene[3]
+	LimitToReplicate = Gene[4]
 
+#---------------------------------------
+func initialize_random_gene() -> void:
+	for key in MovementProbs.keys():
+		MovementProbs[key] = randf()
+	MovementProbs = Global.normalize_probs(MovementProbs)
+	
+	for key in AttachProbability.keys():
+		AttachProbability[key] = randf_range(0,1)
+
+	for key in DettachProbability.keys():
+		DettachProbability[key] = randf_range(0,1)
+
+	DeathLimit = 4#randi_range(3,4)
+	LimitToReplicate = 0#randi_range(1,4)
+	Gene = [MovementProbs,AttachProbability,DettachProbability,DeathLimit,LimitToReplicate]
 #---------------------------------------
 func start_robot() -> void:
 	Global.QtyRobotsCreated += 1
 	Global.QtyRobotsAlive += 1
 	self.name = ("Bot"+str(Global.QtyRobotsCreated))
+	RobotID = self.name
 	self.BornIn = Global.Step
+
 	#Start variables
 	Energy = MaxEnergyPossible
 	Global.BotsAtEnergyBank[EnergyBankIndex].append(self)
-	#Builds an ID to robot and adds robot and its Bones to this group
-	RobotID = self.name#"id_" + str(get_instance_id())
+	initialize_random_gene()
+
+	#Builds the ID to robot and adds robot and its Bones to this group
 	add_to_group("robot")
 	add_to_group(RobotID)
 	
@@ -293,6 +344,8 @@ func check_joints() -> void:
 #---------------------------------------
 # Signals
 func _on_bone_collided(myBone:RigidBody2D,collider:Node):
+	if myBone == Bones[CenterBoneIndex]:
+		die(1)
 	if collider.is_in_group("bone")and(myBone.CanJoin):
 		var rand:float = randf()
 		var joinedToNumber = get_joinedTo_number()

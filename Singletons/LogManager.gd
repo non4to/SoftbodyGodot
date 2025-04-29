@@ -6,6 +6,11 @@ var EventLog:Array = []
 var BotStepLog:Array = []
 var GeneralLog:Array = []
 var EnergyBankOpsLog:Array = []
+var BotLog:Array= []
+
+func log_bot(bot:Robot, message:String="") -> void:
+	var log_line = ["["+str(bot.RobotID)+"]", message, bot.BornIn, bot.Gene]
+	BotLog.append(log_line)
 
 func log_break_event(botA:Robot, botB:Robot, message:String="") -> void:
 	var log_line = ["[BREAK]", Global.Step,	botA.RobotID, botB.RobotID]
@@ -57,32 +62,31 @@ func save_log():
 			dir.make_dir(time)
 
 	address += "/"+time
-	# print(BotStepLog)
-	var eventFile = FileAccess.open(address+"/EventLog.csv",FileAccess.WRITE)
-	# eventFile.store_line("[BREAK],Global.Step,botA.RobotID,botB.RobotID,message")
-	var debugEventFile = FileAccess.open(address+"/DEBUGEventLog.csv",FileAccess.WRITE)
-	# debugEventFile.store_line("step, eventType, botA.name, boneA, botB.name, boneB")
-	var frameFile = FileAccess.open(address+"/BotStepLog.csv",FileAccess.WRITE)
-	# frameFile.store_line("step, bot.name, bot.movementDirection, bot.linearVelocity, bot.joints")
-	var generalFile = FileAccess.open(address+"/GeneralLog.csv",FileAccess.WRITE)
-	# generalFile.store_line("step, message, EnergyBank, BotsAtEnergyBank, EnergyBankConnections")
-	
-	for line in EventLog:
-		eventFile.store_line(get_string_from_array(line))
+	var botFile = FileAccess.open(address+"/BotsLog.json",FileAccess.WRITE)
+		# ("[Bot],bornIn,[MovementProbs, AttachProbability, DettachProbability, DeathLimit, LimitToReplicate]")
+	var eventFile = FileAccess.open(address+"/EventLog.json",FileAccess.WRITE)
+		# ("[EVENT],Step, botA, botB, message")
+	var debugEventFile = FileAccess.open(address+"/DEBUGEventLog.json",FileAccess.WRITE)
+	var botStepFile = FileAccess.open(address+"/BotStepLog.json",FileAccess.WRITE)
+		# ("Step, Bot, Age, BornIn, MarkedForDeath, BankIndex, MovDir, LinearVel, JoinedBots")
+	var generalFile = FileAccess.open(address+"/GeneralLog.json",FileAccess.WRITE)
+		# ("step, message, EnergyBanks, BotsAtEnergyBank, EnergyBankConnections")
 
-	for line in DEBUGEventLog:
-		debugEventFile.store_line(get_string_from_array(line))
-	
-	for line in BotStepLog:
-		frameFile.store_line(get_string_from_array(line))
+	store_json(botFile,BotLog)
+	store_json(eventFile,EventLog)
+	store_json(debugEventFile,DEBUGEventLog)
+	store_json(botStepFile,BotStepLog)
+	store_json(generalFile,GeneralLog)
 
-	for line in GeneralLog:
-		generalFile.store_line(get_string_from_array(line))
-
+	botFile.close()
 	eventFile.close()
 	debugEventFile.close()
-	frameFile.close()
+	botStepFile.close()
 	generalFile.close()
+
+func store_json(file:FileAccess, logToJson:Array) -> void:
+	for line in logToJson:
+		file.store_line(JSON.stringify(line))
 
 func print_state():
 	var output:String = "=========STATE=========\n"
@@ -98,8 +102,6 @@ func print_state():
 	#     print("-----"+str(bank)+": "+str(Global.BotsAtEnergyBank[bank].size())+" -> "+str(Global.EnergyBankConnections[bank]))
 	# print("=======================")
 
-
-
 func snapshot_bots_at_energybank(botsAtEnergyBank:Dictionary) -> Dictionary:
 	var snapshot:Dictionary = {}
 	for energyBank in botsAtEnergyBank.keys():
@@ -113,6 +115,7 @@ func bot_snapshot(bot:Robot) -> Array:
 				bot.RobotID,
 				bot.Age,
 				bot.BornIn,
+				bot.MarkedForDeath,
 				bot.EnergyBankIndex,
 				bot.MovementDirection,
 				bot.Bones[bot.CenterBoneIndex].linear_velocity,

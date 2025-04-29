@@ -436,6 +436,7 @@ metadata/bone_name = &"Bone-4"
 
 [node name="Label" type="Label" parent="SoftBody2D/Bone-4"]
 unique_name_in_owner = true
+visible = false
 offset_left = -11.0
 offset_top = -11.0
 offset_right = 29.0
@@ -446,9 +447,11 @@ vertical_alignment = 1
 autowrap_mode = 2
 
 [node name="Label2" type="Label" parent="SoftBody2D/Bone-4"]
-offset_left = -12.0
-offset_right = 13.0
-offset_bottom = 23.0
+visible = false
+offset_left = -12.5
+offset_top = -27.5
+offset_right = 12.5
+offset_bottom = -4.5
 scale = Vector2(0.974978, 0.530183)
 
 [node name="charger" type="Area2D" parent="SoftBody2D/Bone-4" groups=["charger"]]
@@ -459,6 +462,7 @@ shape = SubResource("RectangleShape2D_mestj")
 debug_color = Color(0.752941, 0.458824, 0, 0.682353)
 
 [node name="RectangleShape2D" type="CollisionShape2D" parent="SoftBody2D/Bone-4"]
+scale = Vector2(0.5, 0.5)
 shape = SubResource("RectangleShape2D_xry5a")
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="SoftBody2D/Bone-4"]

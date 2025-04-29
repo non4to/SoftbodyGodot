@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://dt317af5oy764"]
+[gd_scene load_steps=5 format=3 uid="uid://dt317af5oy764"]
 
 [ext_resource type="Script" uid="uid://coru2p6hkq03g" path="res://Scenes/Robot/robot_spawner.gd" id="1_lhg4k"]
 
@@ -10,6 +10,8 @@ font_color = Color(0, 0, 0, 1)
 outline_size = 3
 shadow_size = 0
 shadow_color = Color(1, 0, 0, 0)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pstjn"]
 
 [node name="robot-spawner" type="Area2D" groups=["robot-spawner"]]
 collision_layer = 8
@@ -38,5 +40,13 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+scale = Vector2(1.5, 1.5)
+shape = SubResource("RectangleShape2D_pstjn")
+
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
 [connection signal="body_exited" from="." to="." method="_on_body_exited"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]

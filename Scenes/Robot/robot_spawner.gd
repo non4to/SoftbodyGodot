@@ -18,16 +18,17 @@ func _physics_process(_delta: float) -> void:
 		spawn_robot(position)
 		
 func spawn_robot(origin:Vector2):
-	if AllowedToSpawn and Global.QtyRobotsAlive<90:
+	if AllowedToSpawn and Global.QtyRobotsAlive<50:
 		var robot = ROBOT.instantiate()
 		robot.position = origin
 		get_parent().add_child(robot)
+		LogManager.log_bot(robot, "Bot Spawner")
 
-func _on_body_entered(_body: Node2D) -> void:
+func _on_area_2d_body_entered(_body: Node2D) -> void:
 	bodiesInside += 1
 	AllowedToSpawn = false
 
-func _on_body_exited(_body: Node2D) -> void:
+func _on_area_2d_body_exited(_body: Node2D) -> void:
 	bodiesInside -= 1
 	if bodiesInside==0:
 		AllowedToSpawn = true

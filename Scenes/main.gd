@@ -14,6 +14,10 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	$SubViewportContainer/SubViewport/Label.text = "Alive: "+str(Global.QtyRobotsAlive)
 	$SubViewportContainer/SubViewport/Label2.text = str(Global.Step)
+	var mouse_position =  get_viewport().get_final_transform().basis_xform(get_global_mouse_position())
+	$SubViewportContainer/SubViewport/Label3.global_position = mouse_position
+	$SubViewportContainer/SubViewport/Label3.text = str(mouse_position)
+
 	# $SubViewportContainer/SubViewport/Label3.text = str(Global.BotsAtEnergyBank)
 	# $SubViewportContainer/SubViewport/Label4.text = str(Global.FreeBanks)
 
