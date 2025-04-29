@@ -1,5 +1,4 @@
 extends Node
-var address:String = "/home/non4to/Documentos/SoftBodyLogs"
 
 var DEBUGEventLog:Array = []
 var EventLog:Array = []
@@ -9,7 +8,7 @@ var EnergyBankOpsLog:Array = []
 var BotLog:Array= []
 
 func log_bot(bot:Robot, message:String="") -> void:
-	var log_line = ["["+str(bot.RobotID)+"]", message, bot.BornIn, bot.Gene]
+	var log_line = [str(bot.RobotID), message, bot.BornIn, bot.Gene]
 	BotLog.append(log_line)
 
 func log_break_event(botA:Robot, botB:Robot, message:String="") -> void:
@@ -54,22 +53,14 @@ func get_string_from_array(array:Array) -> String:
 
 
 func save_log(): 
-	var time = Time.get_datetime_string_from_system(true,true)
-	var dir = DirAccess.open(address)
-
-	if dir:
-		if not dir.dir_exists(time):
-			dir.make_dir(time)
-
-	address += "/"+time
-	var botFile = FileAccess.open(address+"/BotsLog.json",FileAccess.WRITE)
+	var botFile = FileAccess.open(Global.LogAddress+"/BotsLog.json",FileAccess.WRITE)
 		# ("[Bot],bornIn,[MovementProbs, AttachProbability, DettachProbability, DeathLimit, LimitToReplicate]")
-	var eventFile = FileAccess.open(address+"/EventLog.json",FileAccess.WRITE)
+	var eventFile = FileAccess.open(Global.LogAddress+"/EventLog.json",FileAccess.WRITE)
 		# ("[EVENT],Step, botA, botB, message")
-	var debugEventFile = FileAccess.open(address+"/DEBUGEventLog.json",FileAccess.WRITE)
-	var botStepFile = FileAccess.open(address+"/BotStepLog.json",FileAccess.WRITE)
+	var debugEventFile = FileAccess.open(Global.LogAddress+"/DEBUGEventLog.json",FileAccess.WRITE)
+	var botStepFile = FileAccess.open(Global.LogAddress+"/BotStepLog.json",FileAccess.WRITE)
 		# ("Step, Bot, Age, BornIn, MarkedForDeath, BankIndex, MovDir, LinearVel, JoinedBots")
-	var generalFile = FileAccess.open(address+"/GeneralLog.json",FileAccess.WRITE)
+	var generalFile = FileAccess.open(Global.LogAddress+"/GeneralLog.json",FileAccess.WRITE)
 		# ("step, message, EnergyBanks, BotsAtEnergyBank, EnergyBankConnections")
 
 	store_json(botFile,BotLog)

@@ -254,8 +254,8 @@ func initialize_random_gene() -> void:
 	for key in DettachProbability.keys():
 		DettachProbability[key] = randf_range(0,1)
 
-	DeathLimit = 4#randi_range(3,4)
-	LimitToReplicate = 0#randi_range(1,4)
+	DeathLimit = randi_range(1,4)
+	LimitToReplicate = randi_range(0,4)
 	Gene = [MovementProbs,AttachProbability,DettachProbability,DeathLimit,LimitToReplicate]
 #---------------------------------------
 func start_robot() -> void:

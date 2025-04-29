@@ -1,6 +1,7 @@
 extends Node
 const ROBOT = preload("res://Scenes/Robot/robot.tscn")
 
+var LogAddress:String = "/home/non4to/Documentos/SoftBodyLogs"
 const WorldSize:Vector2 = Vector2(1000,1000)
 #FoodSpawnerConst
 const FSEnergyArea: float = 500
@@ -32,9 +33,11 @@ var QtyRobotsCreated: int = 0
 var QtyRobotsAlive: int = 0
 ###
 var Step:int = 0
-var FinalStep:int = 9999999999
-var FPS:int = 1
-var SaveFrames:bool = false
+var FinalStep:int = 1000
+var FPS:int = 15
+var SaveFrames:bool = true
+var SavedFrames:int = 0
+var PendingFrames:Array = []
 var RobotSpawners = []
 var MutationRate:float = 0
 
@@ -43,7 +46,42 @@ var OldestAge:int = 0
 
 var StopStep:int = 0
 
+func _init() -> void:
+	initialize_log()
+
+func _process(_delta: float) -> void:
+	if PendingFrames:
+		SavedFrames += 1
+		var frameData = PendingFrames.pop_front()
+		var img = frameData["img"]
+		# var step = frameData["step"]
+		var path = LogAddress+"/frames/frame_%06d.png" % SavedFrames
+		img.save_png(path)
 #---------------------------------------
+func _physics_process(_delta: float) -> void:
+	if Global.Step > Global.FinalStep:
+		LogManager.save_log()
+		get_tree().quit()
+	#-------------------------------------
+	EventManager.resolve_events()
+	#-------------------------------------
+	Assertation.assert_dicts_size()
+	#-------------------------------------
+	for bank in BotsAtEnergyBank:
+		for bot in BotsAtEnergyBank[bank]:
+			if is_instance_valid(bot):
+				LogManager.log_bot_snapshot(bot)
+	LogManager.log_general("general",Global.EnergyBank,Global.BotsAtEnergyBank,Global.EnergyBankConnections)
+	#SaveFrame
+	if (SaveFrames) and (Step%FPS==0):
+		save_frame()
+	##########
+	Step += 1
+	progress_bar(Step, FinalStep)
+
+#==============================================================================
+#==============================================================================
+#==============================================================================
 func wrap_position(body: Node2D):
 	if body.global_position.x < 0:
 		body.global_position.x += WorldSize.x
@@ -113,26 +151,31 @@ func is_unit_vector(vector:Vector2):
 func save_frame() -> void:
 	await RenderingServer.frame_post_draw  
 	var img = get_viewport().get_texture().get_image()
-	img.save_png("res://frames/frame_%08d.png" % Step)
+	PendingFrames.append({"step":Step, "img":img})
 #--------------------------------------
 func deferred_assert() -> void:
 	Assertation.resolve_assert()
 #--------------------------------------
-func _physics_process(_delta: float) -> void:
-	if Global.Step > Global.FinalStep:
-		get_tree().quit()
-	#-------------------------------------
-	EventManager.resolve_events()
-	#-------------------------------------
-	Assertation.assert_dicts_size()
-	#-------------------------------------
-	for bank in BotsAtEnergyBank:
-		for bot in BotsAtEnergyBank[bank]:
-			if is_instance_valid(bot):
-				LogManager.log_bot_snapshot(bot)
-	LogManager.log_general("general",Global.EnergyBank,Global.BotsAtEnergyBank,Global.EnergyBankConnections)
-	#SaveFrame
-	if (SaveFrames) and (Step%FPS==0):
-		save_frame()
-	##########
-	Step += 1
+func initialize_log() -> void:
+	var time = Time.get_datetime_string_from_system(true,true)
+	time = time.replace(":", "-").replace(" ", "_")
+	var main_dir = time+"_s"+str(FinalStep)
+	var dir = DirAccess.open(LogAddress)
+	if dir:
+		if not dir.dir_exists(main_dir):
+			dir.make_dir(main_dir)
+			
+
+	LogAddress += "/"+main_dir
+	dir = DirAccess.open(LogAddress)
+	dir.make_dir("frames")
+#--------------------------------------
+func progress_bar(current: int, total: int) -> void:
+	var percent := float(current) / total
+	var bar_width := 40
+	var filled := int(percent * bar_width)
+	var bar := "[" + "#".repeat(filled) + "-".repeat(bar_width - filled) + "]"
+	var display := "%s %3d%% (%d/%d steps)" % [bar, int(percent * 100), current, total]
+	
+	# \r volta ao início da linha, OS.flush_stdout() força o print
+	print(display)
