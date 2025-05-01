@@ -1,0 +1,39 @@
+{
+	"Bots": {
+		"BonesThatCanJoin": [
+			1,2,
+			3,
+			5,6,
+			7,8
+		],
+		"CenterBoneIndex": 4,
+		"ChangeDirectionDelay": 0.0,
+		"CriticalAge": 5000,
+		"DeathOfAge": false,
+		"JoinThresold": 112.5,
+		"MaxDeathProb": 0.8,
+		"MaxEnergyPossible": 250,
+		"MaxForcePossible": 45.0,
+		"Metabolism": 0.5,
+		"MovingEnergyMult": 0.01,
+		"ReplicationCoolDown": 750,
+		"UsingJoinThresold": false
+	},
+	"FoodSource": {
+		"EnergyArea": 500.0,
+		"InfiniteFood": true,
+		"MaxEnergyStorage": 500.0,
+		"RechargeRate": 1.25,
+		"StandardGivenEnergy": 1.0
+	},
+	"General": {
+		"FPS": 20,
+		"StartPopulation": 25,
+		"MaxStep": 100000,
+		"MutationRate": 0.001,
+		"SaveFrames": true,
+		"Seed": 746080124,
+		"RandomSeed":true,
+		"WorldSize": [1000.0, 1000.0]
+	}
+}

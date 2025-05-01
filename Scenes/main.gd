@@ -7,19 +7,18 @@ const TESTSPRING = preload("res://Scenes/TEST-SCENES/linked_bot.tscn")
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	get_spawners()
-	for spawner in Global.RobotSpawners:
-		spawner.spawn_robot(spawner.position)
+	# for spawner in Global.RobotSpawners:
+	# 	spawner.spawn_robot(spawner.position)
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
 	$SubViewportContainer/SubViewport/Label.text = "Alive: "+str(Global.QtyRobotsAlive)
 	$SubViewportContainer/SubViewport/Label2.text = str(Global.Step)
-	var mouse_position =  get_viewport().get_final_transform().basis_xform(get_global_mouse_position())
-	$SubViewportContainer/SubViewport/Label3.global_position = mouse_position
-	$SubViewportContainer/SubViewport/Label3.text = str(mouse_position)
-
+	# var mouse_position =  get_viewport().get_final_transform().basis_xform(get_global_mouse_position())
+	# $SubViewportContainer/SubViewport/Label3.global_position = mouse_position
+	# $SubViewportContainer/SubViewport/Label3.text = str(mouse_position)
 	# $SubViewportContainer/SubViewport/Label3.text = str(Global.BotsAtEnergyBank)
-	# $SubViewportContainer/SubViewport/Label4.text = str(Global.FreeBanks)
+	$SubViewportContainer/SubViewport/Label4.text = "Time: "+str(Global.Duration)
 
 	#$SubViewportContainer/SubViewport/Label2.text = "Robot1EnBank: "+str($SubViewportContainer/SubViewport/Robot.EnergyBankIndex)+ "; Robot1En: "+ str($SubViewportContainer/SubViewport/Robot.get_current_energy())
 	#$SubViewportContainer/SubViewport/Label3.text = "Robot2EnBank: "+str($SubViewportContainer/SubViewport/Robot2.EnergyBankIndex)+ "; Robot2En: "+ str($SubViewportContainer/SubViewport/Robot2.get_current_energy())
@@ -43,7 +42,7 @@ func _input(event):
 		call_deferred("finish_sim")
 		
 func finish_sim() -> void:
-	LogManager.save_log()
+	LogManager.end_sim(1234,"TEST")
 	get_tree().quit()
 
 func make_robot(x:int,y:int):

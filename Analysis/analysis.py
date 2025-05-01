@@ -10,8 +10,9 @@ import subprocess
 
 
 class Simulation():
-    def __init__(self, log_folder:str):
+    def __init__(self, log_folder:str, experiment_name:str):
         self.mainFolder:str = log_folder
+        self.experimentName:str = experiment_name
         self.BotsLog = self.open_json("BotsLog")
         self.BotStepLog = self.open_json("BotStepLog")
         self.EventLog = self.open_json("EventLog")
@@ -73,11 +74,12 @@ class Simulation():
     def plot_heatmap_comparing_steps(self,df:pd.DataFrame) -> None:
         plt.figure(figsize=(16, 8))
         sns.heatmap(df, annot=True, fmt="d", cmap="viridis", cbar_kws={'label': 'Frequência'})
-        plt.title("Frequência por Combinação de Likes (Heatmap)")
-        plt.xlabel("Passo")
-        plt.ylabel("Combinação de Likes")
+        plt.title("Frequency of Like Direction Combinations (Heatmap)")
+        plt.xlabel("Simulation Step")
+        plt.ylabel("Liked Directions")
         plt.tight_layout()
-        plt.show()
+        plt.savefig(f'{self.mainFolder}/[{self.experimentName}]LikedMovementHeatMaps.png')
+        # plt.show()
 
     def movement_genes_snapshot(self,step:int) -> dict:
         output:dict = {}
@@ -108,8 +110,10 @@ class Simulation():
         return {}
 
 if __name__ == '__main__':
-    data="/home/non4to/Documentos/SoftBodyLogs/2025-04-29_10-59-03_s1000"
-    A = Simulation(data)
-    A.generate_video_of_frames()
-    # A.movement_gene_analysis([0,500,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000])
-
+    experiments:list=[]
+    main_folder = "/home/non4to/Documentos/SoftBodyLogs"
+    for folder in os.listdir(main_folder):
+        experiment_folder = f"{main_folder}/{folder}"
+        print(f"Looking at {experiment_folder}")
+        experiment = Simulation(experiment_folder,folder)
+        experiment.movement_gene_analysis([0,15000,30000,45000,60000,75000,100000])

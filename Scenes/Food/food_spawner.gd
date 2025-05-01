@@ -13,8 +13,8 @@ extends Node2D
 @export var StandardGivenEnergy:float = Global.FSStandardGivenEnergy
 @export var RechargeRate:float = Global.FSRechargeRate
 @export var EnergyStorage:float = MaxEnergyStorage
-
 var InfiniteFood:bool = Global.FSInfiniteFood
+
 var GivenEnergy:float = StandardGivenEnergy
 var Recharging:bool = true
 var RobotsInRechargeArea:int = 0

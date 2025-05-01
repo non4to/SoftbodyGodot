@@ -38,9 +38,9 @@ var AllowDirectionChange: bool = false									#Self explanatory
 var StepsToChangeDirection: int = 0										#Counter to allow change in Movement Direction
 
 ### GENE/PARAMETERS
-var MovementProbs:Dictionary = {"G":0.1,"B":0.1,"R":0.1,"Y":0.1,"Z":0.6} #Green direction, Blue direction, Red direction, Yellow direction, (Zero movement)
-var AttachProbability:Dictionary = {0:1, 1:0.8, 2:0.4, 3:0.6} # Qty of links robot has
-var DettachProbability:Dictionary = {1:0.0001, 2:0.0001, 3:0.005, 4:0.5} # Qty of links robot has
+var MovementProbs:Dictionary = {"N":0.1,"S":0.1,"E":0.1,"W":0.1,"Z":0.6} #Green direction, Blue direction, Red direction, Yellow direction, (Zero movement)
+var AttachProbability:Dictionary = {0:1, 1:0.8, 2:0.4, 3:0.6, 4:0.5, 5:0.5, 6:0.5, 7:0.5} # Qty of links robot has
+var DettachProbability:Dictionary = {1:0.0001, 2:0.0001, 3:0.005, 4:0.5, 5:0.5, 6:0.5, 7:0.5, 8:0.5} # Qty of links robot has
 var DeathLimit:int = 3 #If this number of links or more, die.
 var LimitToReplicate:int = 0
 var Gene: Array = [MovementProbs, AttachProbability, DettachProbability, DeathLimit, LimitToReplicate]						
@@ -122,11 +122,19 @@ func self_replicate() -> void:
 		new_gene = Gene.duplicate(true)
 
 	descendent.initialize_gene(new_gene)
-	descendent.global_position = Bones[CenterBoneIndex].global_position + Vector2(50,50)
+	descendent.global_position = get_replication_position()
 	ReplicationCount = ReplicationCoolDown
 	get_parent().add_child(descendent)
 
 	LogManager.log_bot(descendent, "Self-Replication of "+str(RobotID))
+	LogManager.log_replication_event(self,descendent)
+#---------------------------------------
+func get_replication_position() -> Vector2:
+	var grads = deg_to_rad(randi_range(0,360))
+	var replicant_position:Vector2 = Bones[CenterBoneIndex].global_position + Vector2(cos(grads)*50,sin(grads)*50)
+	while (position[0]>Global.WorldSize[0]-20) or (position[1]>Global.WorldSize[1]-20):
+		replicant_position = Bones[CenterBoneIndex].global_position + Vector2(cos(grads)*50,sin(grads)*50)
+	return replicant_position
 #---------------------------------------
 func metabolize() -> void:
 	sum_to_energy(-Metabolism)
@@ -241,22 +249,6 @@ func initialize_gene(gene:Array) -> void:
 	DettachProbability = Gene[2]
 	DeathLimit = Gene[3]
 	LimitToReplicate = Gene[4]
-
-#---------------------------------------
-func initialize_random_gene() -> void:
-	for key in MovementProbs.keys():
-		MovementProbs[key] = randf()
-	MovementProbs = Global.normalize_probs(MovementProbs)
-	
-	for key in AttachProbability.keys():
-		AttachProbability[key] = randf_range(0,1)
-
-	for key in DettachProbability.keys():
-		DettachProbability[key] = randf_range(0,1)
-
-	DeathLimit = randi_range(1,4)
-	LimitToReplicate = randi_range(0,4)
-	Gene = [MovementProbs,AttachProbability,DettachProbability,DeathLimit,LimitToReplicate]
 #---------------------------------------
 func start_robot() -> void:
 	Global.QtyRobotsCreated += 1
@@ -268,8 +260,6 @@ func start_robot() -> void:
 	#Start variables
 	Energy = MaxEnergyPossible
 	Global.BotsAtEnergyBank[EnergyBankIndex].append(self)
-	initialize_random_gene()
-
 	#Builds the ID to robot and adds robot and its Bones to this group
 	add_to_group("robot")
 	add_to_group(RobotID)
@@ -296,10 +286,10 @@ func get_joinedTo_number() -> int:
 #---------------------------------------
 func get_direction() -> Vector2:
 	var directionCode:String = Global.weighted_choice(MovementProbs)
-	var movementTranslationDict:Dictionary = {"G": Global.get_direction_vector(Bones[CenterBoneIndex],Bones[3]),
-									"B": Global.get_direction_vector(Bones[CenterBoneIndex],Bones[5]),
-									"R": Global.get_direction_vector(Bones[CenterBoneIndex],Bones[1]),
-									"Y": Global.get_direction_vector(Bones[CenterBoneIndex],Bones[7]),
+	var movementTranslationDict:Dictionary = {"N": Vector2(0,-1),
+									"S": Vector2(0,1),
+									"E": Vector2(1,0),
+									"W": Vector2(-1,0),
 									"Z": Vector2(0,0)}
 	return movementTranslationDict[directionCode]
 #---------------------------------------

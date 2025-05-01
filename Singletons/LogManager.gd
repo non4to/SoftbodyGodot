@@ -7,6 +7,15 @@ var GeneralLog:Array = []
 var EnergyBankOpsLog:Array = []
 var BotLog:Array= []
 
+var BotFile
+var EventFile
+var DebugEventFile
+var BotStepFile
+var GeneralFile
+
+func _init() -> void:
+	init_log()
+
 func log_bot(bot:Robot, message:String="") -> void:
 	var log_line = [str(bot.RobotID), message, bot.BornIn, bot.Gene]
 	BotLog.append(log_line)
@@ -18,6 +27,11 @@ func log_break_event(botA:Robot, botB:Robot, message:String="") -> void:
 
 func log_join_event(botA:Robot, botB:Robot, message:String="") -> void:
 	var log_line = ["[JOIN]", Global.Step,	botA.RobotID, botB.RobotID]
+	if not (message==""): log_line.append(message)
+	EventLog.append(log_line)
+
+func log_replication_event(botA:Robot, botB:Robot, message="")->void:
+	var log_line = ["[REPLICATION]", Global.Step,	botA.RobotID,"parent of", botB.RobotID]
 	if not (message==""): log_line.append(message)
 	EventLog.append(log_line)
 
@@ -51,29 +65,115 @@ func get_string_from_array(array:Array) -> String:
 			output += ","
 	return output
 
-
-func save_log(): 
-	var botFile = FileAccess.open(Global.LogAddress+"/BotsLog.json",FileAccess.WRITE)
+func init_log() -> void:
+	save_parameters()
+	BotFile = FileAccess.open(Global.LogAddress+"/BotsLog.json",FileAccess.WRITE_READ)
 		# ("[Bot],bornIn,[MovementProbs, AttachProbability, DettachProbability, DeathLimit, LimitToReplicate]")
-	var eventFile = FileAccess.open(Global.LogAddress+"/EventLog.json",FileAccess.WRITE)
+	EventFile = FileAccess.open(Global.LogAddress+"/EventLog.json",FileAccess.WRITE_READ)
 		# ("[EVENT],Step, botA, botB, message")
-	var debugEventFile = FileAccess.open(Global.LogAddress+"/DEBUGEventLog.json",FileAccess.WRITE)
-	var botStepFile = FileAccess.open(Global.LogAddress+"/BotStepLog.json",FileAccess.WRITE)
+	DebugEventFile = FileAccess.open(Global.LogAddress+"/DEBUGEventLog.json",FileAccess.WRITE_READ)
+	BotStepFile = FileAccess.open(Global.LogAddress+"/BotStepLog.json",FileAccess.WRITE_READ)
 		# ("Step, Bot, Age, BornIn, MarkedForDeath, BankIndex, MovDir, LinearVel, JoinedBots")
-	var generalFile = FileAccess.open(Global.LogAddress+"/GeneralLog.json",FileAccess.WRITE)
+	GeneralFile = FileAccess.open(Global.LogAddress+"/GeneralLog.json",FileAccess.WRITE_READ)
 		# ("step, message, EnergyBanks, BotsAtEnergyBank, EnergyBankConnections")
 
-	store_json(botFile,BotLog)
-	store_json(eventFile,EventLog)
-	store_json(debugEventFile,DEBUGEventLog)
-	store_json(botStepFile,BotStepLog)
-	store_json(generalFile,GeneralLog)
+func save_parameters() -> void:
+	var address = Global.LogAddress+"/Parameters.json"
+	var PARAMETERS = {
+		"Bots"= {
+			"CenterBoneIndex":Global.BOTCenterBoneIndex,
+			"MaxEnergyPossible":Global.BOTMaxEnergyPossible,
+			"MovingEnergyMult":Global.BOTMovingEnergyMult,
+			"Metabolism":Global.BOTMetabolism,
+			"MaxForcePossible":Global.BOTMaxForcePossible,
+			"UsingJoinThresold":Global.BOTUsingJoinThresold,
+			"JoinThresold":Global.BOTJoinThresold,
+			"ChangeDirectionDelay":Global.BOTChangeDirectionDelay,
+			"ReplicationCoolDown":Global.BOTReplicationCoolDown,
+			"CriticalAge":Global.BOTCriticalAge,
+			"DeathOfAge":Global.BOTDeathOfAge,
+			"MaxDeathProb":Global.BOTMaxDeathProb,
+			"BonesThatCanJoin":Global.BOTBonesThatCanJoin
+		},
+		"FoodSource"={
+			"EnergyArea":Global.FSEnergyArea,
+			"MaxEnergyStorage":Global.FSMaxEnergyStorage,
+			"StandardGivenEnergy":Global.FSStandardGivenEnergy,
+			"RechargeRate":Global.FSRechargeRate,
+			"InfiniteFood":Global.FSInfiniteFood
+		},
+		"General"={
+			"WorldSize":Global.WorldSize,
+			"MaxStep":Global.MaxStep,
+			"FPS":Global.FPS,
+			"SaveFrames":Global.SaveFrames,
+			"MutationRate":Global.MutationRate,
+			"Seed":Global.Seed,
+		}
+	}
+	var jsonDict = JSON.stringify(PARAMETERS, "\t")
+	var file = FileAccess.open(address, FileAccess.WRITE)
+	if file:
+		file.store_string(jsonDict)
+		file.close()
+	else:
+		print("Erro ao salvar JSON em:", address)
 
-	botFile.close()
-	eventFile.close()
-	debugEventFile.close()
-	botStepFile.close()
-	generalFile.close()
+func end_sim(reason:int, msg:String=""):
+	"""reason = 0 -> No bots alive
+	reason = 1 -> Max Steps Reached
+	reason = 1234 -> Forced by user"""
+	save_log()
+	while Global.PendingFrames:
+		Global.save_frame()
+
+	var address = Global.LogAddress+"/EndSimulation.json"
+	var endDict = {
+		"Reason":"",
+		"FinalStep":Global.Step,
+		"Duration(s)":Global.Duration,
+		"NumberOfBotsCreatedBySpawner":Global.QtyRobotsCreatedBySpawner,
+		"NumberOfBotsCreatedByReplication":Global.QtyRobotsCreated-Global.QtyRobotsCreatedBySpawner,
+		"Extra":msg
+	}
+
+	if reason==0:
+		endDict["Reason"] = "All bots died."
+	elif reason==1:
+		endDict["Reason"] = "Simulation reached its maximum step."
+		endDict["NumberOfBotsAlive"] = Global.QtyRobotsAlive
+	elif reason==1234:
+		endDict["Reason"] = "Forced by user."
+		endDict["NumberOfBotsAlive"] = Global.QtyRobotsAlive
+	else:
+		assert(false,"Reason must be 1 or 0 or 1234")
+
+	var jsonDict = JSON.stringify(endDict, "\t")
+	var file = FileAccess.open(address, FileAccess.WRITE)
+	if file:
+		file.store_string(jsonDict)
+		file.close()
+	else:
+		print("Erro ao salvar JSON em:", address)
+
+func save_log(): 
+	store_json(BotFile,BotLog)
+	store_json(EventFile,EventLog)
+	store_json(DebugEventFile,DEBUGEventLog)
+	store_json(BotStepFile,BotStepLog)
+	store_json(GeneralFile,GeneralLog)
+	BotLog.clear()
+	EventLog.clear()
+	DEBUGEventLog.clear()
+	BotStepLog.clear()
+	GeneralLog.clear()
+
+func close_logs():
+	BotFile.close()
+	EventFile.close()
+	DebugEventFile.close()
+	BotStepFile.close()
+	GeneralFile.close()
 
 func store_json(file:FileAccess, logToJson:Array) -> void:
 	for line in logToJson:
