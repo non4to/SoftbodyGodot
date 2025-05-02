@@ -131,7 +131,6 @@ func weighted_choice(itemsDict:Dictionary) -> String:
 #--------------------------------------
 func mutate_gene(gene:Array) -> Array:
 	var partToMutate: int = randi_range(0,gene.size()-1)
-	# var partToMutate: int = randi_range(1,2)
 	var mutated_gene: Array = gene.duplicate(true)
 	if (partToMutate>=0)and(partToMutate<=2):
 		var keys = mutated_gene[partToMutate].keys()
@@ -139,12 +138,12 @@ func mutate_gene(gene:Array) -> Array:
 		var randValue = randi_range(-1,1)
 		while randValue==0:
 			randValue = randi_range(-1,1)
-		mutated_gene[partToMutate][randKey] += 0.2*randValue
+		mutated_gene[partToMutate][randKey] += 0.25*randValue
 		mutated_gene[partToMutate] = normalize_probs(mutated_gene[partToMutate])
 	else:
-		var mutation:int = randi_range(-4,4)
+		var mutation:int = randi_range(-1,1)
 		while mutation==0:
-			mutation = randi_range(-4,4)
+			mutation = randi_range(-1,1)
 		mutated_gene[partToMutate] +=  mutation
 
 		if mutated_gene[partToMutate] > 4:
@@ -203,8 +202,8 @@ func progress_bar(current: int, total: int) -> void:
 #--------------------------------------
 func initialize_random_gene() -> Array:
 	var movementProbs:Dictionary = {"N":0.1,"S":0.1,"E":0.1,"W":0.1,"Z":0.6} #Green direction, Blue direction, Red direction, Yellow direction, (Zero movement)
-	var attachProbability:Dictionary = {0:1, 1:0.8, 2:0.4, 3:0.6, 4:0.5, 5:0.5, 6:0.5, 7:0.5} # Qty of links robot has
-	var dettachProbability:Dictionary = {1:0.0001, 2:0.0001, 3:0.005, 4:0.5, 5:0.5, 6:0.5, 7:0.5, 8:0.5} # Qty of links robot has
+	var attachProbability:Dictionary = {0:1, 1:0.8, 2:0.4, 3:0.6} # Qty of links robot has
+	var dettachProbability:Dictionary = {1:0.0001, 2:0.0001, 3:0.005, 4:0.5}# Qty of links robot has
 	var deathLimit:int = 3 #If this number of links or more, die.
 	var limitToReplicate:int = 0
 
