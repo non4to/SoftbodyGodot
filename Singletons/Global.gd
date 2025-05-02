@@ -6,7 +6,7 @@ var RandomSeed:bool = true
 var MaxStep:int = 100000
 var FPS:int = 20
 var MutationRate:float = 0.001
-var LogAddress:String = "/home/non4to/Documentos/SoftBodyLogs"
+var LogAddress:String
 var WorldSize:Vector2 = Vector2(1000,1000)
 var StartPopulation:int = 25
 
@@ -252,6 +252,7 @@ func load_parameters_from_file(paramsFile:String) -> void:
 	FSRechargeRate = result["FoodSource"].get("RechargeRate", FSRechargeRate)
 	FSInfiniteFood = result["FoodSource"].get("InfiniteFood", FSInfiniteFood)
 
+	LogAddress = result["General"].get("LogAddress", LogAddress)
 	StartPopulation = result["General"].get("StartPopulation", StartPopulation)
 	Seed = result["General"].get("Seed", Seed) 
 	RandomSeed =  result["General"].get("RandonSeed", RandomSeed) 
