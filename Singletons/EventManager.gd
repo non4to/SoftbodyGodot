@@ -2,14 +2,16 @@ extends Node
 const BONE = preload("res://Scenes/Robot/bone.gd")
 const ROBOT = preload("res://Scenes/Robot/robot.tscn")
 
-var JointsToBreak:Array = []
-var JointsToCreate:Array = []
+# var JointsToBreak:Array = []
+# var JointsToCreate:Array = []
 var BotsToDie:Array = []
 var BanksToErase:Array = []
+var BotsToReplicate:Array = []
 
 #--------------------------------------
 func resolve_events():
 	pass
+	resolve_replications()
 	resolve_deaths()
 	# resolve_joints_to_create_queue()
 	# resolve_joints_to_break_queue()
@@ -80,18 +82,30 @@ func reset_variables(bone:Bone) -> void:
 	bone.JoinedTo = null
 	bone.RelatedJoints.clear()
 #--------------------------------------
-func add_joints_to_create_queue(boneA:Bone,boneB:Bone):
-	JointsToCreate.append([boneA,boneB])
+# func add_joints_to_create_queue(boneA:Bone,boneB:Bone):
+# 	JointsToCreate.append([boneA,boneB])
 #--------------------------------------
-func add_joints_to_break_queue(botA:Robot,botB:Robot,boneA:Bone,jointLine=null):
-	JointsToBreak.append([botA,botB,boneA,jointLine])
+# func add_joints_to_break_queue(botA:Robot,botB:Robot,boneA:Bone,jointLine=null):
+# 	JointsToBreak.append([botA,botB,boneA,jointLine])
 #--------------------------------------
-func add_bot_to_die(bot:Robot):
+func add_bot_to_replicate(parent:Robot) -> void:
+	BotsToReplicate.append(parent)
+#--------------------------------------
+func add_bot_to_die(bot:Robot) -> void:
 	bot.MarkedForDeath = true
 	BotsToDie.append(bot)
 #--------------------------------------
-func add_bank_to_erase(bank:int):
+func add_bank_to_erase(bank:int) -> void:
 	BanksToErase.append(bank)
+#--------------------------------------
+func resolve_replications() -> void:
+	var processed:int = 0
+	while (processed < Global.MaxReplicationPerStep) and (BotsToReplicate.size() > 0):
+		var chosenIndex = randi_range(0,BotsToReplicate.size()-1)
+		var parent = BotsToReplicate.pop_at(chosenIndex)
+		if is_instance_valid(parent):
+			parent.self_replicate()
+		processed += 1
 #--------------------------------------
 func resolve_create_joint(boneA:Bone, boneB:Bone):
 	LogManager.log_event("[resolving unions...]")

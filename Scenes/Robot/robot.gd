@@ -22,7 +22,8 @@ var JoinThresold: float = Global.BOTJoinThresold						#if a collision happens wh
 ## VARIABLES
 # BODY
 var ReplicationCount:int = ReplicationCoolDown
-var BonesThatCanJoin:Array = Global.BOTBonesThatCanJoin				#Which bones can join during the simulation
+var BonesThatCanJoin:Array = Global.BOTBonesThatCanJoin					#Which bones can join during the simulation
+var ReplicationEnergyThresold:float = Global.BOTReplicationEnergyThresold			#minimum energy to replicate
 var MarkedForDeath = false
 var Age:int = 0
 var BornIn:int = 0
@@ -67,6 +68,8 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if EnergyBar: update_energy_bar()
 	$"SoftBody2D/Bone-4/Label2".text = str(get_current_energy())
+	#check if is to break joints
+	check_joints()
 #---------------------------------------
 func _physics_process(_delta: float) -> void:	
 	if not(MarkedForDeath):
@@ -93,8 +96,9 @@ func _physics_process(_delta: float) -> void:
 			#Replication if possible
 			if ReplicationCount > 0:
 				ReplicationCount -= 1
-			if (get_joinedTo_number() >= LimitToReplicate) and (ReplicationCount==0):
-				self_replicate()
+			if (get_joinedTo_number() >= LimitToReplicate) and (ReplicationCount==0) and (get_current_energy() >= MaxEnergyPossible*ReplicationEnergyThresold):
+				EventManager.add_bot_to_replicate(self)
+				# self_replicate()
 				
 			#Move if possible
 			if not AllowDirectionChange:
@@ -103,10 +107,6 @@ func _physics_process(_delta: float) -> void:
 					AllowDirectionChange = true
 			change_direction(get_direction())
 			move_to_direction(MovementDirection,MaxForcePossible)
-
-			#check if is to break joints
-			check_joints()
-		
 			
 	# print(""+str(name)+" "+str(EnergyBankIndex))
 #---------------------------------------
@@ -132,7 +132,7 @@ func self_replicate() -> void:
 func get_replication_position() -> Vector2:
 	var grads = deg_to_rad(randi_range(0,360))
 	var replicant_position:Vector2 = Bones[CenterBoneIndex].global_position + Vector2(cos(grads)*100,sin(grads)*100)
-	while (position[0]>Global.WorldSize[0]-20) or (position[1]>Global.WorldSize[1]-20):
+	while (position[0]>Global.WorldSize[0]-20) or (position[1]>Global.WorldSize[1]-20) or (position[0]<0+20) or (position[1]<0+20) :
 		replicant_position = Bones[CenterBoneIndex].global_position + Vector2(cos(grads)*100,sin(grads)*100)
 	return replicant_position
 #---------------------------------------
@@ -285,12 +285,14 @@ func get_joinedTo_number() -> int:
 	return output
 #---------------------------------------
 func get_direction() -> Vector2:
+	# print("\n"+str(RobotID)+" get direction")
 	var directionCode:String = Global.weighted_choice(MovementProbs)
 	var movementTranslationDict:Dictionary = {"N": Vector2(0,-1),
 									"S": Vector2(0,1),
 									"E": Vector2(1,0),
 									"W": Vector2(-1,0),
 									"Z": Vector2(0,0)}
+	# print(movementTranslationDict[directionCode])
 	return movementTranslationDict[directionCode]
 #---------------------------------------
 func is_alone() -> bool:

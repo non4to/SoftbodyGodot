@@ -16,7 +16,8 @@
 		"MaxForcePossible": 50,
 		"Metabolism": 0.5,
 		"MovingEnergyMult": 0.01,
-		"ReplicationCoolDown": 501,
+		"ReplicationCoolDown": 10,
+		"ReplicationEnergyThresold":0.8,
 		"UsingJoinThresold": false
 	},
 	"FoodSource": {
@@ -27,6 +28,8 @@
 		"StandardGivenEnergy": 1.0
 	},
 	"General": {
+		"TimeLimitByFrame_mS":70,
+		"MaxReplicationPerStep":25,
 		"FPS": 20,
 		"StartPopulation": 25,
 		"MaxStep": 100000,
@@ -36,5 +39,6 @@
 		"RandomSeed":true,
 		"WorldSize": [1000.0, 1000.0],
 		"LogAddress":"/home/non4to/Documentos/SoftBodyLogs"
+
 	}
 }

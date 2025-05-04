@@ -142,11 +142,15 @@ func end_sim(reason:int, msg:String=""):
 	elif reason==1:
 		endDict["Reason"] = "Simulation reached its maximum step."
 		endDict["NumberOfBotsAlive"] = Global.QtyRobotsAlive
+	elif reason==2:
+		endDict["Reason"] = "Physics frame too long! Simulation might crash!"
+		endDict["NumberOfBotsAlive"] = Global.QtyRobotsAlive
+		endDict["LineToReplicateSize"] = EventManager.BotsToReplicate
 	elif reason==1234:
 		endDict["Reason"] = "Forced by user."
 		endDict["NumberOfBotsAlive"] = Global.QtyRobotsAlive
 	else:
-		assert(false,"Reason must be 1 or 0 or 1234")
+		assert(false,"Reason must be 2, 1 or 0 or 1234")
 
 	var jsonDict = JSON.stringify(endDict, "\t")
 	var file = FileAccess.open(address, FileAccess.WRITE)

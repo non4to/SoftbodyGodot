@@ -27,6 +27,7 @@ var BOTJoinThresold: float = BOTMaxForcePossible*2.5		#if a collision happens wh
 var BOTUsingJoinThresold: bool = false
 var BOTChangeDirectionDelay: float = 0					#How many steps before being allowed to change direction
 var BOTReplicationCoolDown:int = 250
+var BOTReplicationEnergyThresold:float = 0.8 			#minimum energy to replicate
 var BOTCriticalAge:int = 5000
 var BOTDeathOfAge:bool = false
 var BOTMaxDeathProb:float = 0.8
@@ -48,7 +49,10 @@ var SavedFrames:int = 0
 var PendingFrames:Array = []
 var RobotSpawners = []
 var Duration
+var MaxReplicationPerStep:int = 25
+var TimeLimitByFrame_mS = 100
 ###
+var OldFrameStart = 0
 var OldestAge:int = 0
 var StopStep:int = 0
 
@@ -60,14 +64,27 @@ func _init() -> void:
 		Seed = int(now) % 1000000000
 	seed(Seed)
 	initialize_log_adress()
-
+#---------------------------------------
+func _ready() -> void:
+	OldFrameStart = Time.get_ticks_msec()
+#---------------------------------------
 func _process(_delta: float) -> void:
-	Duration = ((Time.get_ticks_msec())/1000)
 	if PendingFrames:
 		SavedFrames += 1
 		save_frame()
 #---------------------------------------
 func _physics_process(_delta: float) -> void:
+	var Duration_mS = Time.get_ticks_msec()
+	Duration = (Duration_mS/1000)
+
+	print(Duration_mS-OldFrameStart)
+	
+	if Duration_mS-OldFrameStart > TimeLimitByFrame_mS:
+		LogManager.end_sim(2,"Frame time that cause crash (ms): "+str(Duration_mS))
+		get_tree().quit(0)
+	OldFrameStart = Duration_mS
+
+
 	#-------------------------------------
 	EventManager.resolve_events()
 	#-------------------------------------
@@ -122,36 +139,65 @@ func normalize_probs(itemsDict:Dictionary) -> Dictionary:
 func weighted_choice(itemsDict:Dictionary) -> String:
 	itemsDict = normalize_probs(itemsDict)
 	var rand:float = randf()
+	# print("randN: ",rand)
 	var cumulative:float = 0
 	for item in itemsDict:
 		cumulative += itemsDict[item]
 		if rand <= cumulative:
+			# print("chosen: ",item)
 			return item
 	return itemsDict.keys()[-1]
 #--------------------------------------
+func get_new_int_gene_unit(value:int) -> int:
+	var mutation:int = randi_range(-1,1)
+	while mutation==0:
+		mutation = randi_range(-1,1)
+	if value > 4:
+		value = value%4
+	if value < 0:
+		value = 4 + value
+	return value
+#--------------------------------------
+func get_new_float_gene_unit(value:float) -> float:
+	var randValue = randi_range(-1,1)
+	while randValue==0:
+		randValue = randi_range(-1,1)
+	value += 0.25*randValue
+	return value
+#--------------------------------------
 func mutate_gene(gene:Array) -> Array:
 	var partToMutate: int = randi_range(0,gene.size()-1)
-	var mutated_gene: Array = gene.duplicate(true)
-	if (partToMutate>=0)and(partToMutate<=2):
-		var keys = mutated_gene[partToMutate].keys()
+	var movementProbs = gene[0].duplicate(true)
+	var attachProbs = gene[1].duplicate(true)
+	var dettachProbs = gene[2].duplicate(true)
+	var deathLimit = gene[3]
+	var replicateLimit = gene[4]
+
+	if partToMutate==0:
+		var keys = gene[partToMutate].keys()
 		var randKey = keys[randi_range(0,keys.size()-1)]
-		var randValue = randi_range(-1,1)
-		while randValue==0:
-			randValue = randi_range(-1,1)
-		mutated_gene[partToMutate][randKey] += 0.25*randValue
-		mutated_gene[partToMutate] = normalize_probs(mutated_gene[partToMutate])
-	else:
-		var mutation:int = randi_range(-1,1)
-		while mutation==0:
-			mutation = randi_range(-1,1)
-		mutated_gene[partToMutate] +=  mutation
+		movementProbs[randKey] = get_new_float_gene_unit(movementProbs[randKey])
+		movementProbs = normalize_probs(movementProbs)
 
-		if mutated_gene[partToMutate] > 4:
-			mutated_gene[partToMutate] = mutated_gene[partToMutate]%4
-		if mutated_gene[partToMutate] < 0:
-			mutated_gene[partToMutate] = 4 + mutated_gene[partToMutate]
+	elif partToMutate==1:
+		var keys = gene[partToMutate].keys()
+		var randKey = keys[randi_range(0,keys.size()-1)]
+		attachProbs[randKey] = get_new_float_gene_unit(attachProbs[randKey])
+		attachProbs = normalize_probs(attachProbs)
+	
+	elif partToMutate==2:
+		var keys = gene[partToMutate].keys()
+		var randKey = keys[randi_range(0,keys.size()-1)]
+		dettachProbs[randKey] = get_new_float_gene_unit(dettachProbs[randKey])
+		dettachProbs = normalize_probs(dettachProbs)
 
-	return mutated_gene
+	elif partToMutate==3:
+		deathLimit = get_new_int_gene_unit(deathLimit)
+
+	elif partToMutate==4:
+		replicateLimit = get_new_int_gene_unit(replicateLimit)
+
+	return [movementProbs,attachProbs,dettachProbs,deathLimit,replicateLimit]
 #--------------------------------------
 func get_direction_vector(fromA:Node,toB:Node) -> Vector2:
 	var direction_vector = Vector2(0,0)
@@ -200,7 +246,7 @@ func progress_bar(current: int, total: int) -> void:
 	# \r volta ao início da linha, OS.flush_stdout() força o print
 	print(display)
 #--------------------------------------
-func initialize_random_gene() -> Array:
+func initialize_random_gene(botA:Robot) -> void:
 	var movementProbs:Dictionary = {"N":0.1,"S":0.1,"E":0.1,"W":0.1,"Z":0.6} #Green direction, Blue direction, Red direction, Yellow direction, (Zero movement)
 	var attachProbability:Dictionary = {0:1, 1:0.8, 2:0.4, 3:0.6} # Qty of links robot has
 	var dettachProbability:Dictionary = {1:0.0001, 2:0.0001, 3:0.005, 4:0.5}# Qty of links robot has
@@ -218,9 +264,18 @@ func initialize_random_gene() -> Array:
 		dettachProbability[key] = randf_range(0,1)
 
 	deathLimit = randi_range(1,4)
-	limitToReplicate = randi_range(0,4)
-	var gene = [movementProbs,attachProbability,dettachProbability,deathLimit,limitToReplicate]
-	return gene
+	limitToReplicate = randi_range(0,0)
+
+	botA.Gene = [movementProbs.duplicate(true),
+				attachProbability.duplicate(true),
+				dettachProbability.duplicate(true),
+				deathLimit,
+				limitToReplicate]
+	botA.MovementProbs = botA.Gene[0]
+	botA.AttachProbability = botA.Gene[1]
+	botA.DettachProbability = botA.Gene[2]
+	botA.DeathLimit = botA.Gene[3]
+	botA.LimitToReplicate = botA.Gene[4]
 #--------------------------------------
 func load_parameters_from_file(paramsFile:String) -> void:
 	var file = FileAccess.open(paramsFile, FileAccess.READ)
@@ -242,6 +297,7 @@ func load_parameters_from_file(paramsFile:String) -> void:
 	BOTUsingJoinThresold = result["Bots"].get("UsingJoinThresold", BOTUsingJoinThresold) 
 	BOTChangeDirectionDelay = result["Bots"].get("ChangeDirectionDelay", BOTChangeDirectionDelay) 
 	BOTReplicationCoolDown = result["Bots"].get("ReplicationCoolDown", BOTReplicationCoolDown)  
+	BOTReplicationEnergyThresold = result["Bots"].get("ReplicationEnergyThresold", BOTReplicationEnergyThresold)
 	BOTCriticalAge = result["Bots"].get("CriticalAge", BOTCriticalAge) 
 	BOTDeathOfAge = result["Bots"].get("DeathOfAge", BOTDeathOfAge) 
 	BOTMaxDeathProb = result["Bots"].get("MaxDeathProb", BOTMaxDeathProb) 
@@ -252,6 +308,8 @@ func load_parameters_from_file(paramsFile:String) -> void:
 	FSRechargeRate = result["FoodSource"].get("RechargeRate", FSRechargeRate)
 	FSInfiniteFood = result["FoodSource"].get("InfiniteFood", FSInfiniteFood)
 
+	TimeLimitByFrame_mS = result["General"].get("TimeLimitByFrame_mS", TimeLimitByFrame_mS)
+	MaxReplicationPerStep = result["General"].get("MaxReplicationPerStep", MaxReplicationPerStep)
 	LogAddress = result["General"].get("LogAddress", LogAddress)
 	StartPopulation = result["General"].get("StartPopulation", StartPopulation)
 	Seed = result["General"].get("Seed", Seed) 
