@@ -212,6 +212,7 @@ func bot_snapshot(bot:Robot) -> Array:
 				bot.BornIn,
 				bot.MarkedForDeath,
 				bot.EnergyBankIndex,
+				bot.Bones[bot.CenterBoneIndex].global_position,
 				bot.MovementDirection,
 				bot.Bones[bot.CenterBoneIndex].linear_velocity,
 				Assertation.get_robots_joints(bot),

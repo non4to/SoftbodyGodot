@@ -3,11 +3,13 @@ import sys
 import argparse
 import time
 import os
+import datetime
 
 
 # Configuração padrão (ajuste conforme necessário)
 CAMINHO_SIMULACAO = "/home/non4to/GitRepos/SoftbodyGodot"  # Altere para seu caminho real
 COMANDO_BASE = ["/home/non4to/Documentos/godot_v4.4", "--path", CAMINHO_SIMULACAO]
+CAMINHO_LOGS = "/home/non4to/Documentos/SoftBodyLogs/CurrentSimulation"
 
 def executar_simulacoes(repetitions):
     maxDuration = 0
@@ -15,7 +17,7 @@ def executar_simulacoes(repetitions):
     duration_times = []
     i=1
     # for i in range(1, repetitions + 1):
-    while keepSimulating and i <= repetitions-1:
+    while keepSimulating and i <= repetitions:
         try:
             print(f"\n--- Executando simulação {i}/{repetitions} ---")
             start_time = time.time()
@@ -34,6 +36,13 @@ def executar_simulacoes(repetitions):
             if duration > maxDuration: maxDuration = duration
             i += 1
             duration_times.append(duration)
+            now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            NEW_FOLDER_NAME = f"/home/non4to/Documentos/SoftBodyLogs/Simulation_{now}__{duration:.2f}s"
+            try:
+                os.rename(CAMINHO_LOGS, NEW_FOLDER_NAME)
+                print(f"✅ Pasta renomeada para: {NEW_FOLDER_NAME}")
+            except Exception as e:
+                print(f"⚠️ Erro ao renomear pasta de log: {e}")
             print(f"Simulação {i} finalizada com código {processo.returncode}, em {duration}")
 
         except subprocess.CalledProcessError as e:
@@ -46,7 +55,7 @@ def executar_simulacoes(repetitions):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Executa simulação Godot múltiplas vezes')
-    parser.add_argument('-n', '--vezes', type=int, default=3,
+    parser.add_argument('-n', '--vezes', type=int, default=50,
                         help='Número de vezes para executar a simulação')
     args = parser.parse_args()
 
@@ -59,4 +68,4 @@ if __name__ == "__main__":
     print("\nTodas as execuções foram concluídas!")
     print(f"Maior duracao: {maxDuration}")
     for i, line in enumerate(duration_times):
-        print(f"{i+1}. [{duration_times[i]}]")
+        print(f"{i}. [{duration_times[i]}]")

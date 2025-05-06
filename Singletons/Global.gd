@@ -224,7 +224,7 @@ func deferred_assert() -> void:
 func initialize_log_adress() -> void:
 	var time = Time.get_datetime_string_from_system(true,true)
 	time = time.replace(":", "-").replace(" ", "_")
-	var main_dir = time+"_s"+str(MaxStep)
+	var main_dir = "CurrentSimulation" #time+"_s"+str(MaxStep)
 	var dir = DirAccess.open(LogAddress)
 	if dir:
 		if not dir.dir_exists(main_dir):
@@ -263,7 +263,7 @@ func initialize_random_gene(botA:Robot) -> void:
 		dettachProbability[key] = randf_range(0,1)
 
 	deathLimit = randi_range(1,4)
-	limitToReplicate = randi_range(0,0)
+	limitToReplicate = randi_range(0,4)
 
 	botA.Gene = [movementProbs.duplicate(true),
 				attachProbability.duplicate(true),

@@ -15,7 +15,7 @@
 		"MaxEnergyPossible": 250,
 		"MaxForcePossible": 50,
 		"Metabolism": 0.5,
-		"MovingEnergyMult": 0.015,
+		"MovingEnergyMult": 0.010,
 		"ReplicationCoolDown": 501,
 		"ReplicationEnergyThresold":0.75,
 		"BornWithPercentageEnergy":0.5,

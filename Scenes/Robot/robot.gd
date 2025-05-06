@@ -68,7 +68,9 @@ func _ready() -> void:
 #---------------------------------------
 func _process(_delta: float) -> void:
 	if EnergyBar: update_energy_bar()
-	$"SoftBody2D/Bone-4/Label2".text = str(get_current_energy())
+	# $"SoftBody2D/Bone-4/Label2".text = str(Bones[CenterBoneIndex].global_position)
+	# print("proccess: "+str(Bones[CenterBoneIndex].global_position))
+
 	#check if is to break joints
 	check_joints()
 #---------------------------------------
@@ -110,7 +112,6 @@ func _physics_process(_delta: float) -> void:
 					AllowDirectionChange = true
 			change_direction(get_direction())
 			move_to_direction(MovementDirection,MaxForcePossible)
-			
 	# print(""+str(name)+" "+str(EnergyBankIndex))
 #---------------------------------------
 # Actions
@@ -135,9 +136,10 @@ func self_replicate() -> void:
 #---------------------------------------
 func get_replication_position() -> Vector2:
 	var grads = deg_to_rad(randi_range(0,360))
-	var replicant_position:Vector2 = Bones[CenterBoneIndex].global_position + Vector2(cos(grads)*100,sin(grads)*100)
+	var radius = 65
+	var replicant_position:Vector2 = Bones[CenterBoneIndex].global_position + Vector2(cos(grads)*radius,sin(grads)*radius)
 	while (position[0]>Global.WorldSize[0]-20) or (position[1]>Global.WorldSize[1]-20) or (position[0]<0+20) or (position[1]<0+20) :
-		replicant_position = Bones[CenterBoneIndex].global_position + Vector2(cos(grads)*100,sin(grads)*100)
+		replicant_position = Bones[CenterBoneIndex].global_position + Vector2(cos(grads)*radius,sin(grads)*radius)
 	return replicant_position
 #---------------------------------------
 func metabolize() -> void:
