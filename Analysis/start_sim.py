@@ -4,15 +4,20 @@ import argparse
 import time
 import os
 
+
 # Configuração padrão (ajuste conforme necessário)
 CAMINHO_SIMULACAO = "/home/non4to/GitRepos/SoftbodyGodot"  # Altere para seu caminho real
 COMANDO_BASE = ["/home/non4to/Documentos/godot_v4.4", "--path", CAMINHO_SIMULACAO]
 
-def executar_simulacoes(repetições):
+def executar_simulacoes(repetitions):
+    maxDuration = 0
+    keepSimulating = True
     duration_times = []
-    for i in range(1, repetições + 1):
+    i=1
+    # for i in range(1, repetitions + 1):
+    while keepSimulating and i <= repetitions-1:
         try:
-            print(f"\n--- Executando simulação {i}/{repetições} ---")
+            print(f"\n--- Executando simulação {i}/{repetitions} ---")
             start_time = time.time()
             # Executa o comando e aguarda a finalização
             processo = subprocess.run(
@@ -26,6 +31,8 @@ def executar_simulacoes(repetições):
                     "__GLX_VENDOR_LIBRARY_NAME": "nvidia"
                 })
             duration = time.time() - start_time
+            if duration > maxDuration: maxDuration = duration
+            i += 1
             duration_times.append(duration)
             print(f"Simulação {i} finalizada com código {processo.returncode}, em {duration}")
 
@@ -35,10 +42,11 @@ def executar_simulacoes(repetições):
         except Exception as e:
             print(f"Erro inesperado na execução {i}: {e}")
             break
+    return duration_times, maxDuration
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Executa simulação Godot múltiplas vezes')
-    parser.add_argument('-n', '--vezes', type=int, default=30,
+    parser.add_argument('-n', '--vezes', type=int, default=3,
                         help='Número de vezes para executar a simulação')
     args = parser.parse_args()
 
@@ -47,5 +55,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     print(f"\nIniciando ciclo de {args.vezes} execuções...")
-    executar_simulacoes(args.vezes)
+    duration_times, maxDuration = executar_simulacoes(args.vezes)
     print("\nTodas as execuções foram concluídas!")
+    print(f"Maior duracao: {maxDuration}")
+    for i, line in enumerate(duration_times):
+        print(f"{i+1}. [{duration_times[i]}]")

@@ -15,9 +15,10 @@
 		"MaxEnergyPossible": 250,
 		"MaxForcePossible": 50,
 		"Metabolism": 0.5,
-		"MovingEnergyMult": 0.01,
-		"ReplicationCoolDown": 10,
-		"ReplicationEnergyThresold":0.8,
+		"MovingEnergyMult": 0.015,
+		"ReplicationCoolDown": 501,
+		"ReplicationEnergyThresold":0.75,
+		"BornWithPercentageEnergy":0.5,
 		"UsingJoinThresold": false
 	},
 	"FoodSource": {
@@ -29,9 +30,9 @@
 	},
 	"General": {
 		"TimeLimitByFrame_mS":70,
-		"MaxReplicationPerStep":25,
+		"MaxReplicationPerStep":20,
 		"FPS": 20,
-		"StartPopulation": 25,
+		"StartPopulation": 50,
 		"MaxStep": 100000,
 		"MutationRate": 0.001,
 		"SaveFrames": true,

@@ -24,6 +24,7 @@ var JoinThresold: float = Global.BOTJoinThresold						#if a collision happens wh
 var ReplicationCount:int = ReplicationCoolDown
 var BonesThatCanJoin:Array = Global.BOTBonesThatCanJoin					#Which bones can join during the simulation
 var ReplicationEnergyThresold:float = Global.BOTReplicationEnergyThresold			#minimum energy to replicate
+var BornWithPercentageEnergy = Global.BOTBornWithPercentageEnergy
 var MarkedForDeath = false
 var Age:int = 0
 var BornIn:int = 0
@@ -84,7 +85,6 @@ func _physics_process(_delta: float) -> void:
 
 		#Self-replication cooldown
 		if not(MarkedForDeath):
-
 			#Eat if possible
 			if RechargingAreas and (get_current_energy() < get_maximum_energy()):
 				for eachArea in RechargingAreas:
@@ -98,6 +98,9 @@ func _physics_process(_delta: float) -> void:
 				ReplicationCount -= 1
 			if (get_joinedTo_number() >= LimitToReplicate) and (ReplicationCount==0) and (get_current_energy() >= MaxEnergyPossible*ReplicationEnergyThresold):
 				EventManager.add_bot_to_replicate(self)
+				if (Global.QtyRobotsAlive+EventManager.BotsToReplicate.size() > 120):
+					LogManager.end_sim(2,"Too many bots alive and too many in line to replicate!")
+					get_tree().quit()
 				# self_replicate()
 				
 			#Move if possible
@@ -123,6 +126,7 @@ func self_replicate() -> void:
 
 	descendent.initialize_gene(new_gene)
 	descendent.global_position = get_replication_position()
+	descendent.Energy = MaxEnergyPossible*BornWithPercentageEnergy
 	ReplicationCount = ReplicationCoolDown
 	get_parent().add_child(descendent)
 
@@ -258,7 +262,6 @@ func start_robot() -> void:
 	self.BornIn = Global.Step
 
 	#Start variables
-	Energy = MaxEnergyPossible
 	Global.BotsAtEnergyBank[EnergyBankIndex].append(self)
 	#Builds the ID to robot and adds robot and its Bones to this group
 	add_to_group("robot")

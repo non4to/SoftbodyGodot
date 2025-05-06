@@ -32,6 +32,7 @@ var BOTCriticalAge:int = 5000
 var BOTDeathOfAge:bool = false
 var BOTMaxDeathProb:float = 0.8
 var BOTBonesThatCanJoin:Array = [1,3,5,7]
+var BOTBornWithPercentageEnergy = 0.5
 
 #####################################################################
 ##################################################################
@@ -76,14 +77,12 @@ func _process(_delta: float) -> void:
 func _physics_process(_delta: float) -> void:
 	var Duration_mS = Time.get_ticks_msec()
 	Duration = (Duration_mS/1000)
-
-	print(Duration_mS-OldFrameStart)
-	
+	#-------------------------------------
 	if Duration_mS-OldFrameStart > TimeLimitByFrame_mS:
 		LogManager.end_sim(2,"Frame time that cause crash (ms): "+str(Duration_mS))
-		get_tree().quit(0)
+		get_tree().quit()
 	OldFrameStart = Duration_mS
-
+	#-------------------------------------
 
 	#-------------------------------------
 	EventManager.resolve_events()
@@ -298,6 +297,8 @@ func load_parameters_from_file(paramsFile:String) -> void:
 	BOTChangeDirectionDelay = result["Bots"].get("ChangeDirectionDelay", BOTChangeDirectionDelay) 
 	BOTReplicationCoolDown = result["Bots"].get("ReplicationCoolDown", BOTReplicationCoolDown)  
 	BOTReplicationEnergyThresold = result["Bots"].get("ReplicationEnergyThresold", BOTReplicationEnergyThresold)
+	BOTBornWithPercentageEnergy = result["Bots"].get("BornWithPercentageEnergy", BOTBornWithPercentageEnergy) 
+
 	BOTCriticalAge = result["Bots"].get("CriticalAge", BOTCriticalAge) 
 	BOTDeathOfAge = result["Bots"].get("DeathOfAge", BOTDeathOfAge) 
 	BOTMaxDeathProb = result["Bots"].get("MaxDeathProb", BOTMaxDeathProb) 

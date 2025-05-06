@@ -23,9 +23,12 @@ func spawn_robot(origin:Vector2):
 		Global.QtyRobotsCreatedBySpawner += 1
 		var robot = ROBOT.instantiate()
 		robot.position = origin
+		robot.Energy = robot.MaxEnergyPossible
 		Global.initialize_random_gene(robot)
 		get_parent().add_child(robot)
 		LogManager.log_bot(robot, str(self.name))
+	if Global.QtyRobotsCreatedBySpawner >= Global.StartPopulation:
+		self.queue_free()
 
 func _on_area_2d_body_entered(_body: Node2D) -> void:
 	bodiesInside += 1
