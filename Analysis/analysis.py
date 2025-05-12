@@ -13,10 +13,10 @@ class Simulation():
     def __init__(self, log_folder:str, experiment_name:str):
         self.mainFolder:str = log_folder
         self.experimentName:str = experiment_name
-        self.BotsLog = self.open_json("BotsLog")
-        self.BotStepLog = self.open_json("BotStepLog")
-        self.EventLog = self.open_json("EventLog")
-        self.GeneralLog = self.open_json("GeneralLog")
+        # self.BotsLog = self.open_json("BotsLog")
+        # self.BotStepLog = self.open_json("BotStepLog")
+        # self.EventLog = self.open_json("EventLog")
+        # self.GeneralLog = self.open_json("GeneralLog")
 
     def movement_gene_analysis(self,steps:list) -> None:
         df = self.build_movement_analysis_df(steps)
@@ -110,10 +110,12 @@ class Simulation():
         return {}
 
 if __name__ == '__main__':
-    experiments:list=[]
-    main_folder = "/home/non4to/Documentos/SoftBodyLogs"
-    for folder in os.listdir(main_folder):
-        experiment_folder = f"{main_folder}/{folder}"
-        print(f"Looking at {experiment_folder}")
-        experiment = Simulation(experiment_folder,folder)
-        experiment.movement_gene_analysis([0,15000,30000,45000,60000,75000,100000])
+    A = Simulation(log_folder="/home/non4to/Documentos/SoftBodyLogs/Simulation_2025-05-06_19-40-29__1722.81s",experiment_name="justvid")
+    A.generate_video_of_frames()
+    # experiments:list=[]
+    # main_folder = "/home/non4to/Documentos/SoftBodyLogs"
+    # for folder in os.listdir(main_folder):
+    #     experiment_folder = f"{main_folder}/{folder}"
+    #     print(f"Looking at {experiment_folder}")
+    #     experiment = Simulation(experiment_folder,folder)
+    #     experiment.movement_gene_analysis([0,15000,30000,45000,60000,75000,100000])

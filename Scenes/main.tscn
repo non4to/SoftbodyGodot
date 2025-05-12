@@ -87,7 +87,6 @@ EnergyArea = 125
 
 [node name="robot-spawner" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
 position = Vector2(506, 307)
-work = true
 
 [node name="robot-spawner2" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
 position = Vector2(497, 142)

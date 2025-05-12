@@ -22,22 +22,22 @@ func log_bot(bot:Robot, message:String="") -> void:
 
 func log_break_event(botA:Robot, botB:Robot, message:String="") -> void:
 	var log_line = ["[BREAK]", Global.Step,	botA.RobotID, botB.RobotID]
-	if not (message==""): log_line.append(message)
+	log_line.append(message)
 	EventLog.append(log_line)
 
 func log_join_event(botA:Robot, botB:Robot, message:String="") -> void:
 	var log_line = ["[JOIN]", Global.Step,	botA.RobotID, botB.RobotID]
-	if not (message==""): log_line.append(message)
+	log_line.append(message)
 	EventLog.append(log_line)
 
 func log_replication_event(botA:Robot, botB:Robot, message="")->void:
 	var log_line = ["[REPLICATION]", Global.Step,	botA.RobotID,"parent of", botB.RobotID]
-	if not (message==""): log_line.append(message)
+	log_line.append(message)
 	EventLog.append(log_line)
 
 func log_death_event(botA:Robot, message:String="") -> void:
 	var log_line = ["[DEATH]", Global.Step,	botA.RobotID]
-	if not (message==""): log_line.append(message)
+	log_line.append(message)
 	EventLog.append(log_line)
 
 func log_event(message:String):
@@ -46,7 +46,8 @@ func log_event(message:String):
 
 func log_bot_snapshot(bot:Robot, message:String=""):
 	var log_line = bot_snapshot(bot)
-	if not (message==""): log_line.append(message)
+	log_line.append(message)
+	# if not (message==""): log_line.append(message) #took this off cause pandas was complaining that lines had different sizes to transform everything into a dataframe
 	BotStepLog.append(log_line)
 			
 func log_general(message:String,energyBank:Dictionary, botsAtEnergyBank:Dictionary, energyBankConnections:Dictionary):
