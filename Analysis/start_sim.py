@@ -10,6 +10,9 @@ import datetime
 CAMINHO_SIMULACAO = "/home/non4to/GitRepos/SoftbodyGodot"  # Altere para seu caminho real
 COMANDO_BASE = ["/home/non4to/Documentos/godot_v4.4", "--path", CAMINHO_SIMULACAO]
 CAMINHO_LOGS = "/home/non4to/Documentos/SoftBodyLogs/CurrentSimulation"
+TIME_LIMIT = 10
+SIMULATION_NUMBER = 3
+
 
 def executar_simulacoes(repetitions):
     maxDuration = 0
@@ -55,7 +58,7 @@ def executar_simulacoes(repetitions):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Executa simulação Godot múltiplas vezes')
-    parser.add_argument('-n', '--vezes', type=int, default=2,
+    parser.add_argument('-n', '--vezes', type=int, default=SIMULATION_NUMBER,
                         help='Número de vezes para executar a simulação')
     args = parser.parse_args()
 

@@ -16,7 +16,7 @@
 		"MaxForcePossible": 50,
 		"Metabolism": 0.5,
 		"MovingEnergyMult": 0.010,
-		"ReplicationCoolDown": 501,
+		"ReplicationCoolDown": 250,
 		"ReplicationEnergyThresold":0.75,
 		"BornWithPercentageEnergy":0.5,
 		"UsingJoinThresold": false
@@ -31,13 +31,13 @@
 	"General": {
 		"TimeLimitByFrame_mS":70,
 		"MaxReplicationPerStep":20,
-		"FPS": 20,
-		"StartPopulation": 50,
+		"FPS": 1,
+		"StartPopulation": 1,
 		"MaxStep": 100000,
 		"MutationRate": 0.001,
 		"SaveFrames": true,
 		"Seed": 746080124,
-		"RandomSeed":true,
+		"RandomSeed":false,
 		"WorldSize": [1000.0, 1000.0],
 		"LogAddress":"/home/non4to/Documentos/SoftBodyLogs"
 

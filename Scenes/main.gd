@@ -31,6 +31,7 @@ func _process(_delta: float) -> void:
 func _physics_process(_delta: float) -> void:
 	pass
 
+#----------------------------------------------------------------------------------
 func _input(event):
 	if event.is_action_released("toogle_spawn_robot"):
 		make_robot(50,50)

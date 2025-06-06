@@ -2,7 +2,7 @@ extends Node
 const ROBOT = preload("res://Scenes/Robot/robot.tscn")
 
 var Seed
-var RandomSeed:bool = true
+var RandomSeed:bool = false
 var MaxStep:int = 100000
 var FPS:int = 20
 var MutationRate:float = 0.001
@@ -63,6 +63,8 @@ func _init() -> void:
 	if RandomSeed:
 		var now = Time.get_unix_time_from_system()
 		Seed = int(now) % 1000000000
+		
+	print(Seed)
 	seed(Seed)
 	initialize_log_adress()
 #---------------------------------------
@@ -263,7 +265,7 @@ func initialize_random_gene(botA:Robot) -> void:
 		dettachProbability[key] = randf_range(0,1)
 
 	deathLimit = randi_range(1,4)
-	limitToReplicate = randi_range(0,4)
+	limitToReplicate = 0#randi_range(0,4)
 
 	botA.Gene = [movementProbs.duplicate(true),
 				attachProbability.duplicate(true),

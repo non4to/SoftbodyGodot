@@ -20,3 +20,17 @@ scale = Vector2(1, 1.545)
 position = Vector2(0, 1000)
 rotation = -1.5708
 scale = Vector2(1, 1.545)
+
+[node name="wall5" parent="." instance=ExtResource("1_lxr0y")]
+position = Vector2(274, 189)
+
+[node name="wall6" parent="." instance=ExtResource("1_lxr0y")]
+position = Vector2(274, 187)
+rotation = -1.56946
+
+[node name="wall7" parent="." instance=ExtResource("1_lxr0y")]
+position = Vector2(580, 183)
+
+[node name="wall8" parent="." instance=ExtResource("1_lxr0y")]
+position = Vector2(272, 400)
+rotation = -1.57391

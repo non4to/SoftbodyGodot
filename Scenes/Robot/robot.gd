@@ -59,7 +59,8 @@ var MovementRules: Array[Vector2] = []				#Has the movement direction that will 
 
 # Called when the node enters the scene tree for the first time.
 func _init() -> void:
-	pass
+	seed(Global.Seed)
+	#pass
 #---------------------------------------
 func _ready() -> void:
 	start_robot() #ID to the robot and its Bones

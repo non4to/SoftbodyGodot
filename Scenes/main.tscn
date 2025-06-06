@@ -82,83 +82,95 @@ position = Vector2(500, 500)
 EnergyArea = 125
 
 [node name="food_spawner6" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
-position = Vector2(713, 300)
+position = Vector2(586, 288)
 EnergyArea = 125
 
 [node name="robot-spawner" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
-position = Vector2(506, 307)
+position = Vector2(333, 222)
 
 [node name="robot-spawner2" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
 position = Vector2(497, 142)
+work = false
 
 [node name="robot-spawner3" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
-position = Vector2(341, 298)
+position = Vector2(333, 283)
 
 [node name="robot-spawner4" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
-position = Vector2(852, 488)
+position = Vector2(482, 335)
 
 [node name="robot-spawner5" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
 position = Vector2(712, 670)
+work = false
 
 [node name="robot-spawner6" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
 position = Vector2(503, 852)
+work = false
 
 [node name="robot-spawner7" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
 position = Vector2(324, 680)
+work = false
 
 [node name="robot-spawner8" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
-position = Vector2(156, 494)
+position = Vector2(387, 341)
 
 [node name="robot-spawner9" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
-position = Vector2(162, 312)
+position = Vector2(541, 277)
 
 [node name="robot-spawner10" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
 position = Vector2(160, 145)
+work = false
 
 [node name="robot-spawner11" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
-position = Vector2(317, 504)
+position = Vector2(337, 347)
 
 [node name="robot-spawner12" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
 position = Vector2(158, 848)
+work = false
 
 [node name="robot-spawner13" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
-position = Vector2(671, 304)
+position = Vector2(432, 227)
 
 [node name="robot-spawner14" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
-position = Vector2(531, 500)
+position = Vector2(431, 278)
 
 [node name="robot-spawner15" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
-position = Vector2(726, 137)
+position = Vector2(483, 222)
 
 [node name="robot-spawner16" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
-position = Vector2(332, 145)
+position = Vector2(384, 224)
 
 [node name="robot-spawner17" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
-position = Vector2(847, 307)
+position = Vector2(435, 337)
 
 [node name="robot-spawner18" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
 position = Vector2(851, 142)
+work = false
 
 [node name="robot-spawner19" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
-position = Vector2(728, 496)
+position = Vector2(538, 224)
 
 [node name="robot-spawner20" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
 position = Vector2(169, 675)
+work = false
 
 [node name="robot-spawner21" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
-position = Vector2(505, 675)
+position = Vector2(537, 333)
 
 [node name="robot-spawner22" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
 position = Vector2(846, 665)
+work = false
 
 [node name="robot-spawner23" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
 position = Vector2(860, 843)
+work = false
 
 [node name="robot-spawner24" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
 position = Vector2(315, 849)
+work = false
 
 [node name="robot-spawner25" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_6bp64")]
 position = Vector2(676, 851)
+work = false
 
 [node name="food_spawner7" parent="SubViewportContainer/SubViewport" instance=ExtResource("6_21xkr")]
 position = Vector2(313, 700)
