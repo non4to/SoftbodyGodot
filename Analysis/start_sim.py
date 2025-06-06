@@ -55,7 +55,7 @@ def executar_simulacoes(repetitions):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Executa simulação Godot múltiplas vezes')
-    parser.add_argument('-n', '--vezes', type=int, default=50,
+    parser.add_argument('-n', '--vezes', type=int, default=2,
                         help='Número de vezes para executar a simulação')
     args = parser.parse_args()
 

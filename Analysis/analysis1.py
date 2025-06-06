@@ -112,8 +112,10 @@ class Experiment():
                 pickle.dump(data, file)
         return data
     
-    def direction_gene_dominance_analysis(self, GenesThreshold: float):
-        # 1) Merge all simulation steps
+    def gene_dominance_stackplot(self, threshold, gene:int, normalize=False):
+        """gene: index of which allelo is being analysed.
+        0 -> Movement , 1 -> Attach, 2 -> Dettach, 3 -> Death, 4 -> Replication"""
+        # Merge all simulation steps
         allSimulationSteps = []
         for folder, data in self.data.items():
             steps_df = data["steps_df"].copy()
@@ -121,142 +123,169 @@ class Experiment():
             allSimulationSteps.append(steps_df)
         df = pd.concat(allSimulationSteps, ignore_index=True)
 
-        # 2) Calcular contagens por direção
-        directions = ["E", "N", "W", "S", "Z"]
-        counts_per_direction = {}
-        for direction in directions:
-            df["tempColumn"] = df["Gene_Movement"].apply(
-                lambda g: isinstance(g, dict) and g.get(direction, 0) > GenesThreshold
-            )
-            counts_per_direction[direction] = df.groupby("Step")["tempColumn"].sum()
+        if gene==0:
+            graph_labels = ["E", "N", "W", "S", "Z"]
+            graph_title = (f'Probability to move to a direction (value >{threshold*100}%) + Active Simulations (line) ')
+            graph_y_axis_label= (f"Quantity of occurrences of corresponding allele value (value >{threshold*100}%)")
+            stack_data = self.direction_gene_dominance_analysis(df,threshold)
+            if normalize: stack_data = stack_data.div(stack_data.sum(axis=1), axis=0).fillna(0) #Normalize
 
-        stack_data = pd.DataFrame(counts_per_direction).fillna(0)[directions]
+        if gene==1:
+            graph_labels = ["0","1","2","3"]
+            graph_title = (f'Probability to attach based on number of existing links (value >{threshold*100}%) + Active Simulations (line)')
+            graph_y_axis_label= (f"Quantity of occurrences of corresponding allele value (value >{threshold*100}%)")
+            stack_data = self.attach_gene_dominance_analysis(df,threshold)
+            if normalize: stack_data = stack_data.div(stack_data.sum(axis=1), axis=0).fillna(0) #Normalize
 
-        # 3) Normalizar para 0–1
-        stack_norm = stack_data.div(stack_data.sum(axis=1), axis=0).fillna(0)
+        if gene==2:
+            graph_labels = ["1","2","3","4"]
+            graph_title = (f'Probability to dettach based on number of existing links (value >{threshold*100}%) + Active Simulations (line)')
+            graph_y_axis_label= (f"Quantity of occurrences of corresponding allele value (value >{threshold*100}%)")
+            stack_data = self.dettach_gene_dominance_analysis(df,threshold)
+            if normalize: stack_data = stack_data.div(stack_data.sum(axis=1), axis=0).fillna(0) #Normalize
 
-        # 4) Calcular quantas simulações estão vivas em cada step
-        # Primeiro, para cada simulação, achar o último step
+        if gene==3:
+            graph_labels = ["1","2","3","4"]
+            graph_title = (f'Death allele value + Active Simulations (line)')
+            graph_y_axis_label= (f"Quantity of occurrences of corresponding allele value")
+            stack_data = self.death_gene_dominance_analysis(df)
+            if normalize: stack_data = stack_data.div(stack_data.sum(axis=1), axis=0).fillna(0) #Normalize
+
+        if gene==4:
+            graph_labels = ["0","1","2","3","4"]
+            graph_title = (f'Minimum-links to replicate allele value + Active Simulations (line)')
+            graph_y_axis_label= (f"Quantity of occurrences of corresponding allele value")
+            stack_data = self.replicate_gene_dominance_analysis(df)
+            if normalize: stack_data = stack_data.div(stack_data.sum(axis=1), axis=0).fillna(0) #Normalize
+
+        # How many simulations are active in each timestep
+        # Take the last time step
         last_steps = df.groupby("Simulation")["Step"].max()
-        # Agora, para cada valor de step no índice, contar quantas sims têm last_step >= step
-        steps = stack_norm.index.values
+        # For each timestep value in the index, count how many simulations have last_step >= step 
+        steps = stack_data.index.values
         active_sims = [ (last_steps >= s).sum() for s in steps ]
 
-        # 5) Plot
+        # Plot
         fig, ax1 = plt.subplots(figsize=(12,6))
 
-        # 5a) Stackplot no eixo principal
-        ax1.stackplot(steps, stack_norm.T.values, labels=directions, alpha=0.8)
+        # StackPlot
+        ax1.stackplot(steps, stack_data.T.values, labels=graph_labels, alpha=0.8)
         ax1.set_xlabel("Step")
-        ax1.set_ylabel("Proporção de Bots", color="black")
-        ax1.set_yticks([i/10 for i in range(0,11)])
+        if normalize: graph_y_axis_label = f"Normalized {graph_y_axis_label}"
+        ax1.set_ylabel(graph_y_axis_label, color="black")
+        if normalize: ax1.set_yticks([i/10 for i in range(0,11)])
         ax1.set_xticks(range(0, int(steps.max())+1, 5000))
         ax1.tick_params(axis='y', labelcolor="black")
 
-        # 5b) Eixo secundário para simulações ativas
+        # ActiveSimulations
         ax2 = ax1.twinx()
         ax2.plot(steps, active_sims, color="k", linestyle="--", 
-                label="Simulações ativas")
-        ax2.set_ylabel("Simulações ativas", color="k")
+                label="Active Simulations")
+        ax2.set_ylabel("Active Simulations", color="k")
         ax2.tick_params(axis='y', labelcolor="k")
 
-        # 6) Legenda e grid
+        # Subtitle/Grid
         lines, labels = ax1.get_legend_handles_labels()
         lines2, labels2 = ax2.get_legend_handles_labels()
         ax1.legend(lines + lines2, labels + labels2, loc="upper left")
 
         ax1.grid(True, which='both', linestyle='--', linewidth=0.5)
-        plt.title(f'Dominância de direções (stacked) + Simulações ativas (linha)')
+        if normalize: graph_title = f"Normalized {graph_title}"
+        plt.title(graph_title)
         plt.tight_layout()
+        plt.savefig(f"{self.mainFolder}/Figures/{graph_title}.png")
         plt.show()
 
+    def direction_gene_dominance_analysis(self, df:pd.DataFrame, genesThreshold: float) -> pd.DataFrame:
+        """Returns dataframe with directions counted. \n
+        [df] - Step dataframe with bot genes merged \n
+        [genesThreshold] - The minimum value to count said bot
+        """
+        # Counts per direction
+        alleles = ["E", "N", "W", "S", "Z"]
+        counts_per_direction = {}
+        for allele in alleles:
+            df["tempColumn"] = df["Gene_Movement"].apply(
+                lambda g: isinstance(g, dict) and g.get(allele, 0) > genesThreshold
+            )
+            counts_per_direction[allele] = df.groupby("Step")["tempColumn"].sum()
 
-    # def direction_gene_dominance_analysis(self, GenesThreshold:float):
-    #     """Outputs graphs of frequency of Gene that have values bigger than the given [GenesThreshold] \n"""
+        stack_data = pd.DataFrame(counts_per_direction).fillna(0)[alleles]
+        return stack_data
 
-    #     # Merge all simulation steps
-    #     allSimulationSteps = []
-    #     for folder, data in self.data.items():
-    #         steps_df = data["steps_df"].copy()
-    #         steps_df["Simulation"] = folder
-    #         allSimulationSteps.append(steps_df)
+    def attach_gene_dominance_analysis(self, df:pd.DataFrame, genesThreshold: float) -> pd.DataFrame:
+        """Returns dataframe with links counts value counted. \n
+        [df] - Step dataframe with bot genes merged \n
+        [genesThreshold] - The minimum value to count said bot
+        """
+        alleles = ["0","1","2","3"]
+        counts_per_direction = {}
+        for allele in alleles:
+            df["tempColumn"] = df["Gene_Attach"].apply(
+                lambda g: isinstance(g, dict) and g.get(allele, 0) > genesThreshold
+            )
+            counts_per_direction[allele] = df.groupby("Step")["tempColumn"].sum()
 
-    #     df = pd.concat(allSimulationSteps, ignore_index=True)
+        stack_data = pd.DataFrame(counts_per_direction).fillna(0)[alleles]
+        return stack_data
+    
+    def dettach_gene_dominance_analysis(self, df:pd.DataFrame, genesThreshold: float) -> pd.DataFrame:
+        """Returns dataframe with links counts value counted. \n
+        [df] - Step dataframe with bot genes merged \n
+        [genesThreshold] - The minimum value to count said bot
+        """
+        alleles = ["1","2","3","4"]
+        counts_per_direction = {}
+        for allele in alleles:
+            df["tempColumn"] = df["Gene_Dettach"].apply(
+                lambda g: isinstance(g, dict) and g.get(allele, 0) > genesThreshold
+            )
+            counts_per_direction[allele] = df.groupby("Step")["tempColumn"].sum()
 
-    #     # Preparar contagens para cada direção
-    #     directions = ["E", "N", "W", "S", "Z"]
-    #     counts_per_direction = {}
+        stack_data = pd.DataFrame(counts_per_direction).fillna(0)[alleles]
+        return stack_data
 
-    #     for direction in directions:
-    #         def bigger_than_threshold(geneDict):
-    #             if isinstance(geneDict, dict):
-    #                 return geneDict.get(direction, 0) > GenesThreshold
-    #             else:
-    #                 return False
+    def death_gene_dominance_analysis(self, df:pd.DataFrame) -> pd.DataFrame:
+        """Counts how many bots have death gene == 1, 2, 3 or 4 in each Step."""
+        death_values = [1, 2, 3, 4]
+        counts_per_value = {}
+        for val in death_values:
+            df["tempColumn"] = df["Gene_Death"].apply(lambda g: g == val)
+            counts_per_value[str(val)] = df.groupby("Step")["tempColumn"].sum()
 
-    #         df["tempColumn"] = df["Gene_Movement"].apply(bigger_than_threshold)
-    #         countValuesPerStep = df.groupby("Step")["tempColumn"].sum()
-    #         counts_per_direction[direction] = countValuesPerStep
+        stack_data = pd.DataFrame(counts_per_value).fillna(0)[[str(v) for v in death_values]]
+        return stack_data
+    
+    def replicate_gene_dominance_analysis(self, df:pd.DataFrame) -> pd.DataFrame:
+        """Counts how many bots have death gene == 1, 2, 3 or 4 in each Step."""
+        replicate_values = [0, 1, 2, 3, 4]
+        counts_per_value = {}
+        for val in replicate_values:
+            df["tempColumn"] = df["Gene_Replicate"].apply(lambda g: g == val)
+            counts_per_value[str(val)] = df.groupby("Step")["tempColumn"].sum()
 
-    #     # Montar DataFrame para stackplot
-    #     stack_data = pd.DataFrame(counts_per_direction).fillna(0)
-    #     stack_data = stack_data[directions]  # garantir ordem correta
+        stack_data = pd.DataFrame(counts_per_value).fillna(0)[[str(v) for v in replicate_values]]
+        return stack_data
 
-    #     # Normalizar para proporção (0 a 1)
-    #     stack_data_normalized = stack_data.div(stack_data.sum(axis=1), axis=0).fillna(0)
-
-    #     # Plotar stackplot normalizado
-    #     plt.figure(figsize=(12, 6))
-    #     plt.stackplot(stack_data_normalized.index, stack_data_normalized.T.values, labels=directions, alpha=0.8)
-
-    #     plt.xlabel('Step')
-    #     plt.ylabel('Proporção de Bots (%)')
-    #     plt.title(f'Proporção de Bots com Gene_Movement > {GenesThreshold} por Direção')
-
-    #     plt.yticks([i/10 for i in range(0, 11)])           
-    #     max_step = int(stack_data_normalized.index.max())
-    #     plt.xticks(range(0, max_step + 1, 5000)) 
-    #     plt.legend(loc="upper left")
-    #     plt.grid(True)
-    #     plt.tight_layout()
-    #     plt.show()
-
-        # #Merge all simulation steps_df
-        # allSimulationSteps = []
-        # for folder, data in self.data.items():
-        #     steps_df = data["steps_df"].copy()
-        #     steps_df["Simulation"] = folder
-        #     allSimulationSteps.append(steps_df)
-
-        # df = pd.concat(allSimulationSteps, ignore_index=True)
-        
-        # #plots figure
-        # plt.figure(figsize=(12,6))
-        # for direction in ["E","N","W","S","Z"]:
-        #     def bigger_than_threshold(geneDict):
-        #         if isinstance(geneDict, dict):
-        #             return geneDict.get(direction, 0) > GenesThreshold
-        #         else:
-        #             return False
-            
-        #     df["tempColumn"] = df["Gene_Movement"].apply(bigger_than_threshold)
-        #     countValuesPerStep = df.groupby("Step")["tempColumn"].sum()
-        #     plt.plot(countValuesPerStep.index, countValuesPerStep.values, label=f"{direction}>{GenesThreshold}")
-        #     df.drop(columns=["tempColumn"], inplace=True)
-        
-        # totalBotsInStep = df.groupby("Step").size()
-        # plt.plot(totalBotsInStep.index, totalBotsInStep.values, color="red",label=f"Total bots", linewidth=2)
-
-        # plt.xlabel('Step')
-        # plt.ylabel('Quantidade de Bots')
-        # plt.title(f'Bots com Gene_Movement > {GenesThreshold} por Direção')
-        # plt.legend()
-        # plt.grid(True)
-        # plt.show()
 
 if __name__ == '__main__':
     Sim1 = Experiment(MAIN_LOG_FOLDER,"LogsDepoisDaNovaReplicacao")
-    Sim1.direction_gene_dominance_analysis(0.2)
+    graphs_to_print = {
+        # "movement_norm": [0.2,0,True],
+        "movement_not_norm": [0.2,0,False],
+        # "attach_norm": [0.5,1,True],
+        # "attach_not_norm": [0.5,1,False],
+        # "dettach_norm": [0.5,2,True],
+        # "dettach_not_norm": [0.5,2,False],
+        # "death_norm": [0,3,True],
+        # "death_not_norm": [0,3,False],
+        # "replicate_norm": [0,4,True],
+        # "replicate_not_norm":[0,4,False]
+    }
+
+    for key in graphs_to_print.keys():
+        Sim1.gene_dominance_stackplot(graphs_to_print[key][0],graphs_to_print[key][1],graphs_to_print[key][2])
+    # Sim1.gene_dominance_stackplot(0.20,0,True)
     # Sim1.debug_dict_column("Gene_Movement")
     # Sim1.build_simulation_step_df("/home/non4to/Documentos/SoftBodyLogs/Simulation_2025-05-06_18-27-33__47.26s")
     # Sim1.gene_dominance_analysis([0.2, 0.5, 0.5, 1, 0])
