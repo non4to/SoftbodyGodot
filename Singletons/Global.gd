@@ -2,7 +2,7 @@ extends Node
 const ROBOT = preload("res://Scenes/Robot/robot.tscn")
 
 var Seed
-var RandomSeed:bool = false
+var RandomSeed:bool
 var MaxStep:int = 100000
 var FPS:int = 20
 var MutationRate:float = 0.001
@@ -33,6 +33,7 @@ var BOTDeathOfAge:bool = false
 var BOTMaxDeathProb:float = 0.8
 var BOTBonesThatCanJoin:Array = [1,3,5,7]
 var BOTBornWithPercentageEnergy = 0.5
+var BOTReplicationEnergyCost = 0.5
 
 #####################################################################
 ##################################################################
@@ -43,6 +44,7 @@ var QtyEnergyBanksCreated: int = 0
 var QtyRobotsCreated: int = 0 
 var QtyRobotsCreatedBySpawner: int = 0
 var QtyRobotsAlive: int = 0
+var MaxQtyRobotsAlive: int = 0
 ###
 var Step:int = 0
 var SaveFrames:bool = true
@@ -52,6 +54,8 @@ var RobotSpawners = []
 var Duration
 var MaxReplicationPerStep:int = 25
 var TimeLimitByFrame_mS = 100
+var KillOlderBots:bool = true
+var MaxBotsInScreen:int = 100
 ###
 var OldFrameStart = 0
 var OldestAge:int = 0
@@ -64,7 +68,6 @@ func _init() -> void:
 		var now = Time.get_unix_time_from_system()
 		Seed = int(now) % 1000000000
 		
-	print(Seed)
 	seed(Seed)
 	initialize_log_adress()
 #---------------------------------------
@@ -256,6 +259,7 @@ func initialize_random_gene(botA:Robot) -> void:
 
 	for key in movementProbs.keys():
 		movementProbs[key] = randf()
+		
 	movementProbs = Global.normalize_probs(movementProbs)
 
 	for key in attachProbability.keys():
@@ -264,7 +268,7 @@ func initialize_random_gene(botA:Robot) -> void:
 	for key in dettachProbability.keys():
 		dettachProbability[key] = randf_range(0,1)
 
-	deathLimit = randi_range(1,4)
+	deathLimit = 999#randi_range(1,4)
 	limitToReplicate = 0#randi_range(0,4)
 
 	botA.Gene = [movementProbs.duplicate(true),
@@ -299,6 +303,7 @@ func load_parameters_from_file(paramsFile:String) -> void:
 	BOTChangeDirectionDelay = result["Bots"].get("ChangeDirectionDelay", BOTChangeDirectionDelay) 
 	BOTReplicationCoolDown = result["Bots"].get("ReplicationCoolDown", BOTReplicationCoolDown)  
 	BOTReplicationEnergyThresold = result["Bots"].get("ReplicationEnergyThresold", BOTReplicationEnergyThresold)
+	BOTReplicationEnergyCost = result["Bots"].get("ReplicationEnergyCost", BOTReplicationEnergyCost)
 	BOTBornWithPercentageEnergy = result["Bots"].get("BornWithPercentageEnergy", BOTBornWithPercentageEnergy) 
 
 	BOTCriticalAge = result["Bots"].get("CriticalAge", BOTCriticalAge) 
@@ -311,12 +316,15 @@ func load_parameters_from_file(paramsFile:String) -> void:
 	FSRechargeRate = result["FoodSource"].get("RechargeRate", FSRechargeRate)
 	FSInfiniteFood = result["FoodSource"].get("InfiniteFood", FSInfiniteFood)
 
+	KillOlderBots = result["General"].get("KillOlderBots", KillOlderBots)
+	MaxBotsInScreen = result["General"].get("MaxBotsInScreen", MaxBotsInScreen)
 	TimeLimitByFrame_mS = result["General"].get("TimeLimitByFrame_mS", TimeLimitByFrame_mS)
 	MaxReplicationPerStep = result["General"].get("MaxReplicationPerStep", MaxReplicationPerStep)
 	LogAddress = result["General"].get("LogAddress", LogAddress)
 	StartPopulation = result["General"].get("StartPopulation", StartPopulation)
+	MaxQtyRobotsAlive = result["General"].get("MaxQtyRobotsAlive", MaxQtyRobotsAlive)
 	Seed = result["General"].get("Seed", Seed) 
-	RandomSeed =  result["General"].get("RandonSeed", RandomSeed) 
+	RandomSeed =  result["General"].get("RandomSeed", RandomSeed) 
 	MaxStep = result["General"].get("MaxStep", MaxStep)
 	FPS = result["General"].get("FPS", FPS)
 	MutationRate = result["General"].get("MutationRate", MutationRate)

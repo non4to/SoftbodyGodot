@@ -2,7 +2,9 @@ extends Node
 
 var DEBUGEventLog:Array = []
 var EventLog:Array = []
-var BotStepLog:Array = []
+var BotStepLog:Array = [
+	["SimStep,BotID,BornIn,Age,Ndescendents,EnBankIndex,Energy,Position,MovDirection,LinearVel,JoinedBots"]
+]
 var GeneralLog:Array = []
 var EnergyBankOpsLog:Array = []
 var BotLog:Array= []
@@ -209,12 +211,16 @@ func snapshot_bots_at_energybank(botsAtEnergyBank:Dictionary) -> Dictionary:
 func bot_snapshot(bot:Robot) -> Array:
 	return [Global.Step, 
 				bot.RobotID,
-				bot.Age,
 				bot.BornIn,
-				bot.MarkedForDeath,
+				bot.Age,
+				bot.Descendents,
+				# bot.MarkedForDeath,
 				bot.EnergyBankIndex,
+				bot.get_current_energy(),
 				bot.Bones[bot.CenterBoneIndex].global_position,
 				bot.MovementDirection,
 				bot.Bones[bot.CenterBoneIndex].linear_velocity,
 				Assertation.get_robots_joints(bot),
 				]
+
+

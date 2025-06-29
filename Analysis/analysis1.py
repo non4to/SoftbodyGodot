@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 MAIN_LOG_FOLDER = "/home/non4to/Documentos/OldLogsForAnalysis/LogsDepoisDaNovaReplicacao"
 PROB_THRESOLD = 0.2
 
+"""First analysis done. Prints the frequency of each gene along each simulation steps"""
+
 class Experiment():
     def __init__(self, log_folder:str, experiment_name:str):
         self.mainFolder:str = log_folder
@@ -107,7 +109,7 @@ class Experiment():
             with open(f"{self.mainFolder}/{self.experimentName}.pkl", "rb") as file:
                 data = pickle.load(file)
         else:
-            data = self.get_all_simulations_df()
+            data = self.get_all_simulations_df() 
             with open(f"{self.mainFolder}/{self.experimentName}.pkl", "wb") as file:
                 pickle.dump(data, file)
         return data

@@ -3,33 +3,35 @@ class_name Robot
 
 ## CONSTANTS
 # BODY
-var CenterBoneIndex: int = Global.BOTCenterBoneIndex					#Which is the bone in the center of the robot -> Force is applied on it
-var ReplicationCoolDown:int = Global.BOTReplicationCoolDown 
-var CriticalAge:int = Global.BOTCriticalAge
-var MaxDeathProb:float = Global.BOTMaxDeathProb
-var DeathOfAge:bool = Global.BOTDeathOfAge
+var CenterBoneIndex: int = Global.BOTCenterBoneIndex					# Which is the bone in the center of the robot -> Force is applied on it
+var ReplicationCoolDown:int = Global.BOTReplicationCoolDown 			# Bots only repplicate 
+var CriticalAge:int = Global.BOTCriticalAge								# Age where death probability goes up rapidly (when death by age is true)
+var MaxDeathProb:float = Global.BOTMaxDeathProb							# Maximum death probability (when death by age is true)
+var DeathOfAge:bool = Global.BOTDeathOfAge								# Allows or not death by age
 
 # ENERGY ECONOMY
-var MaxEnergyPossible: int = Global.BOTMaxEnergyPossible				#Maximum Energy possible
-var MovingEnergyMult: float = Global.BOTMovingEnergyMult 				#Multiply this by the Force of the movement to obtain the Energy Cost
-var Metabolism: float = Global.BOTMetabolism							#Metabolism. Every step this value is deduced from Energy
+var MaxEnergyPossible: int = Global.BOTMaxEnergyPossible				# Maximum Energy possible for an individual bot
+var MovingEnergyMult: float = Global.BOTMovingEnergyMult 				# Multiply this by the Force of the movement to obtain the Energy Cost
+var Metabolism: float = Global.BOTMetabolism							 #Metabolism. Every step this value is deduced from Energy
 # MOVEMENT
-var MaxForcePossible: float = Global.BOTMaxForcePossible   				#Maximum Movement Force possible
-var ChangeDirectionDelay: float = Global.BOTChangeDirectionDelay		#Delay to allow change in Movement Direction
+var MaxForcePossible: float = Global.BOTMaxForcePossible   				# Maximum Movement Force possible
+var ChangeDirectionDelay: float = Global.BOTChangeDirectionDelay		# Delay to allow change in Movement Direction
 # JOINING MECHANICS
-var JoinThresold: float = Global.BOTJoinThresold						#if a collision happens while above this, they joint
+var JoinThresold: float = Global.BOTJoinThresold						# if a collision happens while above this, they joint
 
 ## VARIABLES
 # BODY
 var ReplicationCount:int = ReplicationCoolDown
-var BonesThatCanJoin:Array = Global.BOTBonesThatCanJoin					#Which bones can join during the simulation
-var ReplicationEnergyThresold:float = Global.BOTReplicationEnergyThresold			#minimum energy to replicate
-var BornWithPercentageEnergy = Global.BOTBornWithPercentageEnergy
-var MarkedForDeath = false
-var Age:int = 0
-var BornIn:int = 0
-var Bones = []
-var RobotID: String 													#Robot unique identifier
+var BonesThatCanJoin:Array = Global.BOTBonesThatCanJoin					# Which bones can join during the simulation
+var ReplicationEnergyThresold:float = Global.BOTReplicationEnergyThresold # Minimum energy to replicate
+var ReplicationEnergyCost:float = Global.BOTReplicationEnergyCost		# Cost of replication
+var BornWithPercentageEnergy = Global.BOTBornWithPercentageEnergy		# Percentage of energy the child will be born 
+var MarkedForDeath = false												# Assigned bot to death list in eventmanager
+var Age:int = 0															# Number of steps the bot stayed alive
+var Descendents:int = 0 												# Number of times it reproduced
+var BornIn:int = 0														# Simulation step it was born
+var Bones = []															# List of bones
+var RobotID: String 													# Robot unique identifier
 # ENERGY ECONOMY
 var RechargingAreas: Array[Area2D] = []									#every Recharging area the charger node is colliding to.
 var Energy: float = 0													#Current Energy
@@ -59,8 +61,8 @@ var MovementRules: Array[Vector2] = []				#Has the movement direction that will 
 
 # Called when the node enters the scene tree for the first time.
 func _init() -> void:
-	seed(Global.Seed)
-	#pass
+	# seed(Global.Seed)
+	pass
 #---------------------------------------
 func _ready() -> void:
 	start_robot() #ID to the robot and its Bones
@@ -118,6 +120,7 @@ func _physics_process(_delta: float) -> void:
 # Actions
 #---------------------------------------
 func self_replicate() -> void:
+	Descendents += 1
 	var descendent:Robot = Global.ROBOT.instantiate()
 	var new_gene:Array = []
 
@@ -126,6 +129,7 @@ func self_replicate() -> void:
 	else: 
 		new_gene = Gene.duplicate(true)
 
+	sum_to_energy(-ReplicationEnergyCost*MaxEnergyPossible)
 	descendent.initialize_gene(new_gene)
 	descendent.global_position = get_replication_position()
 	descendent.Energy = MaxEnergyPossible*BornWithPercentageEnergy
@@ -148,6 +152,12 @@ func metabolize() -> void:
 #---------------------------------------
 func die(reason:int) -> void:
 	#ways to die: 0 = out of energy / 1 = joint 4 broke / 2 = death rule / 3 = death of age
+	if (reason==4): #death of superpolution: this was the oldest bot alive
+		LogManager.log_bot_snapshot(self,"Superpopulation: Oldest Bot")
+		LogManager.log_event("[event] Superpopulation: Oldest Bot "+str(RobotID))
+		LogManager.log_death_event(self,"Superpopulation: Oldest Bot")
+		EventManager.add_bot_to_die(self)
+
 	if (reason==3): #death of age
 		LogManager.log_bot_snapshot(self,"Death-Age")
 		LogManager.log_event("[event] Death by Age "+str(RobotID))
@@ -165,7 +175,6 @@ func die(reason:int) -> void:
 		LogManager.log_bot_snapshot(self,"Death-nucleos break")
 		LogManager.log_event("[event] Death by nucleos break "+str(RobotID))
 		LogManager.log_death_event(self,"Bot broke")
-
 		EventManager.add_bot_to_die(self)
 		# if Global.StopStep<1: Global.StopStep = Global.Step+2
 
@@ -175,7 +184,7 @@ func die(reason:int) -> void:
 				EventManager.add_bot_to_die(cell)
 				LogManager.log_bot_snapshot(cell,"Death-no energy")
 				LogManager.log_event("[event] Death by no energy "+str(RobotID))
-				LogManager.log_death_event(self,"No energy on EnergyBank")
+				LogManager.log_death_event(cell,"No energy on EnergyBank")
 
 				# Global.death(cell)
 		else: 
