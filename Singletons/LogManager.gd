@@ -222,5 +222,3 @@ func bot_snapshot(bot:Robot) -> Array:
 				bot.Bones[bot.CenterBoneIndex].linear_velocity,
 				Assertation.get_robots_joints(bot),
 				]
-
-

@@ -124,10 +124,11 @@ func self_replicate() -> void:
 	var descendent:Robot = Global.ROBOT.instantiate()
 	var new_gene:Array = []
 
-	if randf() <= Global.MutationRate:
-		new_gene = Global.mutate_gene(Gene)
-	else: 
-		new_gene = Gene.duplicate(true)
+	new_gene = Global.new_gene(Gene)
+	# if randf() <= Global.MutationRate:
+	# 	new_gene = Global.mutate_gene(Gene)
+	# else: 
+	# 	new_gene = Gene.duplicate(true)
 
 	sum_to_energy(-ReplicationEnergyCost*MaxEnergyPossible)
 	descendent.initialize_gene(new_gene)
