@@ -199,39 +199,6 @@ func new_gene(gene:Array) -> Array:
 		replicateLimit = get_new_int_gene_unit(replicateLimit)
 
 	return [movementProbs,attachProbs,dettachProbs,deathLimit,replicateLimit]
-# func mutate_gene(gene:Array) -> Array:
-# 	var partToMutate: int = randi_range(0,gene.size()-1)
-# 	var movementProbs = gene[0].duplicate(true)
-# 	var attachProbs = gene[1].duplicate(true)
-# 	var dettachProbs = gene[2].duplicate(true)
-# 	var deathLimit = gene[3]
-# 	var replicateLimit = gene[4]
-
-# 	if partToMutate==0:
-# 		var keys = gene[partToMutate].keys()
-# 		var randKey = keys[randi_range(0,keys.size()-1)]
-# 		movementProbs[randKey] = get_new_float_gene_unit(movementProbs[randKey])
-# 		movementProbs = normalize_probs(movementProbs)
-
-# 	elif partToMutate==1:
-# 		var keys = gene[partToMutate].keys()
-# 		var randKey = keys[randi_range(0,keys.size()-1)]
-# 		attachProbs[randKey] = get_new_float_gene_unit(attachProbs[randKey])
-# 		attachProbs = normalize_probs(attachProbs)
-	
-# 	elif partToMutate==2:
-# 		var keys = gene[partToMutate].keys()
-# 		var randKey = keys[randi_range(0,keys.size()-1)]
-# 		dettachProbs[randKey] = get_new_float_gene_unit(dettachProbs[randKey])
-# 		dettachProbs = normalize_probs(dettachProbs)
-
-# 	elif partToMutate==3:
-# 		deathLimit = get_new_int_gene_unit(deathLimit)
-
-# 	elif partToMutate==4:
-# 		replicateLimit = get_new_int_gene_unit(replicateLimit)
-
-# 	return [movementProbs,attachProbs,dettachProbs,deathLimit,replicateLimit]
 #--------------------------------------
 func get_direction_vector(fromA:Node,toB:Node) -> Vector2:
 	var direction_vector = Vector2(0,0)

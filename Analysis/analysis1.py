@@ -2,10 +2,10 @@ import os
 import json
 import pandas as pd
 import pickle
+import seaborn as sns
 from collections import defaultdict, Counter
 import matplotlib.pyplot as plt
-MAIN_LOG_FOLDER = "/home/non4to/Documentos/OldLogsForAnalysis/LogsDepoisDaNovaReplicacao"
-PROB_THRESOLD = 0.2
+
 
 """First analysis done. Prints the frequency of each gene along each simulation steps"""
 
@@ -61,10 +61,15 @@ class Experiment():
         new_list = []
 
         for line in data:
-            columns = ["Step","RobotID","Age","BornIn","MarkedForDeath","EnergyBankIndex","Position","MovementDirection","LinearVelocity","JointToBots","ReasonOfDeath"]
+            # columns = ["Step","RobotID","Age","BornIn","MarkedForDeath","EnergyBankIndex","Position","MovementDirection","LinearVelocity","JointToBots","ReasonOfDeath"]
+            columns = ["Step","RobotID","BornIn","Age","Ndescendents","EnergyBankIndex","Energy","Position","MovementDirection","LinearVelocity","JointToBots","ReasonOfDeath"]
+
             line_dict = {}
             
-            if len(line)==10:
+            if len(line)==1:
+                continue
+
+            while len(line)<=len(columns):
                 line.append("") 
 
             for i in range(0,len(columns)):
@@ -98,6 +103,7 @@ class Experiment():
                                                 right_index=True,       
                                                 how="left" 
                                                 )      
+
                 data = self.open_json(simulations[folder]["address"]+"/EndSimulation.json",True)
                 for key in data.keys():
                     simulations[folder][key] = data[key]  
@@ -113,7 +119,8 @@ class Experiment():
             with open(f"{self.mainFolder}/{self.experimentName}.pkl", "wb") as file:
                 pickle.dump(data, file)
         return data
-    
+#-------------------------------------------------------------    
+
     def gene_dominance_stackplot(self, threshold, gene:int, normalize=False):
         """gene: index of which allelo is being analysed.
         0 -> Movement , 1 -> Attach, 2 -> Dettach, 3 -> Death, 4 -> Replication"""
@@ -198,6 +205,38 @@ class Experiment():
         plt.savefig(f"{self.mainFolder}/Figures/{graph_title}.png")
         plt.show()
 
+    def direction_children_boxplot(self, threshold=0.2):
+        allBots = []
+
+        for folder, sim_data in self.data.items():
+            stepsDf = sim_data["steps_df"]
+        
+            #order bots to get last register of them
+            lastRegister = stepsDf.sort_values("Step").groupby("RobotID").last()
+            for robotId, row in lastRegister.iterrows():
+                movDict = row["Gene_Movement"]
+                nChild = row["Ndescendents"]
+
+                for direction, prob in movDict.items():
+                    if prob > threshold:
+                        allBots.append({"Direction": direction,
+                                        "Children": nChild})
+        df = pd.DataFrame(allBots)
+
+        plt.figure(figsize=(10, 6))
+        sns.barplot(data=df, x="Direction", y="Children", estimator="sum", ci="sd")        
+        plt.title(f"Nº de descendentes por direção com probabilidade > {threshold*100:.0f}%")
+        plt.suptitle("")
+        plt.xlabel("Direções preferidas (prob > limiar)")
+        plt.ylabel("Número de descendentes")
+        plt.tight_layout()
+        plt.savefig(f"{self.mainFolder}/Figures/Descendents_by_Preferred_Directions_{threshold}.png")
+        plt.show()
+
+
+
+
+#-------------------------------------------------------------
     def direction_gene_dominance_analysis(self, df:pd.DataFrame, genesThreshold: float) -> pd.DataFrame:
         """Returns dataframe with directions counted. \n
         [df] - Step dataframe with bot genes merged \n
@@ -270,24 +309,26 @@ class Experiment():
         return stack_data
 
 
-if __name__ == '__main__':
-    Sim1 = Experiment(MAIN_LOG_FOLDER,"LogsDepoisDaNovaReplicacao")
-    graphs_to_print = {
-        # "movement_norm": [0.2,0,True],
-        "movement_not_norm": [0.2,0,False],
-        # "attach_norm": [0.5,1,True],
-        # "attach_not_norm": [0.5,1,False],
-        # "dettach_norm": [0.5,2,True],
-        # "dettach_not_norm": [0.5,2,False],
-        # "death_norm": [0,3,True],
-        # "death_not_norm": [0,3,False],
-        # "replicate_norm": [0,4,True],
-        # "replicate_not_norm":[0,4,False]
-    }
 
-    for key in graphs_to_print.keys():
-        Sim1.gene_dominance_stackplot(graphs_to_print[key][0],graphs_to_print[key][1],graphs_to_print[key][2])
-    # Sim1.gene_dominance_stackplot(0.20,0,True)
-    # Sim1.debug_dict_column("Gene_Movement")
-    # Sim1.build_simulation_step_df("/home/non4to/Documentos/SoftBodyLogs/Simulation_2025-05-06_18-27-33__47.26s")
-    # Sim1.gene_dominance_analysis([0.2, 0.5, 0.5, 1, 0])
+if __name__ == '__main__':
+
+    MAIN_LOG_FOLDER = "/home/non4to/Documentos/OldLogsForAnalysis/ReplicacaoComCusto" #"/home/non4to/Documentos/OldLogsForAnalysis/LogsDepoisDaNovaReplicacao"
+    PROB_THRESOLD = 0.2
+    
+    Sim1 = Experiment(MAIN_LOG_FOLDER,"ReplicacaoComCusto")
+    Sim1.direction_children_boxplot()
+    # graphs_to_print = {
+    #     "movement_norm": [0.2,0,True],
+    #     "movement_not_norm": [0.2,0,False],
+    #     # "attach_norm": [0.5,1,True],
+    #     # "attach_not_norm": [0.5,1,False],
+    #     # "dettach_norm": [0.5,2,True],
+    #     # "dettach_not_norm": [0.5,2,False],
+    #     # "death_norm": [0,3,True],
+    #     # "death_not_norm": [0,3,False],
+    #     # "replicate_norm": [0,4,True],
+    #     # "replicate_not_norm":[0,4,False]
+    # }
+
+    # for key in graphs_to_print.keys():
+    #     Sim1.gene_dominance_stackplot(graphs_to_print[key][0],graphs_to_print[key][1],graphs_to_print[key][2])

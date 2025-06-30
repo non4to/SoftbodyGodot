@@ -99,12 +99,12 @@ func add_bank_to_erase(bank:int) -> void:
 #--------------------------------------
 func resolve_replications() -> void:
 	var processed:int = 0
-	var oldestBots = get_oldest_bots()
 	while (processed < Global.MaxReplicationPerStep) and (BotsToReplicate.size() > 0):
 		var chosenIndex = randi_range(0,BotsToReplicate.size()-1)
 		var parent = BotsToReplicate.pop_at(chosenIndex)
 		if is_instance_valid(parent):
 			if Global.QtyRobotsAlive >= Global.MaxQtyRobotsAlive:
+				var oldestBots = get_oldest_bots()
 				var oldestBot = oldestBots.pop_front()
 				oldestBot.die(4)
 			parent.self_replicate()
