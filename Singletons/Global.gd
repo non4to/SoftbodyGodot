@@ -34,6 +34,8 @@ var BOTMaxDeathProb:float = 0.8
 var BOTBonesThatCanJoin:Array = [1,3,5,7]
 var BOTBornWithPercentageEnergy = 0.5
 var BOTReplicationEnergyCost = 0.5
+var BOTAttachStartingRange = [0,1]
+var BOTDettachStartingRange = [0,1]
 
 #####################################################################
 ##################################################################
@@ -185,12 +187,10 @@ func new_gene(gene:Array) -> Array:
 	for item in attachProbs.keys():
 		if randf() <= Global.MutationRate:
 			attachProbs[item] = get_new_float_gene_unit(attachProbs[item])
-	attachProbs = normalize_probs(attachProbs)
 
 	for item in dettachProbs.keys():
 		if randf() <= Global.MutationRate:
 			dettachProbs[item] = get_new_float_gene_unit(dettachProbs[item])
-	dettachProbs = normalize_probs(dettachProbs)
 
 	if randf() <= Global.MutationRate:
 		deathLimit = get_new_int_gene_unit(deathLimit)
@@ -260,10 +260,10 @@ func initialize_random_gene(botA:Robot) -> void:
 	movementProbs = Global.normalize_probs(movementProbs)
 
 	for key in attachProbability.keys():
-		attachProbability[key] = randf_range(0,1)
+		attachProbability[key] = randf_range(BOTAttachStartingRange[0],BOTAttachStartingRange[1])
 
 	for key in dettachProbability.keys():
-		dettachProbability[key] = randf_range(0,1)
+		dettachProbability[key] = randf_range(BOTDettachStartingRange[0],BOTDettachStartingRange[1])
 
 	deathLimit = 999#randi_range(1,4)
 	limitToReplicate = 0#randi_range(0,4)
@@ -302,6 +302,8 @@ func load_parameters_from_file(paramsFile:String) -> void:
 	BOTReplicationEnergyThresold = result["Bots"].get("ReplicationEnergyThresold", BOTReplicationEnergyThresold)
 	BOTReplicationEnergyCost = result["Bots"].get("ReplicationEnergyCost", BOTReplicationEnergyCost)
 	BOTBornWithPercentageEnergy = result["Bots"].get("BornWithPercentageEnergy", BOTBornWithPercentageEnergy) 
+	BOTAttachStartingRange = result["Bots"].get("AttachStartingRange", BOTAttachStartingRange) 
+	BOTDettachStartingRange = result["Bots"].get("DettachStartingRange", BOTDettachStartingRange) 
 
 	BOTCriticalAge = result["Bots"].get("CriticalAge", BOTCriticalAge) 
 	BOTDeathOfAge = result["Bots"].get("DeathOfAge", BOTDeathOfAge) 

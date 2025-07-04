@@ -6,11 +6,13 @@
 			5,
 			7
 		],
+		"AttachStartingRange":[1,1],
+		"DettachStartingRange":[0,0],
 		"CenterBoneIndex": 4,
 		"ChangeDirectionDelay": 0.0,
 		"CriticalAge": 5000,
 		"DeathOfAge": false,
-		"JoinThresold": 112.5,
+		"JoinThresold": 0,
 		"MaxDeathProb": 0.8,
 		"MaxEnergyPossible": 250,
 		"MaxForcePossible": 50,
@@ -20,7 +22,7 @@
 		"ReplicationEnergyThresold": 0.95,
 		"ReplicationEnergyCost": 0.5,
 		"BornWithPercentageEnergy": 0.5,
-		"UsingJoinThresold": false
+		"UsingJoinThresold": true
 	},
 	"FoodSource": {
 		"EnergyArea": 500.0,
