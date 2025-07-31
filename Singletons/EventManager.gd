@@ -1,6 +1,8 @@
 extends Node
 const BONE = preload("res://Scenes/Robot/bone.gd")
 const ROBOT = preload("res://Scenes/Robot/robot.tscn")
+const JOINT = preload("res://Scenes/Robot/joint.gd")
+
 
 # var JointsToBreak:Array = []
 # var JointsToCreate:Array = []
@@ -18,7 +20,8 @@ func resolve_events():
 #--------------------------------------
 func attach_bodies(boneA:Bone, boneB: Bone) -> void:	
 	var joint1: PinJoint2D = PinJoint2D.new()
-	var joint2: PinJoint2D = PinJoint2D.new()
+	joint1.set_script(JOINT)
+	# var joint2: PinJoint2D = PinJoint2D.new()
 
 	joint1.position = Vector2(0,0)
 	joint1.node_a = boneA.get_path()
@@ -31,21 +34,21 @@ func attach_bodies(boneA:Bone, boneB: Bone) -> void:
 	boneA.JointDirection = Global.get_direction_vector(boneA,boneB)
 	boneA.add_child(joint1)
 	
-	joint2.position = Vector2(0,0)
-	joint2.node_a = boneB.get_path()
-	joint2.node_b = boneA.get_path()
-	joint2.softness = 0.001
-	joint2.disable_collision =false
-	joint2.name = "body-link"
+	# joint2.position = Vector2(0,0)
+	# joint2.node_a = boneB.get_path()
+	# joint2.node_b = boneA.get_path()
+	# joint2.softness = 0.001
+	# joint2.disable_collision =false
+	# joint2.name = "body-link"
 	boneB.Joined = true
 	boneB.JoinedTo = boneA
-	boneB.JointDirection = Global.get_direction_vector(boneB,boneA)
-	boneB.add_child(joint2)
+	# boneB.JointDirection = Global.get_direction_vector(boneB,boneA)
+	# boneB.add_child(joint2)
 	
 	boneA.RelatedJoints.append(joint1)
-	boneA.RelatedJoints.append(joint2)
+	# boneA.RelatedJoints.append(joint2)
 	boneB.RelatedJoints.append(joint1)
-	boneB.RelatedJoints.append(joint2)
+	# boneB.RelatedJoints.append(joint2)
 	boneA.Joined = true
 	boneB.Joined = true
 	
@@ -54,8 +57,8 @@ func attach_bodies(boneA:Bone, boneB: Bone) -> void:
 	jointLine.add_point(boneA.global_position/100,0)
 	jointLine.add_point(boneB.global_position/100,1)
 	jointLine.default_color = Color(255,255,255)
-	jointLine.width = 5
-	jointLine.z_index = +2
+	jointLine.width = 10
+	jointLine.z_index = -1
 	boneA.add_child(jointLine)
 
 	LogManager.log_event("[attach_bodies] jointLine In" +str(boneA.BoneOf)+","+str(boneA.name))
@@ -98,23 +101,32 @@ func add_bank_to_erase(bank:int) -> void:
 	BanksToErase.append(bank)
 #--------------------------------------
 func resolve_replications() -> void:
+	# print(len(BotsToReplicate))
 	var processed:int = 0
+	var oldestBots = get_oldest_bots()
 	while (processed < Global.MaxReplicationPerStep) and (BotsToReplicate.size() > 0):
 		var chosenIndex = randi_range(0,BotsToReplicate.size()-1)
 		var parent = BotsToReplicate.pop_at(chosenIndex)
 		if is_instance_valid(parent):
 			if Global.QtyRobotsAlive >= Global.MaxQtyRobotsAlive:
-				var oldestBots = get_oldest_bots()
 				var oldestBot = oldestBots.pop_front()
 				oldestBot.die(4)
-			parent.self_replicate()
+			else:
+				call_deferred("replicate_bot", parent)
+				# parent.self_replicate()
 		processed += 1
+#--------------------------------------
+func replicate_bot(parent:Robot) -> void:
+	if is_instance_valid(parent):
+		parent.self_replicate()
+
 #--------------------------------------
 func resolve_create_joint(boneA:Bone, boneB:Bone):
 	LogManager.log_event("[resolving unions...]")
 	var botA = boneA.get_parent().get_parent()
 	var botB = boneB.get_parent().get_parent()
 	if is_instance_valid(botA) and is_instance_valid(botB) and not(boneA.Joined) and not(boneB.Joined):
+		# await get_tree().create_timer(0.05).timeout
 		attach_bodies(boneA,boneB)
 		EnergyBankManager.joint_made(boneA,boneB)
 		LogManager.log_event("[resolved_union] Attachment "+str(boneA.BoneOf)+","+str(boneA.name)+" x "+str(boneB.BoneOf)+","+str(boneB.name))
@@ -160,6 +172,7 @@ func death(bot:Robot) -> void:
 					resolve_break_joint(bot,otherBot,bone,jointLine)
 	Global.BotsAtEnergyBank[bot.EnergyBankIndex].erase(bot)
 	bot.free()
+	# bot.call_deferred("free")
 #--------------------------------------
 func remove_bank(bank:int) ->void:
 	if (Global.BotsAtEnergyBank[bank].size()>0):

@@ -63,6 +63,11 @@ var OldFrameStart = 0
 var OldestAge:int = 0
 var StopStep:int = 0
 
+### Control
+var JointNumber:int = 0
+var BotNumber:int = 0
+var BoneNumber:int = 0
+
 func _init() -> void:
 	load_parameters_from_file("res://Parameters.json")
 
@@ -77,6 +82,7 @@ func _ready() -> void:
 	OldFrameStart = Time.get_ticks_msec()
 #---------------------------------------
 func _process(_delta: float) -> void:
+	EventManager.resolve_replications()
 	if PendingFrames:
 		SavedFrames += 1
 		save_frame()
@@ -84,7 +90,11 @@ func _process(_delta: float) -> void:
 func _physics_process(_delta: float) -> void:
 	var Duration_mS = Time.get_ticks_msec()
 	Duration = (Duration_mS/1000)
-	#-------------------------------------
+	#---------------------------------------
+	# print("Bots: ",BotNumber,
+	# 	  " | Bones:", BoneNumber,
+	#       " | Joints:", JointNumber)
+	# #-------------------------------------
 	if Duration_mS-OldFrameStart > TimeLimitByFrame_mS:
 		LogManager.end_sim(2,"Frame time that cause crash (ms): "+str(Duration_mS))
 		get_tree().quit()
@@ -92,9 +102,11 @@ func _physics_process(_delta: float) -> void:
 	#-------------------------------------
 
 	#-------------------------------------
-	EventManager.resolve_events()
+	# EventManager.resolve_events()
+	EventManager.resolve_deaths()
+	EventManager.resolve_erase_banks()
 	#-------------------------------------
-	Assertation.assert_dicts_size()
+	# Assertation.assert_dicts_size()
 	#-------------------------------------
 	for bank in BotsAtEnergyBank:
 		for bot in BotsAtEnergyBank[bank]:
@@ -295,7 +307,7 @@ func load_parameters_from_file(paramsFile:String) -> void:
 	BOTMovingEnergyMult = result["Bots"].get("MovingEnergyMult", BOTMovingEnergyMult) 
 	BOTMetabolism = result["Bots"].get("Metabolism", BOTMetabolism) 	
 	BOTMaxForcePossible = result["Bots"].get("MaxForcePossible", BOTMaxForcePossible) 
-	BOTJoinThresold = result["Bots"].get("JoinThresold", BOTJoinThresold)  
+	BOTJoinThresold = result["Bots"].get("JoinThresold", BOTJoinThresold)  #standard = 112.5
 	BOTUsingJoinThresold = result["Bots"].get("UsingJoinThresold", BOTUsingJoinThresold) 
 	BOTChangeDirectionDelay = result["Bots"].get("ChangeDirectionDelay", BOTChangeDirectionDelay) 
 	BOTReplicationCoolDown = result["Bots"].get("ReplicationCoolDown", BOTReplicationCoolDown)  
@@ -316,7 +328,7 @@ func load_parameters_from_file(paramsFile:String) -> void:
 	FSInfiniteFood = result["FoodSource"].get("InfiniteFood", FSInfiniteFood)
 
 	KillOlderBots = result["General"].get("KillOlderBots", KillOlderBots)
-	MaxBotsInScreen = result["General"].get("MaxBotsInScreen", MaxBotsInScreen)
+	# MaxBotsInScreen = result["General"].get("MaxBotsInScreen", MaxBotsInScreen)
 	TimeLimitByFrame_mS = result["General"].get("TimeLimitByFrame_mS", TimeLimitByFrame_mS)
 	MaxReplicationPerStep = result["General"].get("MaxReplicationPerStep", MaxReplicationPerStep)
 	LogAddress = result["General"].get("LogAddress", LogAddress)
@@ -327,6 +339,7 @@ func load_parameters_from_file(paramsFile:String) -> void:
 	MaxStep = result["General"].get("MaxStep", MaxStep)
 	FPS = result["General"].get("FPS", FPS)
 	MutationRate = result["General"].get("MutationRate", MutationRate)
+	SaveFrames = result["General"].get("SaveFrames", SaveFrames)
 	LogAddress = result["General"].get("LogAddress", LogAddress)
 	var worldSizeArray = result["General"].get("WorldSize", WorldSize)
 	WorldSize = Vector2(worldSizeArray[0],worldSizeArray[1])

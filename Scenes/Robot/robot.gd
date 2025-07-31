@@ -62,6 +62,7 @@ var MovementRules: Array[Vector2] = []				#Has the movement direction that will 
 # Called when the node enters the scene tree for the first time.
 func _init() -> void:
 	# seed(Global.Seed)
+	Global.BotNumber += 1
 	pass
 #---------------------------------------
 func _ready() -> void:
@@ -348,8 +349,8 @@ func check_joints() -> void:
 #---------------------------------------
 # Signals
 func _on_bone_collided(myBone:RigidBody2D,collider:Node):
-	if myBone == Bones[CenterBoneIndex]:
-		die(1)
+	# if myBone == Bones[CenterBoneIndex]:
+	# 	die(1)
 	if collider.is_in_group("bone")and(myBone.CanJoin):
 		var rand:float = randf()
 		var joinedToNumber = get_joinedTo_number()
@@ -383,3 +384,5 @@ func _input(event):
 	if event.is_action_released("ui_down"):
 		MovementDirection *= Vector2(x_direction_multiplier,1)		
 #---------------------------------------
+func _exit_tree() -> void:
+	Global.BotNumber -= 1

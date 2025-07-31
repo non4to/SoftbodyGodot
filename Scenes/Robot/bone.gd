@@ -16,6 +16,7 @@ signal bone_exited(myself:RigidBody2D, collider:Node)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	Global.BoneNumber += 1
 	contact_monitor = true
 	max_contacts_reported = 30
 	connect("body_entered", _on_body_entered)
@@ -29,3 +30,7 @@ func _on_body_exited(collider:Node): #emits bone exited, if any bone exited anyt
 	var my_id = self.get_groups()[1]
 	if not(collider.is_in_group(my_id)):
 		bone_exited.emit(self,collider)	
+
+func _exit_tree() -> void:
+	Global.BoneNumber -= 1
+

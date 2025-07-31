@@ -11,13 +11,12 @@ CAMINHO_SIMULACAO = "/home/non4to/GitRepos/SoftbodyGodot"  # Altere para seu cam
 COMANDO_BASE = ["/home/non4to/Documentos/godot_v4.4", "--path", CAMINHO_SIMULACAO]
 CAMINHO_LOGS = "/home/non4to/Documentos/SoftBodyLogs/CurrentSimulation"
 TIME_LIMIT = 10
-SIMULATION_NUMBER = 30
-
+SIMULATION_NUMBER = 2
 
 def executar_simulacoes(repetitions):
     maxDuration = 0
     keepSimulating = True
-    duration_times = []
+    duration_times = [] 
     i=1
     # for i in range(1, repetitions + 1):
     while keepSimulating and i <= repetitions:
