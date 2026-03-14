@@ -3,7 +3,6 @@ extends Node2D
 const ROBOT = preload("res://Scenes/Robot/robot.tscn")
 const TESTSPRING = preload("res://Scenes/TEST-SCENES/linked_bot.tscn")
 
-
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	get_spawners()

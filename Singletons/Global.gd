@@ -244,7 +244,6 @@ func initialize_log_adress() -> void:
 		if not dir.dir_exists(main_dir):
 			dir.make_dir(main_dir)
 			
-
 	LogAddress += "/"+main_dir
 	dir = DirAccess.open(LogAddress)
 	dir.make_dir("frames")

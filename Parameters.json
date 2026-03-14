@@ -45,7 +45,7 @@
 		"RandomSeed": true,
 		"Seed": 746080124,
 		"WorldSize": [1000.0, 1000.0],
-		"LogAddress":"/home/non4to/Documentos/SoftBodyLogs"
+		"LogAddress":"Results"
 
 	}
 }
