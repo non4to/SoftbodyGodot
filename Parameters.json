@@ -37,13 +37,13 @@
 		"TimeLimitByFrame_mS":70,
 		"MaxReplicationPerStep":3,
 		"FPS": 30,
-		"StartPopulation": 15,
+		"StartPopulation": 30,
 		"MaxQtyRobotsAlive": 80,
 		"MaxStep": 100000,
 		"MutationRate": 0,
 		"SaveFrames": true,
 		"RandomSeed": true,
-		"Seed": 746080124,
+		"Seed": 74608010,
 		"WorldSize": [1000.0, 1000.0],
 		"LogAddress":"Results"
 
