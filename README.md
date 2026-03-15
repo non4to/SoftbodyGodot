@@ -1,5 +1,6 @@
 # SoftbodyGodot
 
+![demo](Videos/output.gif)
 An Artificial Life simulation of softbody organisms that can **self-replicate, form physical attachments, and evolve attachment/movement behavior** over time. Built in Godot 4 using the [Rapier2D](https://github.com/appsinacup/godot-rapier-2d) physics engine and the [SoftBody2D](https://github.com/appsinacup/godot-softbody2d) addon.
 
 ---
